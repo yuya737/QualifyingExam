@@ -1,0 +1,203 @@
+%In their survey, Wang et al. identifiy five \textit{dimensions} of ensemble data: variable, location, time, member, and ensemble. 
+%%
+%They also define six \textit{analytic tasks} for ensemble data: overview, compare, cluster, trend, feature, and parameters.
+%%
+%Each \textit{analytic task}, when applied to different \textit{dimensions}, demands a distinct analysis and visualization strategy\cite{wang_visualization_2019}.
+% For any of the \textit{analytic tasks}, the \textit{dimension} considered brings rise to a entirely different analysis and visualization strategy \cite{wang_visualization_2019}.
+%
+% We adopt this taxonomy to structure our discussion of the visualization strategies for ensemble climate data.
+
+\subsubsection{Visual Analytics for Climate Ensemble Data}
+% \subsubsection*{\note{Proposed Structure}}
+
+% \begin{tightItemize}
+%     \item Here are past work that have tried climate ensemble data visualization.
+%     \item Given the complexity of this data, visualization and analytics of such data often rely on data abstraction and aggregation to compress the data into a concise form.
+%     \item For climate ensemble data, the most straightforward intermediate data abstraction are summary statistics as is populate in climate science for its simplicity and interpretablilty\cite{kehrer_brushing_2010,hollt_ovis_2014}. However, past work have also considered graph-based approach, where a graph is constructed to represent the ensemble \cite{shu2016ensemblegraph, kappe_analysis_2019}, topology-based methods, where isocontours, spaghetti plots or similar methods are employed to represent the ensemble data while retainig the spatial context,  \cite{kappe_topology-based_2019,kappe_topology-based_2022, liu_visualizing_2015, vietinghoff_visual_2021, sanyal_noodles_2010, ma_interactive_2019}, or even as 2D images\cite{ise_varenn_2020}.
+
+% \end{tightItemize}
+
+% Given the abundance of ensemble data sets from large-scale simulations, many visualization techniques to investigate the ensemble data have been proposed in literature \cite{potter2009ensemble}.
+
+The increasing availability of ensemble data from large-scale climate simulations has led to the development of a range of visual analytics methods designed to manage and interpret uncertainty, spatial-temporal patterns, and inter-model variability~\cite{kehrer_brushing_2010, biswas_visualization_2017, ferstl_time-hierarchical_2017, wang_multi-resolution_2017,biswas2016visualization, kappe_exploring_2019}. 
+%
+% Given the complexity of this data, visualization and analytics of such data often rely on data abstraction and aggregation to compress the data into a concise form.
+%
+% For climate ensemble data, the most common data abstraction is summary statistics as is popular in climate science for its simplicity and interpretablilty \cite{kehrer_brushing_2010,hollt_ovis_2014}. 
+%
+% Of the many methods, statistics~\cite{kehrer_brushing_2010, hollt_ovis_2014} and matrix decomposition~\cite{chandler_characterizing_2024} have been central tools for some previous works.
+%
+Past works have considered topology-based methods, where isocontours, spaghetti plots or similar methods are employed to preserve spatial context while encoding ensemble variability~\cite{kappe_topology-based_2019,kappe_topology-based_2022, liu_visualizing_2015, sanyal_noodles_2010, ma_interactive_2019}.
+Others have proposed graph-based representations of ensemble relationships~\cite{shu2016ensemblegraph, kappe_analysis_2019} or treated ensemble members as collections of images to facilitate comparative analysis~\cite{ise_varenn_2020}.
+%
+% In \cite{shu2016ensemblegraph} Shu et al. presented EnsembleGraph, a visual analytics tool for time-varying ensemble data that abstracted spatial regions as nodes to develop a graph-based representation of the ensemble.
+%
+Kappe et al. introduced a Sankey-diagram-based visualization using \textit{k}-means clustering on the entire climate field to summarize variability in decadal predictions~\cite{kappe_exploring_2019}, while Evers et al. employed spatial correlation measures and multidimensional scaling (MDS) to embed ensemble members for comparative visualization~\cite{evers_uncertaintyaware_2021}.
+%
+% This work was extended replacing hierarchical clustering with \textit{k}-means clustering \cite{kappe_analysis_2019}.
+% to build a more advanced visual analytics tool 
+%
+% More recently, Evers et al. demonstrated a visualization workflow for climate ensemble via calculating spatial correlation across the spatial domain and then embedding the climate ensemble using multi-dimensional scaling (MDS)~\cite{evers_uncertaintyaware_2021}.
+%
+% This method allows users to understand regions of spatial domain that exhibit similar behavior across the ensemble members.
+%
+% This work was further extended for multi-field climate ensembles by calculating spatial correlations on a concatenated time series across all fields~\cite{evers_interactive_2023}.
+
+%In both set of works, clustering of the ensemble data is identified as a key \textit{analytic task}, though they differ the \textit{dimension}; the former clusters the ensemble members, while the latter clusters the spatial domain.
+%%
+%\ClimateSOM aligns closer to \cite{kappe_analysis_2019, kappe_exploring_2019} where the clustering on the ensemble members is the primary focus.
+
+% Given the complexity of climate ensemble data, the balance between the level of abstraction and the amount of information retained is a key challenge in its visualization, and we propose \ClimateSOM as another approach to address this challenge, this time to abstract the data into a 2D distribution.
+
+However, in the context of visualizing the overall behavior of a single climate ensemble model run or its comparison, past works have mostly relied on summary statistics or what Kappe refers to the as the \textit{mean field approach}~\cite{kappe2022visual}.
+%
+As Kappe points out, however, this aggregation can be misleading since climate ensemble data seldom vary around a single mean, instead exhibiting multiple means of varying importance and distributional characteristics.
+
+%
+Departing from this \textit{mean field} aggregation is a key motivation for \ClimateSOM. Rather than reducing the ensemble to a single statistical summary, our approach models it as a 2D spatially organized distribution, preserving the variability across model runs. We use a self-organizing map (SOM) to maintain local topological relationships while revealing fine-grained differences between ensemble members. In contrast to prior systems, which typically support only isolated subtasks, such as single-run exploration or pairwise comparison, \ClimateSOM provides integrated support for exploration, comparison, and clustering. This unified capability addresses a gap in existing climate ensemble visual analytics.
+
+%\subsection{Dimensionality Reduction (DR) for Spatiotemporal Data}
+%The manifold hypothesis \cite{fefferman2016testing} that posits that high-dimensional data lies on a low-dimensional manifold has been a driving force behind the development of dimensionality reduction (DR) techniques.
+%%
+%Notato and Aupetit provide a comprehensive survey of DR or projection methods for visual analytic tasks \cite{nonato_multidimensional_2019}.
+%%
+%Spatial or spatiotempoiral data is no exception to this and DR methods can be readily to spatial data as well, providing an avenue to visually explore such data.
+%%
+%Classical Multidimensional Scaling (MDS) is often used in these works \cite{piccolotto_undrground_2024} \note{Cite more ST-MDS works.}
+%%
+%In \cite{piccolotto_undrground_2024}, Piccolotto et al. used MDS to visualize latent components and their relationships that were extratcted from a Spatial Blind Source Separation (SBSS) analysis.
+
+%%
+%As Nonato and Aupetit outline the in any DR or similar projection method, the choice of the dissilarity measure is crucial to the success of the method.
+%%
+%Although Euclidean distance is the most common choice, its expressive power is limited in cases where the distance is large as in images \cite{agrawal2021minimum}.
+%%
+%Kappe explored the role of dissimilarity measures in the context of climate data \cite{kappe2022visual}
+
+%Brehmer et al. identified a number of common tasks for visualization with dimensionality reduction, including the intepretation of the synthesized dimension \cite{brehmer_visualizing_2014}.
+
+
+
+\subsubsection{SOMs in Visual Analytics and Climate Science}
+Self-organizing maps (SOMs)~\cite{kohonen_self-organizing_1990} are commonly used for their ability to project high-dimensional data onto a structured, low-dimensional grid while preserving local topological relationships. This pseudo-continuous 2D layout enables spatial interpretation and supports visual pattern recognition.
+In visual analytics, SOMs have been used to structure time-series and spatial data, as demonstrated by Andrienko et al. in their analysis of crime patterns ~\cite{andrienko_space-time_2010}. 
+Beyond this, SOMs have been applied in diverse domains such as astrophysics and cytometry, where the preservation of local structure facilitates cluster identification and improves interpretability~\cite{chen_self-organizing_2013, hemmati_bringing_2019, sacha_somflow_2018, chushig-muzo_data-driven_2020, van_gassen_flowsom_2015,quintelier_analyzing_2021, tu_phrasemap_2024, eirich_irvine_2022}.
+
+In climate science, SOMs have often been used for pattern extraction, where extracted nodes represent particular spatial patterns that may be linked to known physical phenomena \cite{liu_performance_2006}.
+% The ``\textit{self-organizing}'' property of SOMs, which enables dimensionality reduction, is often credited as a key feature that makes analysis via SOMs fruitful in Climate Sciences, where extracted nodes and patterns can often be associated with known physical phenomena \cite{liu_performance_2006}.
+%
+For instance, Reusch et al. used SOMs to identify the North Atlantic Oscillation (NAO) in climate data \cite{reusch_north_2007}, while Mihanovi\'{c} et al. used SOMs to identify surface circulation patterns in the northern Adriatic Sea \cite{mihanovic_surface_2011}.
+%
+% Nourani et al. used SOMs to preprocess precipitation satellite data for further analysis \cite{nourani_using_2013} and Loikith et al. used SOMs to identify large-scale meteorological patterns (LSMPs) over the Northwestern United States \cite{loikith_characterizing_2017}.
+%
+For more applications of SOMs in climate science or related areas, we refer the reader to \cite{liu_review_2011, sheridan_self-organizing_2011, hewitson_self-organizing_2002, gibson_use_2017}.
+Regardless of the exact application, the trained SOM and its associated 2D node space must be interpretable by the user to be useful as this serves as the backbone for its use.
+%
+Past works have mostly considered Sammon Mapping or Multidimensional Scaling (MDS) to understand the SOM-defined 2D space; however, these methods do not provide user control over the mapping process.
+
+% 
+In \ClimateSOM, we extend SOM-based approaches by integrating interactive visual analytics techniques. In particular, we augment the SOM node space with interpretability tools including user annotations, interactive dimensionality reduction, and LLM-empowered bidirectional queries. This allows domain scientists to both guide and interrogate the structure learned by the SOM, moving beyond static representations and improving the transparency and utility of the latent 2D embedding.
+
+%A recurring theme across these studies is use of SOMs as a clustering technique for organizing raw climate data.
+%%
+%% In fact, many works highlight its relationship to k-means clustering \cite{sheridan_self-organizing_2011, gibson_use_2017, hewitson_self-organizing_2002} and its capacity to extract realistic features from the input data.
+%%
+%Gibson et al. refers to this flavor of SOMs as \textit{SOM for clustering} \cite{gibson_use_2017}.
+%%
+%In these works, the relative importance is given to the expression in \textit{each} of the extracted SOM nodes since they can represent extreme events \cite{grotjahn_north_2016} or characteristic patterns
+%of historical weather or climate variation within a region of interest \cite{loikith_characterizing_2017}.
+%%
+%This contrasts with \textit{SOM for projection} where the primary goal to uncover the underlying structure in the data.
+%%
+%Broadly, this application of SOMs can be considered as a form of dimensionality reduction.
+%%
+%% Related methods for dimensionality reduction in climate science including Empirical Orthogonal Functions (EOF) and Matrix Factorization (MF).
+%%
+%% However, these methods have its limitations including the interpretability of the extracted patterns due to their orthogonality constraints in EOFs \cite{liu_performance_2006} and the necessary restriction that they the archetypes in MF-powered methods lie on the extremes of the data \cite{harries_applications_2020}.
+%%
+%The classification of \textit{SOMs for projection} matches several works as well.
+%%
+%For instance, Radi\'{c} et al. used SOMs to analyze CMIP5 data over British Columbia \cite{radic_future_2015}, and more recently, Taylor et al. used SOMs to analyze CMIP6 data to identify recurring patterns in the CMIP6 ensemble \cite{taylor_cmip6_2023}.
+%
+% \ClimateSOM also follows this approach, using SOMs as a projection step to simplify the input ensemble data, reducing complexity and filtering out random variations.
+%
+% In \ClimateSOM, SOMs are adopted primarily as a processing step, emphasizing the characteristic of a set of nodes rather than the characteristics of individual nodes.
+%%
+%\ClimateSOM also aligns more with this use of SOMs, using SOM as a projection step for the input ensemble data, reducing the complexity and random variations the input ensemble data.
+%%
+%With \ClimateSOM, SOMs as adopted as processing step, emphasizing the \textit{distribution} of expressions in each of the input data, rather than the expressions of individual nodes. 
+
+% \subsection{SOMs in Visual Analytics}
+
+% SOMs have been used in a variety of visualization works in the past across different domains.
+
+%Chen et al. used SOMs to visualize a collection of multi-objective pareto frontiers in project portfolio management (PPM) and Asset Management \cite{chen_self-organizing_2013}.
+%%
+%Hemmati et al. used SOMs to visualize and approximate the spectral energy distribution data for galaxies \cite{hemmati_bringing_2019}.
+%%
+%Sacha et al. used SOMs as a part of their VA system for time series data \cite{sacha_somflow_2018}.
+%%
+%Guo et al. used SOMs to visualize a time series of high-dimensional sales data \cite{guo_visualization_2006}, and Chusig-Muzo et al. used SOMs to cluster and visualize electronic health records into ``prototype patients'' \cite{chushig-muzo_data-driven_2020}.
+%%
+%More recently, Tu et al. used SOMs to layout extracted phrases from a text corpus into 2D for user exploration \cite{tu_phrasemap_2024} and Eirich et al. used SOMs to cluster and visualize data from electric engine acoustic signals \cite{eirich_irvine_2022}.
+%
+% Beyond these applications, SOMs have found substantial use in the analysis of cytometry data \cite{van_gassen_flowsom_2015, quintelier_analyzing_2021}.
+%
+% SOMs are used to visualize complex flow and mass cytometry data, and have been shown to be effective in identifying cell populations and their relationships.
+%
+% Van Gassen et al. introduced FlowSOM, a SOM-based visualization interface for cytometry data, where a minimum spanning tree was used to visualize the relationship between the extracted SOM nodes \cite{van_gassen_flowsom_2015}.
+
+
+%\subsection{LLMs for Sensemaking in Visualizations}
+%Past works identify that additive annotations can help with comprehrension and recall of visualizations, aiding in its sensemaking process~\cite{zhao_annotation_2017, rahman_qualitative_2025}.
+%%
+%Additionally, allowing users to express \textit{their} information needs by labeling specific visual elements can support knowledge generation~\cite{bernard_comparing_2018}.
+%% Furthermore, providing users with the ability to express \textit{their} information needs via labeling specific visual elements can support the users' knowledge generation process \cite{bernard_comparing_2018}.
+%% Supplying users with the ability to express \textit{their} information needs via labeling specific visual elements can support the users' knowledge generation process \cite{bernard_comparing_2018}.
+%%Reasoning with complex data often requires its users to explore nuanced information spaces.
+%%
+%Meanwhile, recent studies highlight the potential of LLMs in facilitating sensemaking within visual analytics~\cite{hutchinson_llm_2024}.
+%% Meanwhile, recent works demonstrate the potential for LLMs to aid in the sensemaking process of complex information for visual analytics \cite{hutchinson_llm_2024}.
+%%
+%For instance, LLMs have been used to assist in reasoning of spatiotemporal sensor traces~\cite{ouyang2024llmsense} and they have been also used to explore the latent space of text embedding models~\cite{raval_explain-and-test_2023}.
+%%
+%They have also been used to help users make sense of and explore the decomposition of information-seeking tasks~\cite{suh_sensecape_2023}.
+%%
+%They have also been shown to alleviate the ``cold-start problem'' in information-seeking, helping users establish context and find a starting point when navigating new information~\cite{liu_selenite_2024}.
+%% whereby LLMs can provide a starting point and neccessary context for users as they explore new information \cite{liu_selenite_2024}.
+%% Another recent work also demonstrates LLM's capability to help users to make sense of and explore complex information spaces like the decomposition of information-seeking tasks \cite{suh_sensecape_2023}.
+%%
+%% The premise of these works is that LLMs, given proper prompting and guardrails, can often prime users to new information spaces and explain patterns in data with minimal user intervention.
+%The underlying premise of these works is that, with proper prompting and guardrails, LLMs can prime users to new information spaces and help explain patterns in data with minimal intervention.
+%%
+%With \ClimateSOM, we build on these insights by enabling users to provide \textit{annotations} within the SOM-defined 2D space, using LLMs in the process.
+
+\subsubsection{LLMs for VIS}
+Natural Language Interfaces (NLI)~\cite{shen_towards_2023} or LLMs have been increasingly applied to assist in visualization workflows~\cite{hutchinson_llm_2024, zhang_natural_2024, zhao_leva_2025}.
+%
+Such systems show promise in helping users by generating interpretable annotations in visualizations or by providing a conversational interface to the visualization system~\cite{wu_chartinsights_2024,shen_towards_2023} which can aid in their sensemaking process~\cite{bernard_comparing_2018,rahman_qualitative_2025}.
+%
+They have also been shown to alleviate the ``cold-start problem'' in information-seeking, helping users establish context and find a starting point when navigating new information~\cite{liu_selenite_2024}.
+%
+LLMs have also been successfully applied for Text-to-SQL tasks ~\cite{zhang_natural_2024, li_dawn_2024} and for summarizing insights from and improve usability in visual analytics interfaces~\cite{zhao_leva_2025}.
+%
+In fact, LLMs have been used in geospatial visual analytics systems as in \cite{li_save_2024} for gathering and summarizing insights in a geospatial context.
+% or for generating SQL queries from natural language questions
+%
+
+In \ClimateSOM, we integrate LLMs more tightly into the system design by enabling bidirectional interaction between users and the SOM-defined latent space. This includes support for text-based queries into the embedding and automated summarization of regions in the latent space. This approach not only improves usability but also enhances the interpretive bandwidth of the SOM, particularly in settings where exploratory context is limited or evolving.
+
+
+
+% With \ClimateSOM, we enable users to provide \textit{annotations} in the SOM-defined 2D space as a means to express their information needs, leveraging LLMs in the process.
+%
+% Meanwhile, the latent space of dimensionality reduction techniques have been freqeuntly explored in the past \cite{sacha_visual_2017}, many visual analytics works seeking to improve its interpretablity \cite{montambault_dimbridge_2025, eckelt_visual_2023}.
+%
+% Despite the documented issues like hallucinations that LLMs face, in light of these works, we propose the use of LLMs to help users navigate the latent space of the SOM in the \ClimateSOM workflow and reduce the "cold start" problem in exploring this latent space.
+%Visualizing complex data often involves  
+%dimensionality reduction to a lower-dimensional space, usually in 2D, to facilitate its understanding.
+%%
+%The premise is that patterns in the data are more easily discernible after processing; however, the problem of understanding the patterns still remains albeit in a lower-dimensional space.
+%%
+%Recent works have explored the use of LLMs to assist in sensemaking in these latent spaces \cite{raval_explain-and-test_2023}.
+

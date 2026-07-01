@@ -1,0 +1,273 @@
+\begin{figure*}[h!]
+    \centering
+    \begin{subfigure}[b]{0.24\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{T1Error}
+        \caption{Error for Task 1}
+        \label{subfig:T1Err}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{T1TTI}
+        \caption{Time taken for Task 1}
+        \label{subfig:T1TTI}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{T2Rate}
+        \caption{Success rate for Task 2}
+        \label{subfig:T2Err}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.24\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{T2TTI}
+        \caption{Time taken for Task 2}
+        \label{subfig:T2TTI}
+    \end{subfigure}
+    \caption{Task performance metrics}
+    \label{fig:tasks}
+\end{figure*}
+
+\begin{figure*}[h!]
+    \centering
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{T1TLX}
+        % \caption{Task }
+        \label{subfig:T1TLX}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\textwidth]{T2TLX}
+        % \caption{T2TLX}
+        \label{subfig:T2TLX}
+    \end{subfigure}
+    \caption{Hart and Staveland's NASA-TLX scores for Task 1 and Task 2. Asked were Mental effort, Mental demand, Frustration, and Performance/accuracy of HexTiles with respect to Square-glyphs.}
+    \label{fig:tasks_tlx}
+    \vspace{-0.15in}
+\end{figure*}
+
+To evaluate the efficacy of our HexTiles design, we conducted a user study with 7 participants with two tasks, measuring accuracy and time-to-insight, and an expert review with three domain experts (DEs). 
+
+\subsection{User Study}
+We gathered seven participants, \textbf{P1}-\textbf{P7}: 2 male and 5 female; 5 PhD students, 1 MS student, and 1 BS student; with varying levels of exposure to visualization.
+%
+The user study was conducted with visualizations using the 2020 Presidential Election and demographics data as seen in \cref{fig:usecase_election}.
+%%
+%The three variables encoded were: (1) Population density, (2) Percent people of color, and (3) Percent democratic lead.
+
+As the baseline, we used the existing superimposition-based method, Square-glyphs, and compared its performance against HexTiles.
+%
+For the sake of comparison, HexTiles without the variance encoding was used in the study.
+%
+In addition, to ensure fairness of comparison, we allowed participants to freely change elevation angles for both visulizations to account for the 3D nature of HexTiles.
+
+
+We designed two tasks as follows: 
+\begin{tightItemize}
+    \item \textbf{Task 1:} Given a Square-glyph or HexTile, \textit{estimate} the value of the encoded variable.
+    \item \textbf{Task 2:} Given a desired pair of variable ranges, \textit{find} a Square-glyph or HexTile that satisfies the condition. We use this task as a proxy to measure how well users can interpret and reason about the interactions between the encoded variables.
+\end{tightItemize}
+As an example, for Task 2, participants were asked to find and click on a tile with \textit{population density <25 per square km \textbf{and} percent people of color >50\%}.
+%
+For both tasks, participants were measured on accuracy and time-to-insight (TTI).
+%
+To define accuracy, for Task 1, we used the error between the estimated and actual value expressed as a percentage from the minimum and maximum of that variable, and for Task 2, we used the success rate.
+%
+To define TTI, we measured the time taken to complete each task.
+%
+The regions asked and the ranges asked were randomized for each participant, and 15 questions were asked for each task and for each visualization type, resulting in $15 \times 2 \times 2 = 60$ questions in total for every participant.
+%
+The four hypotheses we tested at a significance level of $\alpha = 0.05$ were:
+\begin{tightItemize}
+    \item \textbf{H1:} HexTiles will have a \textit{lower} error rate compared to Square-glyphs on Task 1.
+    \item \textbf{H2:} HexTiles will have a \textit{shorter} TTI compared to Square-glyphs on Task 1.
+    \item \textbf{H3:} HexTiles will have a \textit{higher} success rate compared to Square-glyphs on Task 2.
+    \item \textbf{H4:} HexTiles will have a \textit{shorter} TTI compared to Square-glyphs on Task 2.
+\end{tightItemize}
+\subsubsection{Quantitative Results}
+Quantitative results are shown in \cref{fig:tasks}.
+%
+We ran a Mann-Whitney U test for each hypothesis (\textbf{H1}, \textbf{H2}, \textbf{H4}) except for \textbf{H3} where we ran a two-sample Z test for proportions.
+%
+For \textbf{H1}, \textbf{H2}, and \textbf{H4}, we opted for the Mann-Whitney U test due to the non-normal distribution of the data.
+%
+At a significance level of $\alpha = 0.05$, we failed to reject the null hypothesis for all hypotheses.
+%
+However, at a p-value of 0.117 for \textbf{H3}, we note that this still points to a trend towards HexTiles having a higher success rate compared to Square-glyphs though not statistically significant.
+%
+Furthermore, for \textbf{H1}, even though we failed to reject the null hypothesis, we find a lower mean error for HexTiles compared to Square-glyphs.
+
+One notable observation was the variances in error and TTI for Task 1, and TTI for Task 2, which were \textit{lower} for HexTiles compared to Square-glyphs.
+%
+Administering the Levene's test for equality of variances, we found that the variances were \textit{significantly different} for error in Task 1 and TTI in Task 2 at a significance level of $\alpha = 0.05$.
+%
+We thus conclude that HexTiles has a \textbf{more consistent performance and mental load for interpretation} compared to Square-glyphs.
+
+\subsubsection{Qualitative Results}
+To gather qualitative feedback, we asked participants to (1) describe their experience with each visualization type, (2) answer the NASA-TLX questionnaire to measure the mental load for each task and visualization type, and (3) evaluate the variance encoding in HexTiles to see if they gained additional insights that were not present without the encoding.
+%
+Results for the NASA-TLX survey are shown in \cref{fig:tasks_tlx}.
+
+On all four categories of the NASA-TLX survey tested\textcolor{red}{\textbf{---}}mental demand, performance, effort, and frustration\textcolor{red}{\textbf{---}}all participants \textbf{P1}-\textbf{P7} reported significantly favorable scores for HexTiles compared to Square-glyphs.
+%
+Here, we also report a number of key recurring points that the participants reported during the qualitative feedback session on the usability of HexTiles compared to Square-glyphs.
+
+\paragraph{``Color is easier to interpret than size''}
+A main distinction between HexTiles and Square-glyphs is the use of color vs. size.
+%
+Where the HexTiles design uses the color of the tile's base or ring to encode the value of a variable, the Square-glyphs design uses the size of the square.
+%
+% Where in HexTiles base color and inner ring, color is used to encode the value of variable, in Square-glyphs, the size of the square is used. \textcolor{red}{\textbf{possibly reword: ""}}
+%
+A number of participants noted that the size of the square was harder to interpret compared to the color of the HexTiles, especially when the size of the square was small.
+%
+\textbf{P1} noted, \qu{when you zoom out on the square glyphs, the little squares disappear. You can't see them anymore, [\dots] and then you can't really compare the sizes of the squares.}
+%
+They further noted, ``with HexTiles, the sizes didn't really matter.''
+% Similarly, \textbf{P3} noted, ``[estimating values with HexTiles] was easier because I don\'t have to compute what the size of square should look like. [\dots] for both Task 1 and Task 2, I don't need to do this translation.''
+%
+\textbf{P2} agreed as well: \qu{[HexTiles] definitely took less effort to interpret because I can just look the scales, look at the colors. [With Square-glyphs] you need to look at it and then kind of estimate what it is.}
+%
+\textbf{P5} also left a similar comment that they had to check the sizes for Square-glyphs, whereas for HexTiles, they could just look at the color, which made it substantially less demanding to interpret and locate specific tiles.
+%
+Another notable insight from \textbf{P6} is that due to the nature of a map and the perspective transform, Square-glyphs and their relative square sizes will depend on the distance to zoom level, which can be a source of confusion and imprecision.
+%
+The reported comparison between color and size was an interesting observation, since literature in visualization\cite{Munzner_2015} suggests that size is a more effective channel than color for ordered attributes.
+%
+However, we report that in the context of superimposition-based multivariate geospatial visualizations, size may be limiting if many such tiles are to be used, especially for interactive visualizations when the perspective transform can interfere with the size perception.
+
+\paragraph{``Icons are mentally easy to interpret''}
+Participants also reaffirmed the efficacy of the semantic icons in HexTiles.
+%
+With regards to the difference between HexTiles and Square-glyphs, \textbf{P4} said, \qu{The biggest difference between [the two] would be reading and finding the icons for the population. [\dots] Population density [in the icons], was the easiest to interpret.}
+%
+\textbf{P2} noted, \qu{The population density [encoding for HexTiles] was very intuitive.}
+%
+\textbf{P7} reaffirmed the semantic icons, \qu{for population, definitely, HexTiles are better, just because you have that 3D icon, so it was really easy to tell.}
+%
+We found evidence that the semantic icons were useful in guiding user attention to specific variables over others.
+
+\paragraph{``HexTiles was easier for understanding multiple variables at once''}
+% {\textbf{possibly reword: "easier for understanding multiple variables at once"}}''}
+Participants also noted that HexTiles made it easier to interpret multiple variables at once and to ascertain relationships between them.
+%
+\textbf{P7} said, \qu{I feel like HexTiles are really good at combining, [for example] when you're combining the political outcomes as well as the population density.}
+%
+\textbf{P5} remarked that Square-glyphs might be better if one focuses on one variable, but \qu{if I want to handle the three types together, HexTiles are better.}
+
+\paragraph{``HexTiles provides a more visually continuous visualization that's easier to interpret and to locate a particular tile''}
+Especially for Task 2, when participants were asked to find a tile of a given characteristic, participants noted that the mental demand was lower for HexTiles mostly due to the more continuous nature of the visualization design.
+%
+\textbf{P1} said, \qu{[Square-glyphs] all look alike when you zoom out. So you can't really see a big picture of [\dots] all the tiles, which is important when you're looking for a tile.}
+%
+Since in the Square-glyphs, the four squares of which the glyph is composed are separated, users mentioned the increased mental load to locate particular tiles.
+
+\paragraph{``The variance encoding in HexTiles is useful''}
+Participants were asked to evaluate the variance encoding in HexTiles and to see if they gained any additional insights that were not present without.
+%
+Many pointed to the variance encoding as a useful feature especially for exploring the data over urban areas like Dallas and Houston, as well as regions between urban areas, since users were able to better understand the nuanced transition of political lead from Democratic to Republican, and vice versa.
+%
+\textbf{P1} said, \qu{you have these places that are sort of in the middle between two regions [\dots] the variance is much higher within them.}
+%
+Participants generally agreed that the variance encoding was useful for adjusting confidence in the aggregated data presented as HexTiles.
+
+
+
+
+% \paragraph{``HexTiles base color and inner ring color can compete which makes the inner ring hard to interpret''}
+
+%\paragraph{``Especially with the variance encoding, HexTiles can be visually complex and overwhelming''}
+%Some participants noted that HexTiles, especially with the variance encoding, can be visually complex and overwhelming.
+%%
+%\textbf{P5} said even though with time, one can get used to it and that it became better, the color is a lot at the start to take in.
+%%
+%\textbf{P1} put it nicely, ``[Square-glyphs] were easier on the eyes to look at because it was more simple. But HexTiles, [with the variance encoding] was more informative.''
+
+
+\subsection{Expert Review}
+We gathered feedback from three domain experts who work in water resource management all with expertise in ecology and hydrology and regularly use geospatial visualizations in their line of work.
+%
+% We denote these three domain experts as \textbf{DE1}-\textbf{DE3}.
+%
+For all \textbf{DE1}-\textbf{DE3}, we presented the visualizations in~\cref{fig:usecase_water}.
+%
+In these DE interviews, we focused on (1) the usability and clarity of HexTiles in the context of communicating water management data, (2) the efficacy of the variance encoding to alleviate MAUP, and (3) the limitations.
+%
+%In addition to DE interviews, we also gathered feedback via informal interviews from two PhD students in the field of visualization.
+%%
+%We will mainly focus on the DE interviews for usability feedback, but we also include results from our informal interviews.
+
+% \vspace{-0.15in}
+
+\subsubsection{Results}
+All three DEs responded positively on the efficacy of communicating multivariate data via HexTiles. 
+%
+\textbf{DE1} described our design as \qu{visually fascinating and intriguing}, \textbf{DE2} described that the design \qu{definitely works}, and \textbf{DE3} remarked that HexTiles \qu{certainly goes beyond anything [they've] come across before.}
+%
+The strengths of HexTiles, as expected from our initial design stage, lied in showing general patterns of multivariate data---however, of course, with the cost of abstracting out finer details as mentioned in \cref{sec:methods}.
+%
+\textbf{DE1} suggested that HexTiles can be combined with other metrics and visualizations to communicate finer details.
+%
+\textbf{DE3} said \qu{[HexTiles] is really good for conveying the patterns over the whole region,} while also noting that the design can \qu{generalize over} a region if the specific area of interest is
+relatively fine.
+%
+They concluded by highlighting the value in \qu{ignoring some specific information, [\dots] in favor of this generalizable approach.}
+%
+\textbf{DE2} also supported HexTiles for other similar uses in hydrology to communicate multivariate data: \qu{I'm actually really intrigued about applying it to a different project we're working on [\dots] the Sacramento River.} 
+%
+With regards to the variance encoding, \textbf{DE2} noted \qu{I think it's really interesting [that] it allows you to look at valley-wide patterns, but warns you about interpreting certain results at that scale, and [that] you need to zoom in more.[\dots] it's incredibly powerful and a ton of data.}
+%
+While the majority of comments were positive,  these interviews, in addition to those outlined during the user study, also reiterated a number of limitations with HexTiles which we list next.
+
+\subsection{Limitations and Considerations}
+We summarize the limitations and shortcomings of HexTiles as reported by our user study participants and domain experts.
+
+%\textbf{Height:} The use of height (i.e. 2.5D) in spatial visualization and its efficacy is a recurring topic in visualization.
+%%
+%In our case, for example in \cref{fig:usecase_water}, we encode the land surface elevation as the height of the HexTiles.
+%%
+%A number of DEs, as well as PhD students during our informal feedback sessions noted that the height was one of the first information that ``popped out`` and that it distracted from interpreting other information.
+%%
+%While \textbf{DE2} mentioned that it may assist in their particular case since land surface elevation relates to the gravitational flow of water, all respondents agreed that it increased the complexity of the visualization, including the occlusion that it can cause.
+%%
+%As a general rule of thumb, as we discuss in \cref{sec:design}, the use of height in HexTiles should be done carefully, considering occlusion as well as the interpretability problems it may lead in 2.5D/3D visualizations.
+%% 
+%Although we include HexTiles height as a possible channel in which to encode data, especially given the feedback during the review process, we caution against it as a general rule of thumb.
+%%
+%Thus, we leave the detailed study of effective uses of HexTiles height as future work.
+
+\noindent
+\textbf{Color interactions: } When asked on the limitation of HexTiles, all participants in the user study noted that the base color and inner ring color can be difficult to interpret together, especially when their saturation is similar. 
+%
+For the election use case tested, the base color saturation at the middle of the colormap and the inner ring saturation at the end of the colormap were similar, causing difficulty in interpretation.
+%
+Since Square-glyphs do not inherently blend the encodings for the three variables, the visual separability was higher than the base color and inner ring color in HexTiles.
+%
+However, we reiterate that putting emphasis on certain variables over others is part of the design of HexTiles, and we see this as a consequence of that decision.
+\\
+\textbf{Visual complexity: } Some participants and domain experts noted that HexTiles, especially with the variance encoding, can be visually complex and overwhelming.
+%
+\textbf{P5} said even though they got used to the design and encodings with time, the color was a lot to take in, especially at the start.
+% said even though with time they got used to the design and encodings, the color was a lot, especially at the start, to take in. \textcolor{red}{\textbf{possibly reword: s}}
+%
+\textbf{P1} put it nicely, \qu{[Square-glyphs] were easier on the eyes to look at because it was simpler. But HexTiles, [with the variance encoding] was more informative.}
+%
+\textbf{DE2} also remarked that the design can be overwhelming for some users who are not used to such complex visualizations.
+%
+The amount of information communicated and the visual complexity is a fine balance, and we acknowledge this limitation.
+
+\noindent
+\textbf{Levels of abstractions: }
+Though \textbf{DE2} noted that this is not necessarily a limitation of HexTiles, but a \qu{limitation for any spatial data or almost any spatial data}, we nevertheless note that this is a limitation of a superimposition-based visualization.
+%
+While visualizing general behavior is a useful and crucial feature, as our domain experts (\textbf{DE2}, \textbf{DE3}) confirmed, we acknowledge that finer investigation may be better suited with a different visual design and encoding.
+%
+Adaptive task-based hexagonal resolution is another possible future direction for HexTiles.
+
+\noindent
+\textbf{Occlusion of underlying terrain: }
+The HexTiles design drawn over a base map will occlude underlying natural and artificial features of the space.
+%
+While many glyph designs encounter this, for applications that explicitly require the underlying features like the terrain, etc. to be visible, HexTiles may not be the best choice.
+

@@ -1,0 +1,130 @@
+
+This section forms the last of three arms in our extension of ClimateSOM.
+%
+First, we extended the workflow with a statistical framework, an EMD-based permutation test that determines whether the distribution of conditioned spatial precipitation patterns has shifted under a changing climate.
+%
+Second, we established the validity of this framework by validating it against a traditional approach, Welch's t-test on mean precipitation, and found the two in broad agreement.
+%
+Third, in this final arm, we develop how to visualize the change that the test detects; this work is ongoing, and we describe it here to outline where we are currently taking the extension.
+
+Our aim is to visualize the spatial reorganization that our EMD test has detected.
+%
+The cumulative change fields above give a first, aggregate view of this reorganization, and we are now developing methods to resolve that view further, decomposing the aggregate change into the specific spatial pattern transitions that compose it, so that the detected reorganization can be visualized as a set of interpretable shifts between precipitation patterns rather than a single blended field.
+
+\subsubsection{Decomposing the Spatial Reorganization}\label{ssec:decomposing_reorganization}
+The cumulative change field $\sum_i (p_{1,i} - p_{2,i}) W_i$ defined in Section~\ref{ssec:cumulative_change} aggregates contributions from many SOM nodes and therefore does not isolate the specific pattern transitions responsible for the observed reorganization.
+%
+To resolve this, we are developing a clustering-based decomposition (Algorithm~\ref{alg:decomposition}) that couples optimal transport with density-based clustering of SOM-projected samples in the ClimateSOM space (Figure~\ref{fig:agu_som_space}), quantifying mass redistribution between historical and future periods at the level of pattern clusters.
+%
+We select HDBSCAN over $k$-means and hierarchical clustering because it does not require the number of clusters to be specified \textit{a priori} and accommodates clusters of varying shapes and densities. Points classified by HDBSCAN as noise are excluded from the decomposition.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{AGU_SOM_Space.pdf}
+    \caption{The two-dimensional ClimateSOM space over which the decomposition operates. Each point is a SOM node placed at its projected position, and the callout shows the log-standardized precipitation anomaly pattern associated with one node. Every sample is located in this space by its best-matching unit, so a set of samples becomes a density over the space that the decomposition then clusters and transports.}
+    \label{fig:agu_som_space}
+\end{figure}
+
+The reduced transport plan $\tilde{P}$ quantifies the mass redistributed between each pair of pattern clusters; however, redistributed mass alone is an insufficient measure of the magnitude of spatial change.
+%
+A large transfer between two similar clusters constitutes a minor reorganization, whereas a smaller transfer between dissimilar clusters may contribute substantially to the cumulative change field.
+%
+To rank transitions by their contribution to the overall reorganization, we define an \textit{importance score} for each cluster pair as the product of (1) the redistributed mass $\tilde{P}_{ab}$ and (2) the mean absolute error (MAE) between the cluster centroids in the SOM prototype space.
+%
+The MAE between centroids in the SOM prototype space directly measures the dissimilarity between the underlying spatial precipitation patterns. High importance scores then identify transitions in which substantial mass is exchanged between markedly distinct patterns.
+
+Although unnormalized importance scores have different totals across comparisons, reflecting different magnitudes of total reorganization, expressing each as a percentage of its comparison's total yields a compositional measure: the fraction of that comparison's spatial reorganization attributable to a given cluster transition.
+%
+This normalized score lets us rank the cluster transitions driving the observed changes and compare their contributions across comparisons, even when the underlying comparisons differ in scale or sample size. In practice, we examine the top-ranked cluster transitions per comparison to identify the dominant pattern shifts.
+%
+Figure~\ref{fig:agu_decomposition} illustrates the decomposition for an example comparison: historical versus SSP5-8.5 March precipitation in the late-century period (2058--2100), conditioned on Bay-Delta wet years.
+%
+We select this comparison because the EMD test flags it as a significant distributional shift (Figure~\ref{fig:combined_pvalues}, $p = 0.001$), so a genuine reorganization is known to be present for the decomposition to resolve.
+%
+The before and after distributions are each partitioned into clusters, and the optimal transport plan redistributes probability mass between them to isolate the dominant cluster transitions.
+%
+Figure~\ref{fig:agu_centroid_weights} then renders, for the five highest-scoring transitions, the source and target cluster centroids as spatial precipitation patterns, making the specific reorganization each transition represents directly legible.
+
+Conditioned on Bay-Delta wet March years in the late century under SSP5-8.5, the five highest-scoring transitions share a consistent theme: a loss of precipitation in the south giving way to gains in the north.
+%
+The top transition (Flow~1, importance score $17.35\%$) relaxes an extreme-dry Sierra Nevada and Northern California source pattern toward a more moderate dryness.
+%
+Flow~2 ($14.49\%$) loses a wet Southern California pattern to a slightly dry Southern California and Sierra state.
+%
+Flow~3 ($12.49\%$) introduces a new wet Northern California and Sierra pattern.
+%
+No single transition dominates, but instead the reorganization spreads across several comparably-weighted flows that together shift wet-year March precipitation away from Southern California and toward Northern California and the Pacific Northwest.
+%
+\begin{algorithm}[h!]
+\caption{Clustering-based decomposition of distributional reorganization}
+\label{alg:decomposition}
+\begin{algorithmic}[1]
+\Require Samples $S_1$ with $|S_1| = n$ and samples $S_2$ with $|S_2| = m$, projected onto the SOM space
+\Ensure Reduced transport plan $\tilde{P}$ and normalized importance scores $\tilde{I}$ summarizing cluster-level reorganization between $S_1$ and $S_2$
+\State Compute the optimal transport plan $P \in \mathbb{R}^{n \times m}$ between $S_1$ and $S_2$ using their BMU locations in the projected SOM space, where $P_{ij}$ denotes the mass transported from sample $i \in S_1$ to sample $j \in S_2$. Use normalized mass if $n\neq m$.
+\State Apply HDBSCAN to the projected SOM locations of $S_1$ and $S_2$ separately, yielding clusters $C_a$ ($a \in \{1, \dots, k_1\}$) and $D_b$ ($b \in \{1, \dots, k_2\}$); exclude points labeled as noise
+\State Compute centroids $c_a$ for each $C_a$ and $d_b$ for each $D_b$ as the mean SOM prototype of their member nodes
+\For{each cluster pair $(a, b)$}
+    \State $\tilde{P}_{ab} \gets \sum_{i \in C_a} \sum_{j \in D_b} P_{ij}$
+    \State $I_{ab} \gets \tilde{P}_{ab} \cdot \mathrm{MAE}(c_a, d_b)$ \Comment{importance score }
+\EndFor
+\State $Z \gets \sum_{a, b} I_{ab}$ \Comment{total importance across all cluster pairs}
+\For{each cluster pair $(a, b)$}
+    \State $\tilde{I}_{ab} \gets I_{ab} / Z$ \Comment{normalized importance score}
+\EndFor
+\State \Return $\tilde{P}, \tilde{I}$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[p]
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{AGUBeforeDist.png}
+        \caption{Before (historical) distribution}
+        \label{fig:agu_before_dist}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{AGUAfterDist.png}
+        \caption{After (future) distribution}
+        \label{fig:agu_after_dist}
+    \end{subfigure}
+
+    \vspace{0.75em}
+
+    \begin{subfigure}{0.8\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{TransportPlan.png}
+        \caption{Optimal transport plan between clusters}
+        \label{fig:agu_transport_plan}
+    \end{subfigure}
+    \caption{Clustering-based decomposition of an example comparison: historical versus SSP5-8.5 March precipitation in the late-century period (2058--2100), conditioned on Bay-Delta wet years. The before (a) and after (b) sample distributions are each represented as a density over the ClimateSOM space and partitioned into clusters, labeled by their share of the probability mass, with markers at the cluster centroids. The optimal transport plan (c) redistributes mass from the before-clusters (circles) to the after-clusters (diamonds). The \emph{historical}
+    distributions shown as the same density rendering and the \emph{future} distributions in the dotted outline. The labeled arrows give the dominant cluster transitions and its importance score $\tilde{I}$.}
+    \label{fig:agu_decomposition}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{centroid_weights.pdf}
+    \caption{The five highest-scoring cluster transitions (flows) from the transport plan in Figure~\ref{fig:agu_transport_plan}, ranked by importance score. Each column is one transition; the top row shows the source (historical) cluster centroid and the bottom row the target (future) cluster centroid, both rendered as log-standardized precipitation anomaly patterns. The annotations report the redistributed mass, the MAE between the two centroids ($\mathrm{Dist}$), and the resulting normalized importance score. Rendering the centroids directly turns each ranked transition into an interpretable before-and-after pair of spatial precipitation patterns.}
+    \label{fig:agu_centroid_weights}
+\end{figure}
+
+% \subsection{Conclusion}
+\subsection{Conclusion}
+\label{subsec:agu-real-conclusion}
+This extension carried ClimateSOM from exploration to inference.
+%
+We equipped the workflow with an EMD-based permutation test that asks, with statistical rigor, whether the distribution of conditioned spatial precipitation patterns has shifted under a changing climate, and we validated it against the standard Welch t-test, finding broad agreement together with an informative asymmetry: the distributional test detects reorganizations of spatial pattern that a mean-based test did not detct.
+%
+Applied to the co-variability between the Sacramento Bay-Delta Watershed and U.S. West Coast precipitation, the test reveals a statistically significant, regime-dependent decoherence that strengthens with emissions and into the late century, and that is coherently expressed within individual water years rather than emerging only in the period average.
+%
+The clustering-based decomposition then begins to turn these detected shifts into interpretable spatial pattern transitions, as in the worked example where wet-year March precipitation is projected to redistribute from Southern California toward the north.
+
+% We regard this as a successful sarlitmus test for ClimateSOM.
+%
+Confronted with a concrete, climatologically substantive question and with the established tools of the domain, the workflow delivers an inferential result those tools were not designed to provide, and renders that result as legible spatial patterns rather than a single summary statistic.
+%
+The decomposition remains a work in progress, and our broader aim is to fold this inferential and interpretive capability back into the interactive ClimateSOM workflow, so that hypothesis testing and pattern attribution become steps an analyst can take within the same visual environment used to explore the ensemble in the first place.

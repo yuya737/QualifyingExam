@@ -1,0 +1,39 @@
+%\subsection{Dimensionality Reduction (DR)}
+%A major distinction among the various methods for dimensionality reduction (DR) is the choice between local and global methods \cite{wang_understanding_2021}.
+%%
+%Local methods such as t-SNE and UMAP are known for their ability to preserve local structures in the data, while global methods such as PCA and MDS are optimized to preserve pairwise relative distances which implicitly focuses on points farther away from each other.
+%%
+%In \ClimateSOM, we opt for a local method for dimensionality reduction for two reasons. 
+%%
+%First, the most interesting comparison arises between ensemble members whose variations are often local in nature. 
+%%
+%In downstream tasks like clustering or the charcterization of forcing, we rely on collection of local differences to encapsulate differences, and thus preserving local structures is preferred over its counterpart.
+%%
+%Second, Euclidean distance, our distance metric to define pairwise difference between precipiation fields, is an suffient local metric but a poor global metric. 
+%%
+
+%Optimizing for the global structure would be at the cost of representing the local deviation structure in the data.
+%%
+%This also allows for the local vector interpretation of the SOM nodes to be more meaningful, as the local structures are preserved.
+
+\subsection{Self-Organizing Maps (SOM)}
+SOMs are a type of neural network designed to learn the topology of the input data by mapping it to a lower-dimensional grid, usually in a rectangular grid in 2D.
+%
+For \ClimateSOM, each node in the SOM grid will be trained to represent a spatio-temporal field in the input data.
+%
+After a random initialization, at each iteration, the SOM algorithm selects a random input field and finds the best matching node (BMU) in the grid. 
+%
+While varying definitions of \textit{best matching} exist, we use the Euclidean distance between the input field and the node's field as the distance metric.
+%
+After identifying the BMU, the algorithm updates the BMU and its neighbors based on a learning rate and a neighborhood function.
+
+Formally, for a data set $D=\{x_1, x_2, \dots x_n\}$ of a collection of spatiotemporal fields, at every iteration $t$, the weight vector $w_i$ of the node $i$ is updated as follows:
+\begin{equation}
+    w_{i}(t+1) = w_{i}(t) + \alpha(t)h_{ij}(t)[x(t) - w_{i}(t)]
+\end{equation}
+where $w_{i}$ is the weight vector of the node $i$, $\alpha(t)$ is the learning rate at time $t$, $h_{ij}(t)$ is the neighborhood function.
+%
+A common choice for the neighborhood function $h_{ij}(t)$ is the Gaussian function.
+%
+After training, the grid of SOM nodes is expected to approximate and learn the distribution input data set $D$ with constraint that the 2D grid of nodes are psuedo-smooth across the grid axes.
+

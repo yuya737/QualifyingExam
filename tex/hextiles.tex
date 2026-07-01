@@ -1,0 +1,24 @@
+In this chapter, I address the first facet of multifaceted geospatial data: its \emph{multivariate structure}.
+%
+Geospatial data rarely arrives as a single quantity per location; instead, many interacting variables coexist over the same geography, yet the map graph schema that makes such data legible reserves spatial position for location itself, leaving little room to encode additional variables without breaking the viewer's expectations.
+%
+Compounding this, real-world geospatial data is discretized in irregular and inconsistent ways, raising statistical hazards such as the Modifiable Areal Unit Problem.
+%
+To confront these challenges, I present \emph{HexTiles}, an attempt at a domain-agnostic hexagonal-tiling encoding that visualizes multivariate geospatial data and their spatial interactions simultaneously while remaining robust to the differing discretizations geospatial data arrives in.
+%
+I evaluate HexTiles through a controlled user study and a domain-expert review with ecologists and hydrologists, and the remainder of this chapter develops the motivation, design, and assessment of the approach in detail.
+\section{Introduction}\label{sec:intro}
+\input{tex/hextiles/introduction}
+\section{Related Work}\label{sec:relworks}
+\input{tex/hextiles/relworks}
+\section{HexTiles}\label{sec:methods}
+\input{tex/hextiles/methods}
+% \section{Design and Workflow}\label{sec:design}
+\section{HexTiles Workflow}\label{sec:workflow}
+\input{tex/hextiles/design}
+\section{Case Studies}\label{sec:cases}
+\input{tex/hextiles/cases}
+\section{Evaluation}\label{sec:feedback}
+\input{tex/hextiles/feedback}
+\section{Conclusion}\label{sec:conclusion}
+\input{tex/hextiles/conclusion}

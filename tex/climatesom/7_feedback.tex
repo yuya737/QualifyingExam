@@ -1,0 +1,61 @@
+In addition to the two experts, \textbf{E1} and \textbf{E2}, who provided the two case studies, we also solicit feedback on \ClimateSOM with a semi-structured interview from four other domain experts, \textbf{E3} - \textbf{E6}, (total of six) presenting the case studies and the system to them.
+%
+These experts range in years of experience from 12 to 48 years in climate science and all have worked with climate ensemble datasets.
+%
+We summarize and discuss the feedback on \ClimateSOM below.
+
+\paragraph{On the LLM integration} Since the case studies were conducted by experts who had already become familiar with the SOM nodes, thus able to rely on their past knowledge to provide annotations, we instead asked experts to test the potential of LLM integration.
+%
+The experts found the LLM integration particularly useful in certain circumstances. 
+%
+\textbf{E2} and \textbf{E3} agreed that LLM integration would be useful if the user had a specific administrative region of their interest.
+%
+\textbf{E1} suggested that the integration would be useful if the geospatial region in question was unfamiliar to them.
+%
+When visual inspection of the SOM nodes alone is insufficient to understand particular patterns in the SOM Node Space, experts \textit{agreed} that the LLM can be used to both identify regions of interest and to provide textual summaries of the nodes in those regions.
+%
+However, \textbf{E3} questioned the reliability of LLMs in providing sensemaking of the SOM Node Space, suggesting visual inspection of the SOM Node Space may be more reliable.
+% 
+Realizing a conversational interface for the LLMs to provide a way to error-correct is a future direction.
+
+\paragraph{On the distributional nature of our data abstraction}
+Throughout the case studies, we saw examples of how the distributional nature of our data abstraction of model runs in \ClimateSOM revealed important patterns.
+%
+Crucially, as \textbf{E1} agreed, providing a distributional view of model runs above an interpretable space via the steerable DR, annotations, and LLM-empowered sensemaking, experts can quickly identify and understand crucial characteristics of model runs.
+%
+% Combined with the interpretable SOM Node Space that \ClimateSOM provides via the steerable DR, annotations, and LLM-empowered sensemaking, experts can quickly identify and understand crucial characteristics of model runs. 
+%
+\textbf{E6} showed significant interest in the descriptive power of our representation, in particular of the vector field formulation of comparison, and noted that they had \textit{``never seen anything like it before.''}
+%
+Experts agreed that this distributional nature of data abstraction is a \textbf{novel way to visualize climate ensemble datasets} and a distinguishing feature of \ClimateSOM.
+
+\paragraph{\ClimateSOM can quickly discover novel and meaningful insights} Most importantly, \textit{all experts} agreed that the insights our system uncovers in climate ensemble datasets are valuable—either because they can be identified or because identifying them manually would require substantial effort.
+%
+% Most importantly, \textit{all experts} agreed that the insights that our system can uncover into the climate ensemble datasets are valuable, either in that they can be identified or that it would take substantial manual effort to identify them otherwise.
+%
+\textbf{E2} remarked that, to generate similar insights \textit{``(their) other methods would involve generating a very large number of static plots and sifting through them.''}
+% . and that they therefore \textit{`like this kind on interactive interface.`''}
+%
+\textbf{E1,E6} also noted the ability to investigate the monthly evolution of the clustering results in \ClimateSOM as a novel and valuable feature.
+%
+\textbf{E4} was impressed by \ClimateSOM and suggested that it could also be used to answer other important questions for climate models, such as whether downscaled coarse-resolution global climate models can capture the characteristics of the climate system by comparing it with high-resolution regional climate models.
+%
+The feedback gives us confidence that our workflow can indeed generate novel insights into climate ensemble datasets of climatological significance.
+
+
+\subsection{Limitations and Future Work}
+Despite the overall very positive feedback, experts also pointed out limitations.
+%
+First, some experts noted the \textbf{visual complexity of the workflow and interface}, though they positively reviewed the memorability of the interface (i.e., there is a learning curve to the system, but once learned, it is easy to remember how to use it).
+%
+Granted, the scope of tasks that \ClimateSOM attempts to address is large and complex, and thus future work will focus on improving the usability of the system with better onboarding tutorials.
+%
+Second, compared to common statistical or analytic methods, \ClimateSOM provides \textbf{no native metrics of statistical significance} in its findings.
+%
+Statistical tests are commonly used in climate science to assert anomalous patterns, for example, and the inclusion of such metrics within the \ClimateSOM framework is a future direction.
+%
+Third, although scalablity is not a concern for the Model Run Inspection Views, \textbf{the scalability of the Clustering View} can become a concern when considering datasets with more model runs.
+%
+An alternative encoding design to accommodate larger number of model runs is future work. 
+%
+Lastly, as introduced in~\cref{sec:problem}, the abstraction in \ClimateSOM \textbf{ignores the temporal ordering of the model runs} which is of interest to many climate scientists.

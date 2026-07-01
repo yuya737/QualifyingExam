@@ -1,0 +1,87 @@
+Multivariate visualization, i.e. visualizing multiple variables  or information from multiple information channels together, is a recurring problem that the visualization community has sought to solve \cite{liu2014survey}. 
+%
+% In fact, the study in dimensionality reduction and visualization methods that leverage these techniques arise from this exact challenge \cite{espadoto2019toward}. 
+% Given the ever-increasing data size and dimensions, this continues to be a challenge.
+%    
+This is no different for geospatial data \cite{andrienko_geovisualization_2008, guo_multivariate_2005, strode2020bivariate, saha_visualizing_2022}. 
+%
+The challenge of visualizing and communicating insights from multivariate geospatial information data has presented, and still presents, a unique challenge in visualization and cartography~\cite{bertin1983semiology, Tyner_2014}.
+% , as the range of geospatial visualizations can be limited due to the rigid graph schema of geospatial maps.
+%
+Pinker, in their seminal work, writes that ``people create schemas for specific types of graphs using a general graph schema, embodying their knowledge of what graphs are for and how they are interpreted in general \cite{pinker1990a}.''
+%
+For example, in a bar graph, the dependent variables and the independent variables tend to be on the Y-axis and X-axis, respectively.
+%
+In interpreting a bar graph, we \textit{match} this prior experience and expectation to the visuals. 
+%
+This \textit{match}, or lack thereof, is a key component in how we reason about and make decisions when using visualizations \cite{padilla_decision_2018}.
+%
+In contrast to other graph schemas, maps, where most geospatial data is visualized, have a comparatively stricter set of expectations that most likely arises from everyday experience with maps including the cardinal directions~\cite{hografer2020state}.
+ 
+For geospatial visualization designers, this is a two-edged sword. 
+%
+This stricter schema implies that if the visualization appropriately \textit{matches} this graph schema, the viewer can quickly start the \textit{interrogation} process where the visual data is converted to answer a particular \textit{conceptual question}.
+%
+On the other hand, the strict nature of the schema can also partially limit the design space of geospatial visualizations, as the spatial position of the visualization interface is often reserved by the geographic position.
+%
+% On the other hand, the nature also means that departures from this map graph schema, will render the visualization undecipherable as viewers are essentially required to fight the preexisting expectations.
+%
+This may be a part of the reason why methods and techniques in geospatial visualization have largely unchanged, especially for visualization used for the general public.
+%%
+%The widespread adoption of the choropleth map is exemplified by a study that examined state COVID dashboards for all 50 US states that found 94\% of the dashboards used a choropleth map \cite{adams_normalizing_2023}.
+%
+% While the choropleth map can be a powerful visualization tool, it has a number of limitations including its challenge with encoding more than two variables\cite{Tyner_2014}, which we solve with our proposed HexTiles design.
+
+Furthermore, multivariate geospatial visualizations must also properly contend with data with varying spatial discretizations.
+% \textbf{Spatial discretization mismatches}
+% \note{add points too}
+%
+% Here, spatial discretization refers to how geospatial data \note{wording}
+%
+Unlike scientific data, where a simulation code may solve a series of PDEs on a regular grid, geospatial data is often discretized in irregular patterns, following geographical features (lakes, mountains, etc.) or based on other geographical groupings like counties. 
+%
+% Beyond polygon-based data, data can also be formatted as a set of points, where each coordinate records some geospatial event, as an example.
+%
+As such, it is commonplace for geospatial data visualizations to work with data using varying spatial discretizations.
+%
+However, differing spatial discretizations also leads to issues like the Modifiable Areal Unit Problem (MAUP) \cite{fotheringham1991modifiable} which we discuss in \cref{sec:methods} and our encoding approach to mitigate its effects.
+%%
+%This, thus excludes methods like the choropleth map as a general tool for multivariate geospatial visualization.
+%%
+%We further describe limitations of colors in maps in \cref{sec:limitations} and how we solve this problem with spatial binning in \cref{sec:methods}.
+
+In order to address these challenges, we propose HexTiles, a domain-agnostic hexagonal-tiling based visual encoding design for multivariate geospatial data.
+%
+In short, the design of HexTiles is motivated by the need to (1) faithfully visualize geospatial data of varying discretizations and qualities simultaneously, 
+and (2) to highlight the interactions and spatial relationships between variables across spatial regions.
+%
+We assess the efficacy of HexTiles via a user study and a domain expert review with ecologists and hydrologists experienced in designing geospatial visualizations.
+
+% As the scale of data grows, the need for accurate decision making based on these data also grows together.
+
+% The paper is organized as follows.
+% %
+% We first cover the related work in~\cref{sec:relworks}, describe the methods we apply in~\cref{sec:methods}, the resulting visual encoding in~\cref{sec:design}, the case studies in~\cref{sec:cases} and finally the expert feedback in~\cref{sec:feedback}.
+
+
+
+
+%\begin{figure}[htb]
+%  \centering
+%  % the following command controls the width of the embedded PS file
+%  % (relative to the width of the current column)
+%  \includegraphics[width=0.8\linewidth]{chart}
+%  % replacing the above command with the one below will explicitly set
+%  % the bounding box of the PS figure to the rectangle (xl,yl),(xh,yh).
+%  % It will also prevent LaTeX from reading the PS file to determine
+%  % the bounding box (i.e., it will speed up the compilation process)
+%  % \includegraphics[width=.95\linewidth, bb=39 696 126 756]{sampleFig}
+%  %
+%  %\parbox[t]{.9\columnwidth}{\relax
+%  %         For all figures please keep in mind that you \textbf{must not}
+%  %         use images with transparent background! 
+%  %         }
+%  %%
+%  \caption{A choropleth map of the United States that encodes data in a sequential discrete colormap. From: \url{https://observablehq.com/@d3/choropleth}}
+%  \label{fig:chloro}
+%\end{figure}

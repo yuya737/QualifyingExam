@@ -1,0 +1,215 @@
+\documentclass[preprint,journal]{vgtc}                     % final (journal style)
+%\documentclass[journal,hideappendix]{vgtc}        % final (journal style) without appendices
+% \documentclass[review,journal]{vgtc}              % review (journal style)
+%\documentclass[review,journal,hideappendix]{vgtc} % review (journal style)
+%\documentclass[widereview]{vgtc}                  % wide-spaced review
+% \documentclass[preprint,journal]{vgtc}            % preprint (journal style)
+
+
+%% Uncomment one of the lines above depending on where your paper is
+%% in the conference process. ``review'' and ``widereview'' are for review
+%% submission, ``preprint'' is for pre-publication in an open access repository,
+%% and the final version doesn't use a specific qualifier.
+
+%% If you are submitting a paper to a conference for review with a double
+%% blind reviewing process, please use one of the ``review'' options and replace the value ``0'' below with your
+%% OnlineID. Otherwise, you may safely leave it at ``0''.
+\onlineid{1910}
+
+%% In preprint mode you may define your own headline. If not, the default IEEE copyright message will appear in preprint mode.
+%\preprinttext{To appear in IEEE Transactions on Visualization and Computer Graphics.}
+
+%% In preprint mode, this adds a link to the version of the paper on IEEEXplore
+%% Uncomment this line when you produce a preprint version of the article 
+%% after the article receives a DOI for the paper from IEEE
+%\ieeedoi{xx.xxxx/TVCG.201x.xxxxxxx}
+
+%% declare the category of your paper, only shown in review mode
+\vgtccategory{Research}
+
+%% please declare the paper type of your paper to help reviewers, only shown in review mode
+%% choices:
+%% * algorithm/technique
+%% * application/design study
+%% * evaluation
+%% * system
+%% * theory/model
+\vgtcpapertype{application/design study}
+
+%% Paper title.
+% \title{Global Illumination for Fun and Profit}
+% \title{HexTiles and Semantic Icons for MAUP-Aware Multivariate Geospatial Visualizations}
+\title{HexTiles and Semantic Icons for \\ MAUP-Aware Multivariate Geospatial Visualizations}
+
+%% Author ORCID IDs should be specified using \authororcid like below inside
+%% of the \author command. ORCID IDs can be registered at https://orcid.org/.
+%% Include only the 16-digit dashed ID.
+\author{%
+    Yuya Kawakami, Sarah Yuniar, and Kwan-Liu Ma
+}
+% \affiliation{University of California, Davis}
+
+\authorfooter{
+     \item
+  	Yuya Kawakami, Sarah Yuniar, and Kwan-Liu Ma are with University of California, Davis.
+  	E-mails: \{ykawakami, sayuniar, klma\}@ucdavis.edu
+  %% insert punctuation at end of each item
+  % \item
+  % 	Josiah Carberry is with Brown University.
+  % 	E-mail: jcarberry@example.com
+  % \item
+  % 	Ed Grimley is with Grimley Widgets, Inc.
+  % 	E-mail: ed.grimley@example.com.
+
+  % \item Martha Stewart is with Martha Stewart Enterprises at Microsoft
+  % Research.
+  % 	E-mail: martha.stewart@example.com.
+}
+
+%% Abstract section.
+\abstract{%
+  %\lipsum[1] % filler text. Replace with your abstract.
+  %%
+  %%% We recommend that you link to your supplemental material here in the abstract, as well
+  %%% as in the Supplemental Materials section at the end.
+  %A free copy of this paper and all supplemental materials are available at \url{https://OSF.IO/2NBSG}.
+    We introduce \textit{HexTiles}, a domain-agnostic hexagonal-tiling based visual encoding design
+    for multivariate geospatial data. Multivariate geospatial data have presented a challenge due to the graph schema associated 
+    with geospatial maps, on which most geospatial data is presented.
+    With \textit{HexTiles}, we design a multivariate geospaital visualization design that leverages semantic icons to (1) simplify the process of interpreting interactions between multivariate geospatial data, and (2) put the visualization designer in the driver's seat to guide user attention to specific variables and interactions.
+    Additionally with \textit{HexTiles}, we attempt to explicitly mitigate effects of the Modifiable Areal Unit Problem (MAUP) for interpreting geospatial data, by proposing a confidence encoding for each of the information channels in \textit{HexTiles}. We calculate weighted variances of the variables in each \textit{HexTile} to provide a confidence value for each tile, which can be used to interpret the variability of the data within the corresponding geospatial area, an information that can be lost in geospatial visualizations.
+%     We find that the overreliance on color to represent geospatial data, via choropleth maps or bivariate colormaps, for example, can make immediate sense-making more difficult.
+%     With HexTiles, we combine hexagonal binning
+%     and semantic icons to leverage pre-attentive processing to guide viewers to discern interactions between multivariate
+    % geospatial data. 
+    To validate our approach, we gather quantitative and qualitative feedback from a user study and document domain expert feedback from ecologists and hydrologists experienced in designing geospatial visualizations.
+}
+
+%% Keywords that describe your work. Will show as 'Index Terms' in journal
+%% please capitalize first letter and insert punctuation after last keyword
+% \keywords{Radiosity, global illumination, constant time}
+
+%% A teaser figure can be included as follows
+% \teaser{
+%  \includegraphics[width=\linewidth]{figures/teaser}
+%  \centering
+%   \caption{\fix{Will update teaser to another image}}
+% \label{fig:teaser}
+%   \centering
+%   % \includegraphics[width=\linewidth, alt={A view of a city with buildings peeking out of the clouds.}]{CypressView}
+% }
+
+%% Uncomment below to disable the manuscript note
+%\renewcommand{\manuscriptnotetxt}{}
+
+%% Copyright space is enabled by default as required by guidelines.
+%% It is disabled by the 'review' option or via the following command:
+%\nocopyrightspace
+
+%==============================================================================%
+% PACKAGES N STUFF
+%==============================================================================%
+\PassOptionsToPackage{hidelinks}{hyperref}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{wrapfig}
+% \usepackage{cleveref}
+\usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{multirow}
+
+% \crefformat{section}{\S#2#1#3} % see manual of cleveref, section 8.2.1 \crefformat{subsubsection}{\S#2#1#3}
+% \crefformat{section}{Section \S#2#1#3}
+% \crefformat{appendix}{Appendix \S#2#1#3}
+% \crefformat{chapter}{Chapter #2#1#3}
+% \crefformat{figure}{Fig. #2#1#3}
+% \crefformat{subfigure}{Fig. #2#1#3}
+% \crefformat{equation}{Eq. #2#1#3}
+% \crefformat{table}{Table #2#1#3}
+% \crefrangeformat{subfigure}{Figs.~(#3#1#4--#5#2#6)}
+% \crefmultiformat{figure}{Figs.~#2#1#3}{ and~#2#1#3}{, #2#1#3}{ and~#2#1#3}
+% \crefmultiformat{subfigure}{Figs.~#2#1#3}{ and~#2#1#3}{, #2#1#3}{ and~#2#1#3}
+\usepackage{makecell}
+\newenvironment{tightItemize}{
+    \begin{itemize}
+        \setlength{\itemsep}{0pt}
+        \setlength{\parskip}{0pt}
+        \setlength{\parsep}{0pt}
+
+}{\end{itemize}}
+\usepackage{refcount}
+\usepackage[normalem]{ulem}
+\newcommand{\fix}[1]{\textcolor{red}{\textbf{\textit{#1}}}}
+\newcommand{\edited}[2]{\sout{#1} \textcolor{red}{#2}}
+\newcommand{\note}[1]{\textcolor{blue}{}}
+% \newcommand{\note}[1]{\textcolor{blue}{\textbf{\textit{#1}}}}
+\newcommand{\alert}[1]{\textcolor{red}{\textbf{\textit{#1}}}}
+\newcommand{\qu}[1]{\textit{``{#1}''}}
+% \newcommand{\bf}[1]{\textbf{#1}}
+
+\renewcommand{\ttdefault}{pcr}
+
+% \usepackage{todonotes}
+% \setuptodonotes{inline}
+\newcommand{\tododone}[1]{\todo[color=green]{#1}}
+\newcommand{\todoignore}[1]{}
+
+\usepackage{array}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% LOAD PACKAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Tell graphicx where to find files for figures when calling \includegraphics.
+%% Note that due to the \DeclareGraphicsExtensions{} call it is no longer necessary
+%% to provide the the path and extension of a graphics file:
+%% \includegraphics{diamondrule} is completely sufficient.
+\graphicspath{{./figures/}{pictures/}{images/}{./}} % where to search for the images
+
+%% Only used in the template examples. You can remove these lines.
+\usepackage{tabu}                      % only used for the table example
+\usepackage{booktabs}                  % only used for the table example
+\usepackage{lipsum}                    % used to generate placeholder text
+\usepackage{mwe}                       % used to generate placeholder figures
+\usepackage{graphicx}
+
+%% We encourage the use of mathptmx for consistent usage of times font
+%% throughout the proceedings. However, if you encounter conflicts
+%% with other math-related packages, you may want to disable it.
+\usepackage{mathptmx}                  % use matching math font
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}\label{sec:intro}
+\input{introduction}
+\section{Related Work}\label{sec:relworks}
+\input{relworks}
+\section{HexTiles}\label{sec:methods}
+\input{methods}
+% \section{Design and Workflow}\label{sec:design}
+\section{HexTiles Workflow}\label{sec:workflow}
+\input{design}
+\section{Case Studies}\label{sec:cases}
+\input{cases}
+\section{Evaluation}\label{sec:feedback}
+\input{feedback}
+\section{Conclusion}\label{sec:conclusion}
+\input{conclusion}
+% No need of Ack. for this version
+%\section*{Acknowledgements}
+%\input{acknowledgements}
+%-------------------------------------------------------------------------
+% bibtex
+% \bibliographystyle{abbrv-doi-hyperref}  
+\bibliographystyle{abbrv-doi}  
+\bibliography{hex}        
+
+% \newpage
+% \renewcommand{\thesection}{Supplementary Material \arabic{section}}
+% \input{supplementary.tex}
+\end{document}
+

@@ -1,0 +1,109 @@
+\subsubsection{ClimateSOM Framework}
+% We make use of the ClimateSOM framework with some adjustments.
+% ClimateSOM~\cite{kawakami2025climatesom} was originally presented as a visual analysis tool that represents ensembles of spatial climate realizations as distributions in a two-dimensional space.
+% %
+% Here, we extend this framework to analyze sets of spatial realizations across different climate periods and scenarios.
+%
+% A self-organizing map (SOM) is trained on the transformed precipitation anomaly fields $p_m'$ (Section~\ref{sec:data}), producing a grid where each node represents a characteristic spatial pattern.
+% %
+% Given this SOM for any transformed precipitation field, we identify its best matching unit (BMU) in the SOM and map that node to a 2D position.
+% %
+% Aggregating these BMU positions across a set of realizations yields a distribution representing that set's spatial pattern composition.
+% %
+% Formally, for a set with $n$ transformed spatial fields $F=[f_1, f_2, \ldots, f_n]$, we obtain:
+% \begin{equation}
+% S=\{s_1,s_2,\dots,s_n\}, \,\,\, s_i=\text{proj}(\text{BMU}(f_i))
+% \label{eq:climatesom_projection}
+% \end{equation}
+% where $\text{BMU}(f_i)$ is the best matching SOM node for transformed field $f_i$, and $\text{proj}(\cdot)$ maps the node to 2D coordinates.
+% %
+% In this work, we use a $30\times 30$ SOM grid, following the configuration established in the original ClimateSOM work~\cite{kawakami2025climatesom}. 
+% \subsubsection{SOM Projection}
+As identified, the original 2D SOM grid often contains distortions that we wish to mitigate.
+%
+The $\text{proj}(\cdot)$ function maps each SOM node to 2D coordinates that serve as the ground space for our EMD computation.
+%
+In this work, we use UMAP~\cite{mcinnes2018umap}, departing from the original ClimateSOM implementation, which used Minimum-Distortion Embedding (MDE)~\cite{agrawal2021minimum}.
+%
+MDE is a general framework that generalizes UMAP and t-SNE as special cases, and the additional anchoring constraints it exposes are not needed here, so we use UMAP as a simpler instance of the same family.
+
+Local fidelity is the appropriate property for our application because EMD aggregates the cost of moving mass over short hops, and the climate-change signal we test takes the form of many such local redistributions in pattern composition rather than wholesale traversal across the pattern space.
+%
+Global distortions introduced by UMAP are therefore of limited concern, as long-range transports are less prevalent in our dataset. 
+%
+Instead, individual displacements are local, and their accumulation across realizations is what we report as decoherence.
+%
+The UMAP projection is computed once on the full SOM codebook, inspected for validity, and held fixed across all comparisons and permutations, so the test statistic depends only on group assignments and not on embedding stochasticity.
+
+\subsubsection{EMD-Based Hypothesis Testing}
+We extend ClimateSOM with a permutation test using Earth Mover's Distance (EMD) to formally compare distributions of spatial climate patterns between different sets of realizations.
+% \shortnote{What if there's a different number?}
+%
+Recall that the SOM is trained once on the full dataset (all historical and future fields, all models and scenarios), ensuring a consistent pattern space for all comparisons.
+%
+Given two sets of spatial realizations with BMU distributions $S_1 = \{s_1^{(1)}, s_2^{(1)}, \ldots, s_{n_1}^{(1)}\}$ and $S_2 = \{s_1^{(2)}, s_2^{(2)}, \ldots, s_{n_2}^{(2)}\}$ in the UMAP-reduced ClimateSOM space, we compute the observed EMD:
+\begin{equation}
+d_{\text{obs}} = \text{EMD}(S_1, S_2)
+\end{equation}
+computed exactly via the network simplex solver in POT~\cite{flamary2021pot}. 
+%
+Here we use Euclidean distance between coordinates.
+%
+Additionally, we note that we solve the balanced optimal transport problem, which assumes equal mass in the compared distributions.
+%
+To satisfy this assumption, we equally distribute mass across all points in any set $S_i$ such that for any $S_i$ the total mass sums to 1.
+%
+This allows us to test distributions of arbitrary size under our framework.
+%
+The UMAP projection is computed once on the full SOM pattern space and held fixed across all permutations, ensuring the test statistic depends only on group assignments. 
+% As an additional validation, we compare our EMD-based results against a standard two-sample t-test on the BMU coordinates and found qualitatively consistent significance patterns.
+
+To assess statistical significance, we test the null hypothesis $H_0$ -- that the two distributions are drawn from the same underlying pattern distribution.
+%
+We perform a permutation test by pooling $S_1 \cup S_2$, randomly shuffling group labels, and recomputing EMD for each permutation.
+%
+Let $d_{\text{perm}}^{(k)}$ denote the EMD for the $k$-th permutation.
+%
+The p-value is calculated as:
+\begin{equation}
+p = \frac{1}{K} \sum_{k=1}^{K} I(d_{\text{perm}}^{(k)} \geq d_{\text{obs}})
+\end{equation}
+where $I(\cdot)$ is the indicator function.
+%
+We empirically find that $K=5000$ provides stable estimates and employ that here.
+%
+Lastly, we use $\alpha = 0.05$ as the significance threshold.
+%
+The validity of this permutation test rests on \emph{exchangeability} under $H_0$: relabeling realizations must be equally likely when the two sets are drawn from the same pattern distribution. We obtain this by treating each (model, water year) realization as an independent draw from the population of plausible climate states under its scenario. We acknowledge this independence assumption as a limitation, since realizations are correlated both across models, which share components and physics, and across neighboring water years; the resulting reduction in effective sample size may render our p-values mildly anti-conservative.
+
+This approach detects both compositional reorganization (changes in which spatial patterns are realized) and pattern intensification, with one caveat.
+%
+The signed-log transformation compresses magnitude, so BMU assignment is pattern-dominated; intensified patterns shift to a more extreme neighboring node when one exists.
+%
+At the wettest and driest SOM extremes, however, no more-extreme nodes exist, so intensification of those patterns remains invisible to the test.
+%
+Significant decoherence therefore indicates a shift in the spatial pattern composition associated with a given regional regime, while non-significance does not strictly rule out intensification confined to the SOM extremes.
+
+\subsubsection{Application to West Coast Precipitation Co-variability}
+
+We apply this framework to test whether the relationship between Bay-Delta precipitation regime and West Coast spatial precipitation patterns may reorganize under climate change.
+%
+Specifically, we examine whether the spatial patterns realized across the broader West Coast during anomalously wet or dry Bay-Delta water years differ systematically between historical and future periods.
+
+We classify each water year as wet or dry based on Bay-Delta accumulated precipitation, applying the same historical thresholds (defined below) to both historical and future periods so that wet/dry labels are consistent across all comparisons.
+% %
+% For each water year, we calculate the total accumulated precipitation in the Bay-Delta region.
+%
+Wet years are defined as those exceeding the 75th percentile of the historical distribution (1950-2014, pooled across all 15 models), and dry years fall below the 25th percentile.
+%
+For months within wet water years, we extract the corresponding West Coast spatial precipitation patterns from the historical period and compare them to West Coast patterns from months within wet water years in the future period.
+%
+All 15 climate models are pooled together in each comparison.
+%
+We repeat this procedure separately for dry water years.
+%
+Comparisons are conducted across October through May, three SSP scenarios (SSP2-4.5, SSP3-7.0, SSP5-8.5), and two future time periods (early: 2015-2057, late: 2058-2100).
+%
+% A significant p-value indicates that the West Coast precipitation response to a given Bay-Delta regime has fundamentally changed between historical and future climates.
+% \subsection{Comparison and verification with standard analysis approaches}
+% To assess the validity and robustness of our EMD-based hypothesis testing result, we compare our results

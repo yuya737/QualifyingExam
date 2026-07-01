@@ -1,0 +1,359 @@
+\section{Prompts used in the LLM integration}
+\subsection{Forward Direction}
+In the forward direction, we presume the user has a SOM node char- acteristic in mind, (e.g.\textit{``Show me SOM nodes with average above 0 over Southern California''}) and we wish to identify a region within the Adjusted SOM Node Space that corresponds to this requested characteristic.
+%
+To this end, we want to build an appropriate PostGIS query that matches the user’s request.
+%
+Using LangChain, we first detect any spatial region (e.g. \textit{Southern California}) using LangChain Tools.
+%
+If so, we first use the \texttt{Region to Counties} prompt to identify the counties in the region.
+\tcbset{colback=gray!10, colframe=black, boxrule=0.5pt, arc=2mm}
+%
+Once we have the counties, for which strict definitions are available, we obtain the boundaries for the region in the original query.
+%
+Next the \texttt{PostGIS Prompt Generation} prompt, along the LangChain Tool Calling that automatically supplies the computed boundarym is used to generate the PostGIS query.
+%
+We note that the SQL query generation query prompt is loosely based on LangChain's documentation on SQL generation\cite{langchainSQL}.
+%
+Finally, we use the \texttt{Clean Query} prompt to ensure the query is syntactically correct and complete.
+
+\lstset{
+    basicstyle=\fontspec{Source Code Pro},
+}
+\begin{tcolorbox}[title=PROMPT: Region to Counties, width=\linewidth, colframe=navy]
+    \begin{lstlisting}[basicstyle=\ttfamily\footnotesize,breaklines=true, columns=fullflexible,showstringspaces=false, keepspaces=true, belowskip=0pt, aboveskip=0pt,breakindent=0pt] 
+Given a US region in the West coast, return the names and states of the counties in that region. Region: {{ Region }} \end{lstlisting}
+\end{tcolorbox}
+\begin{tcolorbox}[title=PROMPT: PostGIS Prompt Generation, width=\linewidth, colframe=navy, breakable]
+    \begin{lstlisting}[basicstyle=\ttfamily\footnotesize,breaklines=true, columns=fullflexible,showstringspaces=false, keepspaces=true, belowskip=0pt, aboveskip=0pt,breakindent=0pt] Given an input question, create a syntactically correct one-line PostGIS query to retrieve the required information. Never query for all the columns from a specific table, only ask for the relevant columns in the question. Don't use any prior knowledge about spatial locations. If queried about the whole region take all grid locations. Nodes or members refer to the grid_ids.
+Pay attention to use only the column names that you can see in the schema description. Be careful to not query for columns that do not exist. Do no use the lat or lon columns. Always build valid and complete SRID 4326 PostGIS polygons for the region specified in the question.
+Example:
+Question: grid_ids whose average value in the Southern California higher than 0.5
+Answer: 
+SELECT grid_id FROM spatial_data WHERE ST_Intersects(geom, ST_GeomFromText(<polygon text>, 4326)) GROUP BY grid_id HAVING AVG(value) > 0.5;
+Question: grid_ids with average higher within Central Valley in California than Southern California
+Answer:  
+ WITH polygon_a_values AS (
+SELECT
+    grid_id,
+    AVG(value) as avg_value_a
+FROM your_table
+WHERE ST_Contains(ST_GeomFromText(<polygon text>, 4326), geom)
+
+GROUP BY grid_id
+),
+polygon_b_values AS (
+    SELECT
+        grid_id,
+        AVG(value) as avg_value_b
+    FROM your_table
+    WHERE ST_Contains(ST_GeomFromText(<polygon text>, 4326), geom)
+    GROUP BY grid_id
+)
+SELECT a.grid_id
+FROM polygon_a_values a
+JOIN polygon_b_values b
+    ON a.grid_id = b.grid_id
+WHERE a.avg_value_a > b.avg_value_b;
+
+Only use the following table: {{table_schema}}
+Question: {{question}} 
+Write an initial draft of the query. Then double check the PostGIS query for common mistake. Produce just the queries. Don't comment on the changes. Changes may include:
+    - ST_ functions are used with the right parameters
+    - Specify SRID 4326 for all geometries
+    - Using NOT IN with NULL values
+    - Using UNION when UNION ALL should have been used
+    - Using BETWEEN for exclusive ranges
+    - Data type mismatch in predicates
+    - Properly quoting identifiers
+    - Using the correct number of arguments for functions
+    - Casting to the correct data type
+    - Using the proper columns for joins
+
+Use format:
+
+First draft: <<FIRST_DRAFT_QUERY>>
+Final answer: <<FINAL_ANSWER_QUERY>> \end{lstlisting}
+\end{tcolorbox}
+
+\begin{tcolorbox}[title=PROMPT: Clean Query, width=\linewidth, colframe=navy]
+    \begin{lstlisting}[basicstyle=\ttfamily\footnotesize,breaklines=true, columns=fullflexible,showstringspaces=false, keepspaces=true, belowskip=0pt, aboveskip=0pt,breakindent=0pt] 
+Clean the following into an one-line query with no extra text and make sure its a valid PostGIS query and specify SRID 4326: {{to_be_cleaned}}\end{lstlisting}
+\end{tcolorbox}
+
+\subsubsection{Example}
+\begin{enumerate}
+    \item \textit{\textbf{User Query:}} grid\_ids whose average value over Southern California is higher than 0.
+    \item Detect \textit{Southern California} as a region that needs to be resolved.
+    \item Resolve \textit{Southern California} to the following counties: \begin{lstlisting}[basicstyle=\ttfamily\footnotesize,breaklines=true, columns=fullflexible,showstringspaces=false, keepspaces=true, belowskip=0pt,breakindent=0pt]
+Los Angeles County-CA, San Diego County-CA, Orange County-CA, Riverside County-CA, San Bernardino County-CA, Ventura County-CA \end{lstlisting} 
+    \item Generate the boundary for \textit{Southern California} by combining the known boundaries for the counties. \begin{lstlisting}[basicstyle=\ttfamily\footnotesize,breaklines=true, columns=fullflexible,showstringspaces=false, keepspaces=true, belowskip=0pt,breakindent=0pt]
+MULTIPOLYGON ((-118.881656 34.791231, ...)) \end{lstlisting} 
+    \item Construct the PostGIS query.\\ \textit{\textbf{Output:}}\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,breaklines=true, columns=fullflexible,showstringspaces=false, keepspaces=true, belowskip=0pt]
+SELECT grid_id FROM spatial_data WHERE ST_Intersects(geom, ST_GeomFromText('MULTIPOLYGON (((-118.881656 34.791231, -117.632011 34.82227, -117.632996 35.797251, -115.648357 35.809211, -114.633487 35.001857, -114.386699 34.457911, -114.131211 34.26273, -114.52868 33.947817, -114.627125 33.433554, -116.085165 33.425932, -116.106168 32.61848, -117.204917 32.528832, -117.571531 33.312302, -118.1259 33.697151, -118.466962 33.725524, -118.557356 33.987673, -119.158963 34.040253, -119.500953 34.326922, -119.442352 34.901274, -118.881656 34.791231)), ((-118.659924 33.50576, -118.359393 33.464922, -118.251379 33.353397, -118.241051 33.313029, -118.250903 33.280465, -118.50368 33.285314, -118.659924 33.50576)), ((-118.654363 33.074952, -118.523727 33.059972, -118.298469 32.794257, -118.538197 32.81277, -118.654363 33.074952)), ((-119.634795 33.285956, -119.519138 33.3337, -119.360702 33.221452, -119.512001 33.167755, -119.634795 33.285956)), ((-119.468064 34.063139, -119.330926 34.065064, -119.296238 33.99724, -119.454479 33.963308, -119.468064 34.063139)))', 4326)) GROUP BY grid_id HAVING AVG(value) > 0; \end{lstlisting}
+
+\end{enumerate}
+\subsection{Backward Direction}
+In the backward direction, we presume the user has identified a region within the \textit{Adjusted SOM Node Space} and wishes to generate a summary of the region.
+%
+To this end, we first evenly sample within the requested \textit{Adjusted SOM Node Space} region.
+%
+Given the user-defined cutoffs for \textit{high}, \textit{moderately high}, \textit{neutral}, \textit{moderate}, \textit{moderately low}, and \textit{low}, we extract the set of counties that fall under each category for every sampled SOM node.
+%
+Next, for each category for each node, we use the \texttt{Counties to Regions} prompt to generate a concise summary of the counties.
+%
+As an example, when supplied with \textit{[`Coos-Oregon', `Curry-Oregon']} it may generate \textit{`Southern Coastal Oregon'}.
+%
+Finally, we aggregate all this text using the \texttt{Aggregate Summaries} prompt to generate a summary of the region.
+%
+\begin{tcolorbox}[title=PROMPT: Counties to Regions, width=\linewidth, colframe=navy]
+    \begin{lstlisting}[basicstyle=\ttfamily\footnotesize,breaklines=true, columns=fullflexible,showstringspaces=false, keepspaces=false, belowskip=0pt, aboveskip=0pt,breakindent=0pt] 
+You are an expert in geographical analysis and regional summarization. Your task is to group and summarize a list of county names into concise regional descriptions based on their geographical characteristics.
+When summarizing, consider:
+    - Geographic location (e.g., northern, southern, coastal, inland, mountainous).
+    - Common regional identifiers (e.g., `Bay Area,' `Central Valley,' `Southern California').
+
+Format the output as summary of less than 20 words. If counties are widely spread, mention multiple distinct regions. Keep the response clear, concise, and relevant. Do not make any inferences about the regions.
+
+For example, you might respond: `Northern coastal areas and the Central Valley, including some southern inland regions.' 
+
+
+{{ list_of_counties }}\end{lstlisting}
+\end{tcolorbox}
+%
+\begin{tcolorbox}[title=PROMPT: Aggregate Summaries, width=\linewidth, colframe=navy]
+    \begin{lstlisting}[basicstyle=\ttfamily\footnotesize,breaklines=true, columns=fullflexible,showstringspaces=false, keepspaces=true, belowskip=0pt, aboveskip=0pt,breakindent=0pt] 
+You are a climate scientist tasked with summarizing climate reports. Scientists have provided observations of regions categorized by varying precipitation levels, formatted as follows:
+
+high_precipitation: [high_precipitation_regions], moderate_high_precipitation: [moderate_high_precipitation_regions], neutral_precipitation: [neutral_precipitation_regions], moderate_low_precipitation:[moderate_low_precipitation_regions], low_precipitation: [low_precipitation_regions].
+
+Your objective is to analyze these observations and identify overall trends in approximately 50 words, focusing on the characteristics of the different precipitation regions. Provide a summary that reflects the proportions of each region category putting focusing on the most consistent trends.  Refrain from making any inferences or assumptions beyond the provided data. 
+
+{{ concatenated_descriptions_dictionary }}\end{lstlisting}
+\end{tcolorbox}
+
+\section{Algorithm for computing the vector field formulation of comparison}
+\begin{algorithm}
+  \caption{Computing the vector field formulation of comparison }\label{alg:bootstrap_comparison}
+
+  \begin{algorithmic}[0]
+  %-------------- Input & Output -----------------
+  \State \textbf{Input:} Distribution \textbf{$R_1$}, Distribution \textbf{$R_2$} of points in the \textit{Annotated SOM Node Space}, Number of bootstrap samples \textbf{k}, Vector field dimension \textbf{n}
+  \State \textbf{Output:} Uniform vector field  \textbf{F} of dimension $\textbf{n}\times \textbf{n}$
+
+  %--------------- for loop -----------------------
+  \State \textbf{Initialize:} \textbf{results} = $[]$
+  \For{$i \in \{1,2,\ldots, k\}$}
+  % \For{\textbf{all} pixel $\textbf{I}(x,y)$}
+       % \State Consider a window \textbf{W} of size $s \times s$ around $\textbf{I}(x,y)$
+       \State Generate bootstrap samples $R_1',R_2'$ 
+       \State $OT= $ 2D optimal transport between $R_1'$ and $R_2'$ 
+       \State \Comment{\parbox[t]{.6\linewidth}{$OT[i] = (r_1',r_2')$ s.t. $r_1'\in R_1', r_2'\in R_2'$}}
+       \State $targets$ = $\{\}$ \Comment{\parbox[t]{.6\linewidth}{$\forall$ $source \in R_1$ store the list of targets matched $target \in R_2$}}
+       % \Statex \hspace{1em} \Comment{$OT[i] = (r_1',r_2')$ s.t. $r_1' \in R_1', r_2' \in R_2'$}
+       \For {$(r_1',r_2')\in OT$}
+            \State $targets[r_1']$.append($r_2'-r_1'$)
+       \EndFor
+       \For {source $r_1'\in targets$}
+            % \State $\textbf{average\_vector}.append(\text{mean}(\textbf{targets}[r_1']))$
+            \State $targets[r_1']$ = $mean$($targets[r_1']$) \Comment{Take the average}
+       \EndFor
+       % average vector, $target-source$ for each source $r_1'$ in \textbf{targets}
+       \State $bootstrap\_sample=$ Interpolate $targets$ onto a regular grid of dimension $n\times n$
+       \State \textbf{results}.append($bootstrap\_sample$)
+       % \State Compute the anisotropic filter $\textbf{F}_{\textbf{W}(x,y)}$ at the location $(x,y)$
+
+       % \State $\textbf{F}_{\text{\textbf{W}(x,y)}} = \left\{\begin{array}{cl}
+       %     \textbf{G}(x,y) & \text{if $\textbf{W}(x,y) \geq \text{Mean}(\textbf{W})$} \\
+       %     0               & \text{if $\textbf{W}(x,y) < \text{Mean}(\textbf{W})$}
+       %   \end{array}\right.$
+       % \State $\textbf{Z}(x,y)$ = $\sum\sum ( \textbf{F}_{\text{\textbf{W}(x,y)}} \circ \textbf{W}(x,y) )$
+       % \State Compute the weight $w$
+       % \State $w = ( s \times s ) \times \sum\sum \textbf{F}_{\text{\textbf{W}}}$
+       % \State $w = \tfrac{1}{w}$
+  \EndFor
+
+  %----------- Remaining text ----------------
+  \State Return the average of \textbf{results} as \textbf{F} 
+
+  \end{algorithmic}
+\end{algorithm}
+\section{Example images used in the LLM integration evaluation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/Central California_map_0.png}
+    \caption{Users were asked to rate in a 5-point likert scale how reasonable the LLM-generated boundary of \textit{Central California} was. Question: \textit{``How reasonable is the above LLM-generated boundary for `Central California'?''}}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/testPolygon_715_neutral.png}
+    \caption{Users were asked to rate in a 5-point likert scale how reasonable the LLM-generated summary of drawn boundary was. Question: \textit{``How reasonable is the above LLM-generated summary in the map title for the drawn boundary?''}}
+\end{figure}
+
+
+\section{Clustering View for the GCM Clustering by its forcings}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/GCMClustering.pdf}
+    \caption{The Clustering View for the GCM clustering variant. The visual encoding is identical to the model run Clustering View, using MDS at each month to place the GCM clusters vertically for every month.}
+\end{figure}
+
+\section{Details of the SOM training for \ClimateSOM}
+
+\subsection{On the metrics for SOM training}\label{ssec:som_training_metrics}
+Past research have employed various metrics to evaluate the quality of a SOM \cite{forest2020survey}.
+%
+Generally, metrics for SOM are divided into those that evaluate error that the SOM approximation introduces and those that evaluate the topological properties of the SOM grid.
+%
+\ClimateSOM requires both classes of metrics to measure that the trained SOM abstraction retains \textit{sufficient} information whilst also ensuring that the MDE dimensionality-reduced space is connected and interpretable.
+%
+The most common metrics for the respective categories are quantization error ($QE$) and topographic error ($TE$).
+%
+% For a given dataset $D=\{d_1, d_2, \ldots, d_n\}$, the quantization error is defined as the average distance between each input field $d_i$ and its BMU, $BMU(d_i)$.
+%
+% Topographic error is defined as the proportion of all data for which the first and second BMUs are \textit{not} adjacent in the SOM grid.
+%
+% While these are useful metrics, we introduce two more metrics that we have found useful for \ClimateSOM: (1) Explained Variance ($EV$) and (2) Variation of Smoothness ($VS$).
+While these are useful metrics, we present two more metrics that we have found useful for \ClimateSOM: (1) Explained Variance ($EV$) and (2) Mean Smoothness ($\mu_S$).
+
+\noindent
+\textbf{Explained Variance}, akin to its definition in principal components analysis (PCA), measures the proportion of variance in the input data set that is explained by the SOM grid, where 0 indicates no explanatory power and 1 indicates full explanatory power.
+%%
+% Formally, for a data set $D$ the explained variance is defined for a trained SOM is defined:
+%\begin{equation}
+%    EV = 1 - \frac{\sum_{i=1}^{n}\sum_{j=1}^{m}(d_{i_j} - (BMU(d_i))_j)^{2}}{\sum_{i=1}^{n}\sum_{j=1}^{m}(d_{i_j} - (\bar{d})_j)^{2}}
+%\end{equation}
+%%
+%where $n$ is the number of members in $D$, $m$ is the number of spatial locations, $d_{i_j}$ is the $j^{th}$ element of the $i^{th}$ input field, $BMU(d_i)_j$ is the $j^{th}$ element of the BMU of the $i^{th}$ input field, and $\bar{d}_j$ is the $j^{th}$ element of the mean of the input data set.
+%% 
+We replace $QE$ with Explained Variance to provide a unitless measure of the explanatory power of the SOM grid.
+
+%\textbf{Variation of Smoothness} is another metric that we introduce to more carefully evaluate the smoothness of the SOM grid.
+%%
+%Given a SOM grid $G$, we define local smoothness, $LS$, at any grid node $g_{i,j}$ as the average Euclidean distance between $g_{i,j}$ and its four immediate neighbors.
+%%
+%Finally, considering the standard deviation of all $g_{i,j}$, we define the Variation of Smoothness as $\sigma_{LS}/ \mu_{LS}$.
+%%
+%Lower values of Variation of Smoothness indicate a more consistent level of smoothness across the grid and vice versa.
+%%
+%We found that topographic error was not sufficient to capture the required smoothness of the SOM grid to ensure the interpretablitity of the MDE result and thus replace the topology-based error metric with the Variation of Smoothness.
+
+%In all, SOM training for \ClimateSOM is the balancing of its explanatory power ($QE,EV$) and smoothness ($VS$).
+%%
+%The following, \cref{ssec:som_training_parameters}, discusses the choice of parameters in the context of these metrics and the implications.
+\noindent
+\textbf{Mean Smoothness} is another metric that we introduce to more carefully evaluate the smoothness of the SOM grid as non smoothness can produce disconnected MDE results.
+%
+Given a SOM grid $G$, we define local smoothness, $LS$, at any grid node $g_{i,j}$ as the average Euclidean distance between $g_{i,j}$ and its four immediate neighbors and define the Mean Smoothness as $\mu_{g_{i,j}}$.
+%
+We found that topographic error was not sufficient to capture the required smoothness of the SOM grid to ensure the interpretablitity of the MDE result and thus replace the topology-based error metric with Mean Smoothness.
+
+In all, SOM training for \ClimateSOM is the balancing of its explanatory power ($QE,EV$) and smoothness ($\mu_S$).
+%
+The following, \cref{ssec:som_training_parameters}, discusses the choice of parameters in the context of these metrics and the implications.
+
+
+\subsection{On the parameter choices for SOM training}\label{ssec:som_training_parameters}
+Among the parameters required for SOM training the initial neighborhood size $(kR)$ and the neighborhood size decay $(kS)$ are most important and we thus list their influences here.
+\begin{itemize}[left=5pt, itemsep=0pt, labelsep=1em, align=left]
+    % \item[\textbf{dim}] The dimension of the SOM grid defines the number of nodes \ClimateSOM uses to approximate the variations in the input ensemble. Larger values tend to result in better explanatory power, but adds complexity to the MDE. While non-square grids can be used, we opt for square grids for simplicity.
+    \item[\textbf{kR}] The Gaussian neighborhood function depends on the parameter $\sigma$. The term $kR$ defines its initial value as the ratio between the SOM grid area and the neighborhood update area, given by $kR=(\sigma_{initial})^2/ dim^2$. 
+        %
+        % Generally, a larger $kR$ results in a smoother SOM grid with less explanatory power (i.e. low $VS$, low $EV$ and high $QE$) and a smaller $kR$ results in the opposite (i.e. high $VS$, high $EV$ and low $QE$).
+        Generally, a larger $kR$ results in a smoother SOM grid with less explanatory power and a smaller $kR$ results in the opposite.
+    \item[\textbf{kS}] In order for the SOM to \textit{fit} the data, it is common to linearly decay the neighborhood size over time \cite{gibson_use_2017}. %
+        $kS$ defines the final value of the neighborhood size as a ratio of the initial value, $kS=\sigma_{final}/ \sigma_{initial}$.
+        %
+        Similar to $kR$, $kS$ also expresses a trade-off between smoothness and explanatory power.
+        %
+        A larger $kS$ results in a smoother SOM grid with less explanatory power and a smaller $kS$ results in the opposite.
+\end{itemize}
+Other parameters such as the dimensions of the SOM grid, as long as they were sufficiently large to enable sufficient explained variance, learning rate decay, the number of iterations, and the initialization method are part of the training process but were found less critical to the performance, and hence we omit them from discussion.
+%
+\cref{fig:SOMParameters} shows the tradeoff between $kR$ and $kS$ as it relates to the explained variance and mean smoothness -- choosing the right parameter is a balance act between the two.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{figures/SOMParameters.pdf}
+    \caption{Effects of SOM Parameters, $kR$ and $kS$ on the explanatory power and smoothness of the SOM grid trained for the California Use Case}
+    \label{fig:SOMParameters}
+\end{figure}
+
+
+\section{Details of the ensemble members used in this work}
+\begin{table*}
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Global Climate Model (GCM) & Shared Socioeconomic Pathway (SSP) & Variant \\
+        \hline
+        \hline
+        ACCESS-CM2 & historical & r1i1p1f1 \\
+        CESM2-LENS & historical & r1i1p1f1 \\
+        CNRM-ESM2-1 & historical & r1i1p1f2 \\
+        EC-Earth3-Veg & historical & r1i1p1f1 \\
+        EC-Earth3 & historical & r1i1p1f1 \\
+        FGOALS-g3 & historical & r1i1p1f1 \\
+        GFDL-ESM4 & historical & r1i1p1f1 \\
+        HadGEM3-GC31-LL & historical & r1i1p1f3 \\
+        INM-CM5-0 & historical & r1i1p1f1 \\
+        IPSL-CM6A-LR & historical & r1i1p1f1 \\
+        KACE-1-0-G & historical & r1i1p1f1 \\
+        MIROC6 & historical & r1i1p1f1 \\
+        MPI-ESM1-2-HR & historical & r1i1p1f1 \\
+        MRI-ESM2-0 & historical & r1i1p1f1 \\
+        TaiESM1 & historical & r1i1p1f1 \\
+        \hline
+
+        ACCESS-CM2 & ssp245 & r1i1p1f1 \\
+        CESM2-LENS & ssp245 & r1i1p1f1 \\
+        EC-Earth3-Veg & ssp245 & r1i1p1f1 \\
+        EC-Earth3 & ssp245 & r1i1p1f1 \\
+        FGOALS-g3 & ssp245 & r1i1p1f1 \\
+        GFDL-ESM4 & ssp245 & r1i1p1f1 \\
+        HadGEM3-GC31-LL & ssp245 & r1i1p1f3 \\
+        INM-CM5-0 & ssp245 & r1i1p1f1 \\
+        IPSL-CM6A-LR & ssp245 & r1i1p1f1 \\
+        KACE-1-0-G & ssp245 & r1i1p1f1 \\
+        MIROC6 & ssp245 & r1i1p1f1 \\
+        MPI-ESM1-2-HR & ssp245 & r1i1p1f1 \\
+        MRI-ESM2-0 & ssp245 & r1i1p1f1 \\
+        TaiESM1 & ssp245 & r1i1p1f1 \\
+
+        \hline
+        ACCESS-CM2 & ssp370 & r1i1p1f1 \\
+        CESM2-LENS & ssp370 & r1i1p1f1 \\
+        CNRM-ESM2-1 & ssp370 & r1i1p1f2 \\
+        EC-Earth3-Veg & ssp370 & r1i1p1f1 \\
+        EC-Earth3 & ssp370 & r1i1p1f1 \\
+        FGOALS-g3 & ssp370 & r1i1p1f1 \\
+        GFDL-ESM4 & ssp370 & r1i1p1f1 \\
+        INM-CM5-0 & ssp370 & r1i1p1f1 \\
+        IPSL-CM6A-LR & ssp370 & r1i1p1f1 \\
+        KACE-1-0-G & ssp370 & r1i1p1f1 \\
+        MIROC6 & ssp370 & r1i1p1f1 \\
+        MPI-ESM1-2-HR & ssp370 & r1i1p1f1 \\
+        MRI-ESM2-0 & ssp370 & r1i1p1f1 \\
+        TaiESM1 & ssp370 & r1i1p1f1 \\
+        \hline
+
+        ACCESS-CM2 & ssp585 & r1i1p1f1 \\
+        CESM2-LENS & ssp585 & r1i1p1f1 \\
+        EC-Earth3-Veg & ssp585 & r1i1p1f1 \\
+        EC-Earth3 & ssp585 & r1i1p1f1 \\
+        FGOALS-g3 & ssp585 & r1i1p1f1 \\
+        GFDL-ESM4 & ssp585 & r1i1p1f1 \\
+        HadGEM3-GC31-LL & ssp585 & r1i1p1f3 \\
+        INM-CM5-0 & ssp585 & r1i1p1f1 \\
+        IPSL-CM6A-LR & ssp585 & r1i1p1f1 \\
+        KACE-1-0-G & ssp585 & r1i1p1f1 \\
+        MIROC6 & ssp585 & r1i1p1f1 \\
+        MPI-ESM1-2-HR & ssp585 & r1i1p1f1 \\
+        MRI-ESM2-0 & ssp585 & r1i1p1f1 \\
+
+        \hline
+    \end{tabular}
+    \caption{LOCA-Downscaled CMIP6 Precipitation Ensemble members used in this work}
+\end{table*}
+

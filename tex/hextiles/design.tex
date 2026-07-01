@@ -1,0 +1,194 @@
+%% \\
+%% \note{Need a visual example of a HexTile, much like Lucas' report does. }
+
+% \begin{figure}
+%   \begin{center}
+%        \includegraphics[width=0.8\linewidth]{HexTileAnatomy}
+%   \end{center}
+%   \vspace{-0.15in}
+%   \caption{The anatomy of a single HexTile and components in which data can be encoded: (1) the HexTile color, (2) the HexTile inner ring, and (3) the overlaid semantic icons (the design will vary with application)}
+%   \label{fig:HexTilesAnatomy}
+% \end{figure}
+%%\begin{figure}[htb]
+%%% \begin{figure}[]
+%%  \centering
+%%  % the following command controls the width of the embedded PS file
+%%  % (relative to the width of the current column)
+%%  % replacing the above command with the one below will explicitly set
+%%  % the bounding box of the PS figure to the rectangle (xl,yl),(xh,yh).
+%%  % It will also prevent LaTeX from reading the PS file to determine
+%%  % the bounding box (i.e., it will speed up the compilation process)
+%%  % \includegraphics[width=.95\linewidth, bb=39 696 126 756]{sampleFig}
+%%  %
+%%  %\parbox[t]{.9\columnwidth}{\relax
+%%  %         For all figures please keep in mind that you \textbf{must not}
+%%  %         use images with transparent background! 
+%%  %         }
+%%  %%
+%%  \label{fig:HexTilesAnatomy}
+%%  \caption{The anatomy of HexTiles}
+%%\end{figure}
+
+%The HexTiles design (\cref{fig:HexTilesAnatomy}) is a visualization encoding design to encode three geospatial variables at once, including our weighted-variance defined confidence to address MAUP, via a carefully designed superimposition.
+%%
+%The main software we leverage in HexTiles is the hierarchical hexagon-based spatial binning system \texttt{H3} \cite{uberh3} and the \texttt{WebGL}-accelerated \texttt{deck.gl} \cite{wang_deckgl_2019}.
+
+%\texttt{H3} is a hierarchical hexagon-based spatial binning system developed by Uber \cite{uberh3}. Unlike rectangular spatial bins, hexagon bins cannot simply be represented by a row and column due to the nature of hexagonal tessellation which has three degrees of direction rather than two. \texttt{H3} simplifies the location encoding as well as size encoding of hexagons by assigning each hexagon to an ID based on its location and size (resolution).
+%%
+%\texttt{H3} also simplifies the process of mapping the basemap zoom level (we use \texttt{Mapbox} in our implementation) to the appropriate hexagon tile size, since \texttt{H3} defines discrete resolutions that approximately subdivides a hexagon into seven smaller hexagon in the next resolution in its hierarchy. 
+%%
+%We refer the readers to the \texttt{H3} documentation \cite{uberh3} for more details.
+%%
+%We use \texttt{H3} to define the hexagonal regions, which we call HexRegions, on which HexTiles are placed.
+
+%% In programming library implementations of H3, the calculation of the ID is abstracted away from the programmer, allowing one to easily map a single hexagonal region (in what we describe as a HexRegion) to its data properties via the HexRegion’s ID. 
+
+%For HexTiles, there are two main workflow steps which need to be carefully considered shown in \cref{fig:workflow}: \textbf{Data Aggregation} and \textbf{Data Encoding}.
+%%
+%Note that these steps are required for each HexRegion and for each zoom level that \texttt{H3} defines to adhere to the \textit{overview first, zoom and filter, then details-on-demand} principle of visualization design \cite{shneiderman_eyes_1996}.
+%% In designing HexTiles, the hex encoding function is a key design decision.
+%%
+%This function represents the mapping between the set of data found within each HexRegion and how we encode that data using the various channels of our HexTile visual encoding, like base color, inner ring, and the semantic icons.
+%%
+%The choice of the appropriate encoding funcion is crucial, and we outline guidelines for this in this section.
+% In a simple case, $f$ can be a colormap mapping some continuous varialble to a range of colors
+% $f:$ HexRegion $\to\{\mathbb{R},\mathbb{Z}\}$ 
+% maps HexRegions and a particular variable to set of real numbers (in the case of color) or an integer (in the case of icons)
+
+% , in which a HexRegion is a hexagonal-shaped bin that contains a set of datapoints defined within the bounds of the bin; the datapoints themselves may have multiple properties (such as name, height, and sex). The range of the hex encoding function is the set of integers and real numbers that define a characteristic of the HexTile, such as color, height, thickness, or amount of icons. 
+
+For HexTiles, there are two main workflow steps which need to be carefully considered shown in \cref{fig:workflow}, \textbf{Data Aggregation} and \textbf{Data Encoding}, to transform raw data into a HexTiles visualization.
+%
+Note that these steps are required for each HexRegion and for each zoom level that the designer defines.
+
+\begin{figure*}[t]
+  \centering
+  % the following command controls the width of the embedded PS file
+  % (relative to the width of the current column)
+  \includegraphics[width=0.85\linewidth]{Hex_workflow}
+  % replacing the above command with the one below will explicitly set
+  % the bounding box of the PS figure to the rectangle (xl,yl),(xh,yh).
+  % It will also prevent LaTeX from reading the PS file to determine
+  % the bounding box (i.e., it will speed up the compilation process)
+  % \includegraphics[width=.95\linewidth, bb=39 696 126 756]{sampleFig}
+  %
+  %\parbox[t]{.9\columnwidth}{\relax
+  %         For all figures please keep in mind that you \textbf{must not}
+  %         use images with transparent background! 
+  %         }
+  %%
+  \caption{HexTiles encoding workflow}
+  \label{fig:workflow}
+\end{figure*}
+
+% Broadly, this function operates in two steps: data aggregation and data mapping.
+\subsection{Data Aggregation}
+%
+\textbf{Data aggregation} describes the process of combining, or aggregating, the set of data within a HexRegion into one \textit{aggregate data point} that can be represented by a single HexTile. 
+%%
+%Specifically, a data point is a collection of attributes associated to a position in geographical space. 
+%
+This aggregation can be defined in a number of ways, including but not limited to a simple mean, spatially-weighted mean (i.e. a mean that takes into account the amount of overlap between the HexRegion and the data to weigh those data which are more present in the HexRegion), or any other function depending on the particular use case. 
+%
+The spatially-weighted mean is particularly useful for data formats that have attributes associated to polygonal features instead of a single position (such as GeoJSON data) since a HexRegion can span multiple polygons. 
+%
+In such cases, the data values of the polygons that the cell covers are spatially interpolated based on the area of its containing polygon that intersects with the hexagonal cell. 
+%
+It is worth noting that in cases where attributes vary in density between polygons, such as the percentage of the population who are Democrat where urban and rural areas vary widely in population, data values are also interpolated based on the density of the data collection in addition to its spatial weight. 
+%
+% \note{A simple graphic would be good here. I think we can show a HexRegion that includes polygon boundaries and show the aggregation. You also introduce some terminology like `property`, `datapoint`, `aggregated datapoint`. So a workflow type image here would help} 
+%
+% This aggregation is done through an aggregation function, the domain of which is a set of data points within a HexRegion and the range of which is a single data point that may or may not have the same attributes as the original set of datapoints, depending on what the user deems relevant or aggregable. 
+%
+
+Lastly, as discussed in \cref{subsec:maup}, we calculate a \textit{confidence} value for the \textit{aggregated data point}.
+%
+In other words, this confidence must address the question, ``How faithful is the aggregated data point to the actual data within the HexRegion?''
+%
+We adopt a weighted variance calculation; however, metrics like Moran's I that are used in spatial data analysis\cite{parenteau_modifiable_2011} can be used as well.
+%
+%Additionally, this aggregation function would ideally be done on multiple resolutions. 
+%%
+%In other words, on one iteration an aggregation function would be done on all HexRegions of one size, and on another iteration, the sizes of HexRegions would be changed to a smaller or larger size and the aggregation function done again on all HexRegions of this new size. 
+%%
+%This multiresolution aggregation would allow multiple levels of details during user interaction, for example by enabling more precise information to be revealed on zooming in on a screen through transitioning to smaller HexRegions.
+%
+
+%\begin{figure}[htb]
+%  \centering
+%  % the following command controls the width of the embedded PS file
+%  % (relative to the width of the current column)
+%  \includegraphics[width=\linewidth]{raster}
+%  % replacing the above command with the one below will explicitly set
+%  % the bounding box of the PS figure to the rectangle (xl,yl),(xh,yh).
+%  % It will also prevent LaTeX from reading the PS file to determine
+%  % the bounding box (i.e., it will speed up the compilation process)
+%  % \includegraphics[width=.95\linewidth, bb=39 696 126 756]{sampleFig}
+%  %
+%  %\parbox[t]{.9\columnwidth}{\relax
+%  %         For all figures please keep in mind that you \textbf{must not}
+%  %         use images with transparent background! 
+%  %         }
+%  %%
+%  \caption{Rasterizing polygons}
+%  \label{fig:raster}
+%\end{figure}
+
+\subsection{Data Encoding}
+\textbf{Data Encoding} describes the step where the set of \textit{aggregate data points} is mapped to the set of three HexTile components.
+% We may select one attribute to map to HexTile height and another attribute to the number of icons. The collection of a single HexTile characteristic then becomes a channel in which the user can analyze information about one attribute of the dataset. For example, the height channel of HexTiles will represent one attribute of the dataset and the color channel will represent another attribute.
+The choice of the specific mapping from the set of \textit{aggregate data points} to the HexTile components is crucial in providing an intuitive visualization.
+%
+%Multiple considerations must be made on the macrolevel and microlevel of visualization design.
+%%
+%On the macrolevel, general encoding choices must be ensured as to not cause too much visual clutter or ambiguity, as with the case of color schemes that are too similar or encoding too much information via the same channel type. 
+%%
+%We argue that using diversified channel types is more advantageous than encoding multiple parameters using one channel type even if they share similar traits. 
+%%
+%For example, instead of encoding two continuous attributes in two channels of color, it would be easier for a general user to interpret the two parameters if they were encoded on separate channel types, e.g. one using color and another using thickness.
+%%
+%On a microlevel, appropriate channel type and scaling must be properly chosen to ensure as minimal cognitive load on the user as possible and leverage pre-attentive processing. In some cases, there may be a tradeoff between the macro- and microlevel design considerations: for example, two parameter types may best be encoded in color, but one may have to be encoded in an alternate channel like icon amount to avoid using the same channel.
+
+In \cref{table:encoding}, we present guidelines for what data attributes are ideal for each HexTile characteristic. 
+%
+We suggest that the base HexTile color be encoded to the most important attribute that one would like to guide the user's attention to. 
+%
+This is due to the fact that the base color takes up the most visual real estate and thus attracts the most attention from the user.
+%
+Icons should encode to the data attribute whose spatial distribution is of interest and the variable whose interaction with the other variables is of interest.
+%
+The speed at which the user can readily interpret the number of icons is the main advantage of this channel.
+%
+Here, the icon object itself should be immediately recognizable and unambiguous so that users can easily interpret what they represent. 
+%
+From our experiments, icons should not be used for variables if the resulting visualizations have many regions with many icons, as this can introduce visual clutter due to its 3D nature.
+%
+Lastly, the inner ring color should be used for secondary variables that are important for contextualizing the other attributes.
+%
+We also note that that some experimentation with colormaps for the base color and the inner ring will be required to ensure that each channel is best discriminated by the user.
+%
+If poorly chosen, the user may have difficulty interpreting the visualization, or worse, may misinterpret the data.
+
+%Ring color and ring thickness can encode to secondary attributes that are important for contextualizing spatial distributions of the primary and distribution/categorical attributes. For ring thickness, we suggest choosing a data attribute that would justify an increase of visual real estate, such as confidence or error, since an increase of visual real estate would draw more user attention to regions with thicker rings. Height can be utilized for a fifth data attribute, but should encode to elevation or a similar data attribute that minimizes cognitive translation. In general however, height introduces occlusion and thus should be used minimally.
+
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\begin{table*}[t]
+\centering
+\begin{tabularx}{\linewidth}{|c|c|Y|Y|}
+\hline
+\multicolumn{2}{|l|}{\textbf{HexTile Encoding}} & \textbf{Variance Encoding} & \textbf{Appropriate Attributes} \\ \hline
+\multicolumn{2}{|l|}{Base Color} & Value-Suppressing Uncertainty Palette\cite{correll2018value}. We treat \textit{confidence} as \textit{uncertainty} in the language of the original work. Higher \textit{confidence} implies lower \textit{uncertainty}  & Primary attribute to guide user attention \\ \hline
+ \multicolumn{2}{|l|}{Semantic Icons} & Opacity - more opaque for higher confidence so that these are more visually prominent  & Attribute where the spatial distribution or interactions with the other variables is the focus. Must have a reasonable value to which zero can mapped. \\ \hline
+ \multicolumn{2}{|l|}{Inner Ring} & Thickness - thicker ring for higher confidence so that these are more visually prominent  & Secondary variables \\ \hline
+ % Inner Design & Ring Thickness & Secondary attribute --- in particular when the assumption that some values ought to take up more visual real estate holds like uncertainty \\ \hline
+ % \multicolumn{2}{|c|}{HexTile Height} & Elevation is a sensible option, but can encode any attribute. However should be used with caution as it can be distract from other variables and cause occlusion (further discussed in \cref{sec:feedback}). \\ \hline
+\end{tabularx}
+\caption{Guideline for choosing the mapping between data variables and HexTile components described in \cref{fig:HexTilesAnatomy} }
+\label{table:encoding}
+\vspace{-0.2in}
+\end{table*}
+
+
+\note{ So for hex, we have height, hex color, [ring width, inner ring color], icons, to encode data. Water we use inner ring color (mostly because the values are similar across so it doesn't introduce visual clutter), and for wildfire confidence we use ring width because this is a variable that we think that some values ought to have less visual impact than others. (Similar to \cite{correll2018value}). Finally we use icons for variables where we are interested in spatial
+distribution and want to speed up / east the process of comparing different regions and its values. This overall structure for HexTiles should come through here, but we shouldn't reference the variables that are specific to each dataset like `power` or `demand units`, though I think elevation is fine. I'll send you my mental map for the designs on discord.}

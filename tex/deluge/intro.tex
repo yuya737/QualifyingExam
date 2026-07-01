@@ -1,0 +1,53 @@
+Flooding is among the costliest natural hazards in the conterminous United States (CONUS)~\cite{fema_cost_of_flooding}, with damage dynamics that vary sharply by topography, drainage infrastructure, and climate regime~\cite{brunner_spatial_2020}.
+%
+Among flood types, \emph{pluvial} flooding (inundation driven by intense rainfall exceeding local drainage capacity) is a particularly difficult prediction target~\cite{rosenzweig_pluvial_2018,nelson-mercer_pluvial_2025}.
+%
+% Events are highly localized in space and time, develop on hourly timescales, and account for roughly $45\%$ of National Flood Insurance Program (NFIP) claims and approximately \$56~billion of insured damage since 1980~\cite{fema_nfip_claims_v2}.
+%
+Anticipating pluvial damage at a resolution operationally meaningful to insurers, emergency managers, and municipal planners is both an open scientific problem and is  of immediate societal value.
+
+Despite this urgency, pluvial flood damage prediction lags behind its riverine and coastal counterparts~\cite{rosenzweig_pluvial_2018}.
+%
+Riverine flooding benefits from a dense network of stream gauges that provide a relatively clean, continuous training signal~\cite{boutayeb_when_2025,nearing_global_2024}, and coastal flooding is similarly well-tracked by tide and surge gauges~\cite{bates_combined_2021,yang_predicting_2022}.
+%
+Pluvial flooding, on the other hand, has a noisy observational backbone, and its damage signal lives in scattered insurance claims~\cite{fema_nfip_claims_v2} and citizen reports~\cite{puttinaovarat_flood_2020,mayo_groundsource_2026}, each carrying nontrivial spatial and temporal uncertainty.
+%
+CONUS-scale pluvial products do exist, but they occupy a different operating regime than ours.
+%
+FEMA flood maps~\cite{fema_flood_zone_2021} are static delineations of long-term flood hazard zones rather than dynamic estimates of damage, while CONUS-scale hydrodynamic models~\cite{wing_30_2024,bates_combined_2021} simulate physical inundation at high fidelity but are computationally heavy and produced for fixed design scenarios rather than on a daily basis.
+%
+Neither delivers a \emph{lightweight, daily, ${\sim}1$\,km prediction of insured pluvial damage}, the regime we target.
+
+We close this gap with \textbf{DELUGE} (\textit{\textbf{D}}aily \textit{\textbf{E}}stimation of p\textit{\textbf{LU}}vial flood dama\textit{\textbf{GE}}), to our knowledge the first end-to-end learned system to predict daily, ${\sim}1$\,km insured pluvial flood damage across the highest-claim regions of CONUS through interpretable conditioning on Earth-observation foundation-model embeddings.
+%
+DELUGE is a multimodal CNN whose local inductive bias matches the locally driven nature of pluvial dynamics, in contrast to the catchment-scale connectivity behind GNN-based riverine approaches~\cite{sarkar_hydrogat_2025,kazadi_floodgnn-gru_2024}.
+%
+We train DELUGE on NFIP claims as a damage proxy, after applying temporal and spatial uncertainty corrections that refine each claim's timing and footprint.
+%
+Under a spatial block holdout protocol that partitions 75\,km grid cells into a train/test split, DELUGE achieves a PR-AUC of \tsim$0.24$, well above the \tsim$0.0025$ no-skill baseline implied by the task's \tsim$0.25\%$ positive rate, and outperforms tuned Random Forest, XGBoost, and LightGBM baselines commonly used in claims-based flood-damage prediction, with the largest gains on high-cost claims.
+% (standard in the pluvial flood literature) by 9\% to 26\% on PR-AUC and 11\% to 35\% on a dollar-weighted variant.
+
+Beyond its predictive performance, DELUGE's architectural novelty lies in two parametric modules within the hydrometeorology branch.
+%
+The \emph{Value Modulator} learns a per-sample monotone warp of each hydrometeorological input, and the \emph{Temporal Modulator} learns a per-sample temporal-response kernel that causally convolves the hydrometeorological time series.
+%
+Both modules are conditioned on local place characteristics, encoded through terrain descriptors and Google AlphaEarth foundation-model embeddings~\cite{brown_alphaearth_2025}, which supply a dense, learned representation of the built and natural environment that varies continuously across CONUS.
+% and captures local context that hand-crafted terrain descriptors alone miss.
+
+Rather than concatenating these embeddings into a black-box encoder, we route them through the physics-shaped modulators, whose parameters carry direct hydrological meaning such as response peak lag in hours and decay timescale.
+%
+This makes the modulators a principled and interpretable way to consume an otherwise opaque foundation embedding, yielding \emph{interpretability-by-design}~\cite{rudin_stop_2019} where ConvLSTM or Transformer-style encoders would require post-hoc attribution approximations like SHAP~\cite{lundberg_unified_2017}.
+%
+Thus our interpretability is at the architecture level, exposing the per-location hydrological response DELUGE has learned, rather than a per-prediction explanation.
+%
+Our main contributions are:
+\begin{enumerate}[nosep, leftmargin=14pt]
+    \item \textbf{DELUGE}, the first end-to-end learned system for daily pluvial flood damage prediction at ${\sim}1$\,km across the highest-claim regions of CONUS, outperforming tree-based baselines standard in the pluvial flood prediction literature, with the largest gains on high-cost claims.
+    \item Two uncertainty-correction procedures for NFIP claims, a precipitation guided correction of claim dates and a spatial refinement that intersects redacted geographies to localize damage to higher resolution.
+    \item The \emph{Value Modulator} and \emph{Temporal Modulator}, terrain- and AlphaEarth-conditioned parametric modules whose learned per-patch parameters are themselves hydrologically meaningful, yielding \emph{interpretability-by-design} of Geospatial Foundation Model integration.
+    \item Inspection of the learned modulator parameters via geography-blind clustering, showing they recover hydrologically coherent regimes consistent with physical expectation.
+    % \item Empirical verification of the modulators' physical fidelity via geography-blind clustering that recovers physically grounded explanation of identified regimes.
+\end{enumerate}
+\vspace{-5pt}
+
+% DELUGE shows that with appropriate parametric inductive biases, sparse and noisy flood damage labels are enough to recover physically meaningful structure, supporting future data-driven approaches to continental-scale flood impact modeling.

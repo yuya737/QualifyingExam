@@ -1,0 +1,334 @@
+Our work is related to others exploring multivariate geospatial visualization and its methods. 
+%
+% Here, we discuss the body of past work in this area, as well as the limitations of prior approaches that we identify.
+Here, we discuss the body of past work in this area in visualization as well as cartography.
+
+% \subsection{Multivariate Geospatial Visualizations}
+
+%Similarly, when we read geospatial maps, viewers have a set of prior expectations of what a map should look like - weexpectation of cardinal directions to orient a map or the expectation on inherent ordering of spatial descriptors (e.g. latitude and latitude) are examples.
+%%
+%As Hogr{\"a}fer et. al. write maps must support the view's kl 
+
+
+
+
+%
+%\note{Expand this} \note{The map is often seen, therefore, as a metaphor for the presentation and representation of all types of data, spatial and non-spatial. - Fairbairn 2001} Geospatial data, especially to the general public, is only represented on maps. 
+%%
+%Of course, minor distortions of maps have proven to be effective in some cases, \note{Metro line maps?\cite{nesbitt2004getting}} but we find that geospatial data give little leeway for this reason. 
+%%
+%Visualizing this data via other representations often contradicts the graph schema - we do not expect geospatial data to be represented without a map.
+
+
+
+% \subsubsection{Unique challenges in geospatial visualizations}
+
+Previous authors \cite{andrienko_geovisualization_2008, guo_multivariate_2005,mcnabb_multivariate_2019, kim_bristle_2013} have identified a clear need for finding visualizations that facilitate the examination of two or more spatially bound data classes \cite{guo_multivariate_2005}.
+%
+As Javed and Elmqvist \cite{javed_exploring_2012} describe in their survey of composite visualizations, four approaches exist for combining visual representations: juxtaposition, superimposition, overloading, and nesting. 
+%
+Similar taxonomies to organize geospatial visualization have been proposed by previous works. 
+%
+Many works \cite{andrienko2010space, mota_comparison_2022, mayr_once_2018} have compared the efficacy of the different approaches of visualizing multivariate information across varying applications \cite{pena-araya_comparison_2020, griffin2006comparison}.
+%
+For geospatial visualizations, however, juxtaposition and superimposition are the common techniques for composing information channels.
+
+Cartography has also extensively studied geospatial visualizations, most notably by Bertin \cite{bertin1983semiology} who in his seminal 1963 text proposed a set of visual variables that can be used to encode data on maps. 
+% \fix{Need more cartography works here}
+%
+The ubiquitous choropleth map, for example, is a direct application of Bertin's visual variables where color is used to encode a variable of interest.
+%%
+%Color is a highly used visual variable in geospatial visualizations, used both for categorical and continuous data.
+%
+Colors can also be used to encode multiple variables, as in bivariate colormaps, where two variables are encoded in the hue and saturation of a color \cite{Tyner_2014}.
+%
+%Bivariate colormaps and its efficacy have also been studied, including guidelines for their design, by many authors
+Bivariate colormaps and its efficacy, including guidelines for their design, have also been studied by many authors~\cite{eyton1984complementary, olson1981spectrally, wainer_empirical_1980, strode2020bivariate, schloss_mapping_2019}. 
+
+
+%We also want to be precise about what multivariate geospatial visualization encompasses.
+%%
+%Typically, the term \textit{multivariate} data is characterized by the number of keys versus values \cite{Munzner_2015}.
+%%
+%However, multivariate geospatial data take on many forms. 
+%%
+%% An election data set, for example, can describe each county with the shares of votes for some party A, its population, median income, etc.
+%%
+%Uncertainty visualization for geospatial data is one instance of a multivariate data and remains a highly active field in which many approaches have been proposed \cite{maceachren2005visualizing,preston_uncertainty-aware_2019,mckenzie2016assessing}.
+%%
+%% For many data sets, data values are measured by devices (e.g. by a satellite); hence, some degree of uncertainty may be associated with some data values.
+%%
+%In addition to these cases where the data can be described in a tabular format, time-varying data can also considered a multivariate data with its inclusion of the temporal axis.
+%%
+%Geospatial-temporal visualization and effective strategies are also studied \cite{andrienko2010space,mota_comparison_2022,ondov_coronaviz_2022}; however, we exclude this from this work and leave that as further work. 
+% \note{ Although, we are concerned with multivariate (many different information), time can also be considered an information channel.  }
+
+%\begin{figure}[htb]
+%% \begin{figure}[]
+%  \centering
+%  % the following command controls the width of the embedded PS file
+%  % (relative to the width of the current column)
+%  \includegraphics[width=0.85\linewidth]{JuxVsSup}
+%  % replacing the above command with the one below will explicitly set
+%  % the bounding box of the PS figure to the rectangle (xl,yl),(xh,yh).
+%  % It will also prevent LaTeX from reading the PS file to determine
+%  % the bounding box (i.e., it will speed up the compilation process)
+%  % \includegraphics[width=.95\linewidth, bb=39 696 126 756]{sampleFig}
+%  %
+%  %\parbox[t]{.9\columnwidth}{\relax
+%  %         For all figures please keep in mind that you \textbf{must not}
+%  %         use images with transparent background! 
+%  %         }
+%  %%
+%  \caption{Comparing the two general strategies for multivariate geospatial visualizations: Juxtaposition (left) and Superimposition (right). Each variable is represented by a different color.}
+%  \label{fig:jux_vs_sup}
+%\end{figure}
+
+% \subsection{General approaches}
+Generally, there are two major approaches for multivariate geospatial visualizations: \textbf{juxtaposition} and \textbf{superimposition}, which we describe in order in \cref{subsec:jux,subsec:super}.
+%
+However, we note that, thanks to the large body of past work in multivariate geospatial visualizations, a number of works have explored other visualization designs beyond juxtaposition and superimposition.
+%
+Methods that leverage textures \cite{maceachren1998visualizing}, density via stippling \cite{gortler_stippling_2019}, and density of lines or \textit{bristles} \cite{kim_bristle_2013} are among the other many methods proposed.
+% \fix{Some other methods, but we want to focus on Juxtapotion and Superimposition here as general strategies}
+
+%These include methods like SOM (self-organizing maps) \cite{kohonen_self-organizing_1990}, and the many visualization tools that leverage this technique \cite{takatsuka2001application,akande2017geospatial}.
+%%
+%However, we find that these can be inaccessible tools for the general public and are not readily decipherable, and thus limit the scope here to juxtaposition and superimposition.
+
+\subsection{Juxtaposition}
+\label{subsec:jux}
+Javed and Elmqvist highlight that juxtaposition is the most common and flexible approach for combining visual visualizations \cite{javed_exploring_2012}.
+%
+The small multiples approach or linked views approach, which leverage more interaction for users to better reason about the juxtaposed geospatial visualizations, are frequently employed \cite{deng_visualizing_2023, yang2022epimob}.
+%
+In many cases, these designs envision to link map-based geospatial and temporal data with other common data encodings like line charts, etc., but the key thread remains to encourage the users to reason about the presented data via implicitly or explicitly comparing the data shown in each visualization.
+%
+% For the multivariate geospatial case, a set of small multiples plots each displaying an unique variable is one such example.
+%
+% \note{fix}
+However, despite its simplicity, juxtaposition has been showed to be ineffective at times \cite{ramachandran2009visualizing, nusrat2017cartogram}.
+%
+Increasing the number of views can render the contextualization of a larger number of views difficult, since viewers must switch back and forth between views to compare the data.
+% as constantly having to switch between views increases the cognitive load put on a user.
+%
+This is a major limitation of this approach.
+
+\subsection{Superimposition}
+\label{subsec:super}
+Superimposition refers to displaying multiple data channels in the same visualization instance at once, and can take a number of forms, including \textbf{layering} and \textbf{glyphing}.
+% \note{need to define and cite the definition of layering and glyphing}
+
+\subsubsection{Layering}
+\textbf{Layering} and its use is heavily studied and explored in many different domains \cite{allan_decal_2017, lobo2017mapmosaic, heer2009sizing}.
+%
+An often used analogy is the creation of a painting, when an artist composes several consecutive layers of paint from basic background elements to details.
+%
+Each individual layer can encode one or more variables, and the final composition can be used to communicate the multivariate geospatial data.
+%
+However, the principle challenge here is to reduce and limit visual clutter and occlusion as noted by several works \cite{mota_comparison_2022, mayr_once_2018}.
+%
+Careful considerations are required in the visual encoding and usage of color, etc. to ensure that each layer is decipherable and meaningful. 
+
+The simplest method of layering in the context of geospatial data is to combine two or more conventional encodings on top of one another on one map.
+%
+For example, one can combine a choropleth map with a proportional symbol map, where the size of the symbol encodes another variable to encode two variables at once. 
+%
+Similar designs but leveraging a pie chart in place of a proportional symbol map along with a choropleth map have been used as well \cite{Tyner_2014, vallandingham}.
+%.
+These designs that enable users to visually separate the variables are referred to as extrinsic methods as opposed to intrinsic methods like bivariate colormaps.
+%
+Though both are effective for certain purposes, recent works in cartography have explored the efficacy of the two designs.
+%
+In fact, for two variables, Stachoň et. al. and previous works demonstrated that extrinsic methods, e.g. combining two variables via layering two separate encodings, can outperform intrinsic methods like bivariate colormaps \cite{stachon_comparison_2023, sasinka_comparison_2021}.
+%
+The proposed HexTiles design thus also adopts an extrinsic approach to combine multiple variables, rather than envisioning a more visually continuous method like a bivariate or a trivariate colormap.
+% However, most use cases for the layering approaches consider two variables as the visual clutter often increases with every additional variable considered.
+% For geospatial applications, layering is the most used and generally most intuitive to the general public via its use in public-facing tools like Google Maps and commonly used libaries like \texttt{ggplot}\cite{kahle2013ggmap}.
+
+\subsubsection{Glyphs}
+In addition to layering, \textbf{glyphs} are another fundamental technique to encode multivariate data, especially in geospatial contexts \cite{mcnabb_multivariate_2019,ondov_coronaviz_2022}.
+%
+With the flexibility in mapping choices their design space offers, glyphs have become a highly popular way to visualize multivariate data. 
+%
+As such, significant research has been dedicated to describing glyphs in the context of visualization. 
+%
+Among the first, Chen et. al. \cite{chen2008multivariate} details their theoretical principles, such as those pertaining to visual mapping, and techniques for their layout, while addressing important concerns such as the bias certain encodings may introduce.
+%
+%Ropinski et al. \cite{ropinski2008taxonomy, ropinski_survey_2011} present two surveys that cover the use of glyphs for medical visualizations, in which they focus on the perception of their channels. 
+%%
+%They differentiate between variables that quickly draw out attention (pre-attentive) and those that require focused attention (attentive). 
+%%
+%Expanding on these foundations, Borgo et al. \cite{borgo2013glyph} give a holistic discussion of glyphs. 
+%%
+%Their seminal work offers a rich discussion of a broad, however, highly relevant set of related topics, such as semiotics, or perceptual studies, based on which they give design guidelines for their creation.
+%
+%Zhang and Pazner \cite{zhang2004icon} were among the first authors to use multivariate glyphs on maps. 
+%%
+%Their system allows for the creation of glyphs with juxtaposing visual elements. Within our design space, we create glyphs within a regular grid that we base on the findings mentioned above.
+
+Glyphs have also been studied extensively in cartography, and in fact predates the study of glyphs from the current field of data visualization \cite{anderson1957semigraphical,elmer2013symbol}, and have been showed to be effective at communicating multivariate data to audiences with varying levels of expertise and familiarity with the data \cite{strode2020bivariate}.
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.5\linewidth]{4dsquare}
+    \end{center}
+    \caption{4D square-glyph example \cite{strode_exploratory_2020}.}
+    \label{fig:squareglyph}
+    \vspace{-0.1in}
+\end{figure}
+
+\begin{figure*}[h!]
+    \centering
+    \begin{subfigure}[b]{0.47\textwidth}
+        \centering
+        \includegraphics[width=0.7\linewidth]{square-glyph-original}
+        \caption{3D square-glyphs used to encode a road network and its three associated attributes in a map of the city of Zurich. From \cite{bleisch2018exploring}. Encoded are, from top-right clockwise: Greenery, Transport Accessibility, and Shop Accessibility.}
+        \label{subfig:square_glyph_bleisch}
+    \end{subfigure}
+    \hspace{2em}%
+    \begin{subfigure}[b]{0.47\textwidth}
+        \centering
+        \includegraphics[width=0.7\linewidth]{square-glyphs}
+        \caption{4D square-glyphs used to encode four variables in one map over the Tallahassee area in Florida. From \cite{strode_exploratory_2020}. Encoded are, from top-right clockwise: Household Composition/Diability, Housing/Transportation, Ethnicity/ Language, and Socioeconomic Status.}
+        \label{subfig:square_glyph_strode}
+    \end{subfigure}
+    \caption{Examples of real-life use cases for square-glyphs to encode multivariate geospatial data.}\label{fig:squareglyphexample}
+    \vspace{-0.15in}
+
+\end{figure*}
+
+
+
+Among the various designs, Square-glyphs as seen in \cref{fig:squareglyph,fig:squareglyphexample} in particular have been used in past works to handle more than two variables \cite{strode_exploratory_2020, bleisch2018exploring}, and was also recently studied by Müller et. al., comparing efficacy of 2D vs. 4D square glyphs \cite{muller_square_glyphs_2023}.
+%
+Simply put, the square-glyph is a design that employs two visual channels, color and area, to encode up to four variables in one glyph.
+%
+When used, the underlying geospatial space is divided into a square grids, and whenever applicable, a square-glyph is placed in a grid cell along with each of the up to four variables encoded in the area of the squares as seen in ~\cref{fig:squareglyph}.
+%
+At the same time, color is used to encode the data dimension so that same color addresses the same variable across all square-glyphs. 
+%
+Square-glyphs along with radar, or snowflake glyphs, are among the more commonly used glyphs for multivariate geospatial visualizations with more than two variables.
+
+Another class of visualization methods that handle multivariate data are cartograms, which are also known to be effective in communicating geospatial data \cite{nusrat2017cartogram}.
+%
+Various flavors of cartograms have been proposed over time, and we refer the reader to a comprehensive review of the past work in this area by Nusrat and Kobourov. \cite{nusrat_state_2016}.
+%
+However, as Nusrat and Kobourov call attention to, cartograms are also limited in that they inherently distort the base map, despite the strong visual impact they can have for many use cases.
+%
+Furthermore, they also recognize that multivariate cartograms is a largely unexplored area with further work needed to establish best practices for their design and use.
+%
+In addition to the visual clutter issue that layering faces, glyphs can also face the issue of placement \cite{mcnabb_multivariate_2019, tsorlini_designing_2017}.
+%
+McNabb and Laremee offer a comprehensive review of the past work in this area in \cite{mcnabb_multivariate_2019}.
+%
+However, we still consider this to be an open research question, and instead consider a spatial binning approach that trivializes and simplifies this problem as described in \cref{sec:methods}.
+
+Owing to the documented success of glyphing from past work in visualization and cartography, with HexTiles we adopt a glyph-based approach and develop a superimposition-based visualization design for multivariate geospatial data.
+
+% Directly plotting such multivariate data, where data points may share a spatial location, introduces occlusion as a function of the size of the data set. Some works have examined optimization strategies for
+% this\cite{mcnabb_multivariate_2019}. 
+
+% \subsection{Other approaches}
+%As with all visualization design, the audience and application domain is a key consideration.
+%%
+%Naturally, many different disciplines produce different type of data with different needs and a general purpose tool should be able to support a wide range of use cases.
+%%
+
+%As previously mentioned, multivariate data need not strictly be data with multiple data variable. 
+%%
+%For example, uncertainty geospatial visualization for disaster management is an use case with possible life-threatening consequences if poorly executed \cite{gomov_interactive_2019, preston_uncertainty-aware_2019, ruginski_non-expert_2016}.
+%%
+%Here the uncertainty of a measurement, say of the measured strength of fire at some location, is another set of information that is worth communicating especially in the context of wildfire management.
+%% 
+%\note{need work}
+%Proper handling and encoding of the various data types is critical and these decisions are outlined in \cref{sec:design}.
+%% An addition of a temporal axis is another dimension that needs consideration. Animation or a small multiples plots is the current method to solve visualization for this additional dimension, but they both have issues. In short, designing a visual abstraction that effectively communicates multivariate geospatial data on one static interface is an open research question.
+
+%% \note{Motivate the focus for our encoding to be for the general public. For experts, other methods exist}
+%We also reiterate that our visual encodings are targeted towards the general public, and those with not necessarily the background knowledge to interpret complex visual encoding.
+%%
+%In other words, we want to ensure that we do not depart from known visualization styles or graph schemas \cite{padilla_decision_2018}.
+%
+
+
+% \note{need more here, I think}
+
+% \subsubsection{Common approaches in use}
+
+% \textbf{Layering} typically refers to the way data mappings are superimposed into one coherent visualization. 
+
+% \note{Layering in the context of geospatial}
+
+
+% \note{
+%     occlusion: Andrienko et al. directly embedded ThemeRiver plots onto geographical maps, but this method led to severe clutter and occlusion of other map information
+% }
+
+
+
+% \textbf{VA type works}
+% \cite{deng_visualizing_2023}
+
+% \subsection{Unique challenges in geospatial visualizations}
+
+%\textbf{The loss of two dimensions}
+%Barring immersive visualization methods that can take advantage of a third dimension, visualization interfaces are always two dimensional, whether it be on print or screen. 
+%%
+%% This is another challenge that multivariate geospatial visualizations face.
+%%
+%Since latitude and longitude are data axis that cannot be reordered, a geospatial map inherently occupies the two dimensions of any interface \cite{franconeri2021science}. 
+%%
+%This contrasts with many other data sources, where the data axis can be appropriately omitted or reordered, while still maintaining key information.
+%%
+%As such, almost all visualizations from Google Maps to ESRI \note{cite ESRI} rely on a map as a base for geospatial visualizations.
+%%
+%This can limit many visualization designs since designers are forced into this geospatial map which have strict requirements to ensure interpretability.
+%%
+%Now, with the widespread adoption of interactive devices like smartphones, visualization design can now leverage 3D graphics; however, the use of the third dimension needs be done with caution for geospatial maps due to occlusion, but more importantly, because any geospatial map that uses the z-dimension (i.e. encode some data in height) competes with prior assumptions that height on maps is used to encode elevation.
+
+
+
+% \subsection{On the limitations on color and choropleth maps}
+%\section{On color and choropleth maps}
+%\label{sec:limitations}
+%When considering geospatial visualizations, perhaps the most common channel that visualization designers use is color saturation.
+%%
+%The commonly seen univariate choropleth map is a prime example (\cref{fig:chloro}).
+%%
+%The widely used and adopted \texttt{ColorBrewer} tool which recommends color schemes for various data types for geospatial visualization \cite{harrower2003colorbrewer}, is also testament to its popularity.
+%%
+%Now, as mentioned prior, there is some evidence that extrinsic methods for multivariate visualization can outperform intrinsic methods like bivariate colormaps \cite{stachon_comparison_2023, sasinka_comparison_2021}. 
+%%
+%Thus, in designing HexTiles, as we considered a multivariate visualization, we made
+
+%The effect of color in geospatial visualizations and colormaps are highly active research areas.
+%%
+%Works on the efficacy of bivariate colormaps \cite{wainer_empirical_1980}, effective strategies for bivariate colormaps \cite{strode2020bivariate}, effect of color saturation \cite{scholz2014uncertainty}, and the effect of biases in the understanding of color have been studied \cite{schloss_mapping_2019}.
+
+%However, while color hue is known to be effective for categorical data \cite{Munzner_2015,franconeri2021science}, color saturation, for example, is not known to be particularly effective for ordered attributes.
+%%
+%A natural question to ask is: Why is color saturation so often used for ordered attributes despite its known limitations?
+
+%Put simply, we hypothesize this is primarily because other channels like position and length are not conducive for geospatial maps.
+%%
+%Due to the inherent rigid structure of geospatial maps, as alluded to in~\cref{sec:intro}, and since the longitude and latitude already takes up the two dimensions available on most mediums barring immersive visualization applications, adding additional visual channels likely complicated an already potentially complicated visualization.
+%%
+%In addition to this, another possibility is that the general public is too used to interpreting data from color on maps, whether that be a map of your city, a hiking trail map, or an atlas --- color and maps are so strongly linked that it makes the departure of this trend difficult.
+
+%%
+%%Cartograms attempt to encode information in 2D area, which is known to be more effective than color saturation for ordered data\cite{franconeri2021science}; however, cartograms are also limited in that they inherently distort the base map and the geospatial information therein.
+%%%
+%%While this tradeoff is certainly favorable for many cases, we find t
+%%%
+%%The study of color theory and its implications for data visualization is well documented.
+
+%This is not to say that we advocate for \textit{replacing} color altogether. 
+%%
+%We consider that the use of color saturation for geospatial maps, comes about as a natural consequence with the limitation of the medium, and can be useful in displaying and communicating general structure of data.
+%%
+%With HexTiles, in addition to using color, we also encode data and information in icons.
+%%
+%This allows us to reduce the reliance on colors as well as take advantage of several useful properties of icons as means to represent data as we describe in \cref{sec:methods}.
+% In particular, we encode data in the number of icons to ease the sense-making process for colors.
+
+% \nocite{*}

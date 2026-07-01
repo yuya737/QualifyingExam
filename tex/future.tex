@@ -1,0 +1,54 @@
+For the remainder of my doctoral program, I will continue my investigation of multifaceted geospatial data, its analytical challenges, and the potential of visual analytics to address them. I have two main directions, which I list as follows.
+
+\section{Visual Analytics for Pluvial Flood Damage Risk and Assessment}
+DELUGE (Chapter~\ref{chp:deluge}) produces daily, ${\sim}1$\,km predictions of insured pluvial flood damage, and because it routes foundation-model embeddings through physically meaningful modulators, it reports not only what it predicts but the hydrological factors shaping each prediction.
+%
+A predictive model, however interpretable, is not by itself an analytical tool.
+%
+The stakeholders who must act on pluvial flood risk, including insurers pricing and triaging claims, emergency managers allocating resources around an event, and floodplain planners weighing long-term mitigation, need to read predictions in their spatial and temporal context, understand the drivers behind a given estimate, compare across locations and scenarios, and calibrate their trust before committing to a decision.
+%
+DELUGE supplies the raw material for this, its predictions together with its interpretable modulators, but it leaves unbuilt the analytical workflow that turns that material into decisions.
+%
+This aligns with a growing body of work that attempts to democratize natural disaster risk assessment across industry and academia~\cite{googlefloodhub, cortes_analysis_2024, nowak_designing_2020}.
+
+Here, I propose to develop a visual analytics system that takes DELUGE as its base predictive model and makes both its predictions and its modulators directly explorable.
+%
+The system would support two main tasks.
+%
+First, \emph{inspecting why a prediction is made}: decomposing a predicted damage estimate along the hazard, exposure, and vulnerability triad that structures disaster risk assessment, so that an analyst can attribute an elevated risk to its physical drivers rather than read it as a single opaque number.
+%
+This extends DELUGE's interpretable conditioning scheme, mapping its physically meaningful modulators onto the hazard, exposure, and vulnerability components that domain experts already reason with.
+%
+Second, \emph{counterfactual and what-if analysis}: perturbing the conditions underlying a prediction and observing how the predicted damage and its modulators respond, so that an analyst can probe the effect of altered hazard scenarios, changing exposure, or candidate mitigation measures.
+
+
+
+\section{Completing the ClimateSOM Extension and Investigating Spatial Co-occurrence of Extreme Climate Events}
+The extension to ClimateSOM developed in Section~\ref{sec:agu} established an EMD-based permutation test for distributional shifts in spatial co-variability, together with a clustering-based decomposition (Section~\ref{ssec:decomposing_reorganization}) that resolves a detected shift into a ranked set of interpretable pattern transitions.
+%
+Both currently sit outside the interactive workflow as offline analyses.
+%
+The immediate work is to complete the extension by folding this inferential and interpretive capability back into ClimateSOM itself, so that hypothesis testing and pattern attribution become steps an analyst can take within the same visual environment used to explore the ensemble.
+%
+This entails letting the analyst define conditions and comparisons interactively, run the significance test on the selected comparison on demand, and read the decomposition through linked views that tie each ranked transition back to its source and target patterns in the SOM space.
+%
+The decomposition remains a work in progress, and alongside this integration I will refine the importance score and the clustering it depends on, and validate the resulting attributions against established climatological understanding.
+%
+A further task is to synthesize these findings into a manuscript for submission and presentation at AGU's Annual Meeting.
+
+The second thread generalizes the question the extension asks.
+%
+ClimateSOM and its EMD extension currently characterize the distribution and co-variability of a single field, precipitation.
+%
+Many of the most consequential climate risks, however, arise from the spatial co-occurrence of extremes: compound events in which, for instance, drought and extreme heat coincide, or in which flooding strikes several regions at once and overwhelms shared response capacity~\cite{seneviratne2021weather}.
+%
+I propose to develop a visual analysis workflow for understanding the spatial co-occurrence of extreme events.
+%
+Where ClimateSOM abstracts such datasets into a distribution over spatial patterns, this workflow turns instead to the movement of the events themselves, asking whether extreme events are shifting in location, intensifying, or weakening in intensity under a changing climate.
+%
+Building on the inferential and interpretive tooling of Chapter~\ref{chp:climatesom}, the workflow would let an analyst track how the joint occurrence of extremes migrates and changes in magnitude between historical and future periods, and attribute those changes to specific regions and event types.
+%
+Combined with geospatial foundation model embeddings, which encode the character of the built and natural environment, the workflow could further characterize the kind of place each event strikes, answering \emph{what} happens and \emph{where}, in the sense of what kind of place, at the same time.
+%
+This connects to compound-event analysis, an area of growing concern in climate risk assessment that marginal, single-variable trends are poorly suited to address.
+

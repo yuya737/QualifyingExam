@@ -1,0 +1,40 @@
+\section{Extending ClimateSOM: Detecting Distributional Shifts in Precipitation Co-variability}\label{sec:agu}
+
+In this section, I continue with the \emph{ensemble variability} facet, sharpening it from visual exploration to a specific statistical question.
+%
+Climate-change impacts are typically assessed through mean-state changes at individual locations, yet the spatial co-variability \emph{between} regions may reorganize fundamentally under warming in ways that marginal trends alone cannot reveal.
+%
+Detecting such reorganization demands an explicit comparison of the distributions of spatial realizations across scenarios, something neither mean-state analysis nor EOF-based decompositions are designed to directly support.
+%
+To address this, I extend the ClimateSOM framework with statistical significance testing capabilities, to determine whether the \emph{distribution} of conditioned spatial precipitation patterns has shifted with statistical significance.
+%
+% Discovering such distributional shifts is difficult with standard analyses and here we demonstrate how ClimateSOM can be used to detect such changes under climate change.
+%
+I demonstrate this capability on the co-variability between California's Sacramento Bay-Delta Watershed and U.S. West Coast precipitation under LOCA2-downscaled CMIP6 projections, where I find a strengthening departure from historical relationships that I term ``decoherence,'' and the remainder of this section develops the methodology and findings in detail.
+%
+Although this extension remains a work in progress, I consider it a true litmus test of ClimateSOM's utility. 
+%
+Rather than a contrived demonstration, it applies the workflow to a climatologically substantive question, whether and how regional precipitation co-variability reorganizes under warming, and stakes its value on whether it can deliver insight that the standard analysis methods of the domain, such as mean-state trend analysis and EOF-based decomposition would struggle. 
+%
+It is in this confrontation with a real problem, and with the established tools climate scientists already trust, that the workflow's practical worth is genuinely put to the test.
+
+%% Suggested section heads:
+\subsection{Introduction}
+\label{sec:introduction}
+\input{tex/agu/introduction}
+\subsection{Data}
+\label{sec:data}
+\input{tex/agu/data}
+\subsection{Methods}
+\label{subsec:agu-methods}
+\input{tex/agu/methods}
+\subsection{Results}
+\label{sec:results}
+\input{tex/agu/results}
+% \subsection{Discussion}
+% \label{sec:discussion}
+% \input{tex/agu/discussion}
+\subsection{Continued Work}
+\label{subsec:agu-conclusion}
+\input{tex/agu/conclusion}
+

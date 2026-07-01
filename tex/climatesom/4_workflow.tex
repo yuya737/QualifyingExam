@@ -1,0 +1,404 @@
+% We describe the steps of the \ClimateSOM workflow in detail in this section.
+\subsubsection{Training the SOM (\step{S0})}
+% \subsection{Self-Organizing Maps (SOM)}
+% Self-organizing maps are a type of neural network designed to learn the topology of the input data by mapping it to a lower-dimensional grid, usually in a rectangular grid in 2D of size $dim\times dim$.
+%
+% We refer to \cite{kohonen_self-organizing_1990} for its formal definition.
+%
+% After a random initialization, at each iteration, the SOM algorithm selects a random input field and finds the best matching node (BMU) in the grid. 
+%
+% While varying definitions of \textit{best matching} exist, we use the Euclidean distance between the input field and the node's field as the distance metric.
+%
+% After identifying the BMU at each training step, the algorithm updates the SOM weights based on a learning rate and a neighborhood function.
+%
+% Formally, for a data set $R=\{r_1, r_2, \dots r_n\}$ of a collection of spatiotemporal fields (in the case studies, the fields are a series of precipitation anomalies over chosen domains in the Western US), at every iteration $t$, the algorithm selects a random sample $x(t)$ from $R$ finds its BMU, node $b$, and the weight vector $w_i$ of the node $i$ is updated as follows:
+% \begin{equation}\label{eq:som_update_rule}
+%     w_{i}(t+1) = w_{i}(t) + \alpha(t)h_{i,b}(t)[x(t) - w_{i}(t)]
+% \end{equation}
+% where $w_{i}$ is the weight vector of the node $i$, $\alpha(t)$ is the learning rate at time $t$, $h_{i,b}(t)$ is the neighborhood function that computes the influence of node $i$'s update, defined as a function of the distance between nodes $i$ and $b$.
+%
+For our spatiotemporal ensemble dataset, we train the SOM on the flattened ensemble dataset (i.e. across all spatial realizations that occur in the ensemble).
+%
+As common choice, we opt for the neighborhood function $h(t)$ to be the Gaussian function and linearly decrease its $\sigma$ as is standard practice in climate applications~\cite{gibson_use_2017}.
+%
+After training, the grid of SOM nodes is expected to approximate and learn the distribution input ensemble dataset under the constraint that the 2D grid of nodes are pseudo-smooth.
+
+The SOM must meet two competing criteria: (1) it should retain sufficient information from the input data, and (2) the 2D grid of nodes should be smooth enough to avoid disconnections after projection, which would hinder interpretability.
+%
+However, these two criteria are often in conflict. 
+%
+% Smaller neighborhood update size often results in higher explanatory power allowing the SOM to extract finer details of the input data's topology; however, this is at the cost of non-smooth SOM grid since each update influences a smaller region of the grid, and vice versa.
+%
+% A smaller neighborhood update size enhances the SOM’s ability to capture finer details of the input data’s topology, increasing its explanatory power. 
+%
+% However, this comes at the cost of a less smooth SOM grid, as each update affects a smaller region. 
+%
+% Conversely, a larger neighborhood size promotes smoother transitions but may obscure finer details.
+%
+A smaller neighborhood update size captures finer details of the data’s topology but results in a less smooth SOM grid, as each update affects a smaller region. 
+%
+Conversely, a larger update size smooths the grid but may obscure finer details.
+%
+We found that the choice of the initial neighborhood update size ratio expressed as a ratio between the initial update size and the dimension of the SOM grid, ($kR=(\sigma_{initial})^2/ {dim}^2$), and the ratio of the final neighborhood update size, $kS=\sigma_{final}/ \sigma_{initial}$, to the initial size ($kS$) are critical to balancing these two criteria.
+%
+For our case studies, we found that $kR=0.03$ and $kS=0.2$ provide balanced results.
+%
+Further details are in the Appendix.
+
+
+
+%\subsubsection{On the metrics for SOM training}\label{ssec:som_training_metrics}
+%Past research have employed various metrics to evaluate the quality of a SOM \cite{forest2020survey}.
+%%
+%Generally, metrics for SOM are divided into those that evaluate error that the SOM approximation introduces and those that evaluate the topological properties of the SOM grid.
+%%
+%\ClimateSOM requires both classes of metrics to measure that the trained SOM abstraction retains \textit{sufficient} information whilst also ensuring that the MDE dimensionality-reduced space is connected and interpretable.
+%%
+%The most common metrics for the respective categories are quantization error ($QE$) and topographic error ($TE$).
+%%
+%% For a given dataset $D=\{d_1, d_2, \ldots, d_n\}$, the quantization error is defined as the average distance between each input field $d_i$ and its BMU, $BMU(d_i)$.
+%%
+%% Topographic error is defined as the proportion of all data for which the first and second BMUs are \textit{not} adjacent in the SOM grid.
+%%
+%% While these are useful metrics, we introduce two more metrics that we have found useful for \ClimateSOM: (1) Explained Variance ($EV$) and (2) Variation of Smoothness ($VS$).
+%While these are useful metrics, we present two more metrics that we have found useful for \ClimateSOM: (1) Explained Variance ($EV$) and (2) Mean Smoothness ($\mu_S$).
+
+%\noindent
+%\textbf{Explained Variance}, akin to its definition in principal components analysis (PCA), measures the proportion of variance in the input data set that is explained by the SOM grid, where 0 indicates no explanatory power and 1 indicates full explanatory power.
+%%%
+%%Formally, for a data set $D$ the explained variance is defined for a trained SOM is defined:
+%%\begin{equation}
+%%    EV = 1 - \frac{\sum_{i=1}^{n}\sum_{j=1}^{m}(d_{i_j} - (BMU(d_i))_j)^{2}}{\sum_{i=1}^{n}\sum_{j=1}^{m}(d_{i_j} - (\bar{d})_j)^{2}}
+%%\end{equation}
+%%%
+%%where $n$ is the number of members in $D$, $m$ is the number of spatial locations, $d_{i_j}$ is the $j^{th}$ element of the $i^{th}$ input field, $BMU(d_i)_j$ is the $j^{th}$ element of the BMU of the $i^{th}$ input field, and $\bar{d}_j$ is the $j^{th}$ element of the mean of the input data set.
+%%% 
+%We replace $QE$ with Explained Variance to provide a unitless measure of the explanatory power of the SOM grid.
+
+%%\textbf{Variation of Smoothness} is another metric that we introduce to more carefully evaluate the smoothness of the SOM grid.
+%%%
+%%Given a SOM grid $G$, we define local smoothness, $LS$, at any grid node $g_{i,j}$ as the average Euclidean distance between $g_{i,j}$ and its four immediate neighbors.
+%%%
+%%Finally, considering the standard deviation of all $g_{i,j}$, we define the Variation of Smoothness as $\sigma_{LS}/ \mu_{LS}$.
+%%%
+%%Lower values of Variation of Smoothness indicate a more consistent level of smoothness across the grid and vice versa.
+%%%
+%%We found that topographic error was not sufficient to capture the required smoothness of the SOM grid to ensure the interpretablitity of the MDE result and thus replace the topology-based error metric with the Variation of Smoothness.
+
+%%In all, SOM training for \ClimateSOM is the balancing of its explanatory power ($QE,EV$) and smoothness ($VS$).
+%%%
+%%The following, \cref{ssec:som_training_parameters}, discusses the choice of parameters in the context of these metrics and the implications.
+%\noindent
+%\textbf{Mean Smoothness} is another metric that we introduce to more carefully evaluate the smoothness of the SOM grid as non smoothness can produce disconnected MDE results.
+%%
+%Given a SOM grid $G$, we define local smoothness, $LS$, at any grid node $g_{i,j}$ as the average Euclidean distance between $g_{i,j}$ and its four immediate neighbors and define the Mean Smoothness as $\mu_{g_{i,j}}$.
+%%
+%We found that topographic error was not sufficient to capture the required smoothness of the SOM grid to ensure the interpretablitity of the MDE result and thus replace the topology-based error metric with Mean Smoothness.
+
+%In all, SOM training for \ClimateSOM is the balancing of its explanatory power ($QE,EV$) and smoothness ($\mu_S$).
+%%
+%The following, \cref{ssec:som_training_parameters}, discusses the choice of parameters in the context of these metrics and the implications.
+
+
+%\subsubsection{On the parameter choices for SOM training}\label{ssec:som_training_parameters}
+%Among the parameters required for SOM training the initial neighborhood size $(kR)$ and the neighborhood size decay $(kS)$ are most important and we thus list their influences here.
+%\begin{itemize}[left=5pt, itemsep=0pt, labelsep=1em, align=left]
+%    % \item[\textbf{dim}] The dimension of the SOM grid defines the number of nodes \ClimateSOM uses to approximate the variations in the input ensemble. Larger values tend to result in better explanatory power, but adds complexity to the MDE. While non-square grids can be used, we opt for square grids for simplicity.
+%    \item[\textbf{kR}] The Gaussian neighborhood function depends on the parameter $\sigma$. The term $kR$ defines its initial value as the ratio between the SOM grid area and the neighborhood update area, given by $kR=(\sigma_{initial})^2/ dim^2$. 
+%        %
+%        % Generally, a larger $kR$ results in a smoother SOM grid with less explanatory power (i.e. low $VS$, low $EV$ and high $QE$) and a smaller $kR$ results in the opposite (i.e. high $VS$, high $EV$ and low $QE$).
+%        Generally, a larger $kR$ results in a smoother SOM grid with less explanatory power and a smaller $kR$ results in the opposite.
+%    \item[\textbf{kS}] In order for the SOM to \textit{fit} the data, it is common to linearly decay the neighborhood size over time \cite{gibson_use_2017}. %
+%        $kS$ defines the final value of the neighborhood size as a ratio of the initial value, $kS=\sigma_{final}/ \sigma_{initial}$.
+%        %
+%        Similar to $kR$, $kS$ also expresses a trade-off between smoothness and explanatory power.
+%        %
+%        A larger $kS$ results in a smoother SOM grid with less explanatory power and a smaller $kS$ results in the opposite.
+%\end{itemize}
+%Other parameters such as the dimensions of the SOM grid, as long as they were sufficiently large to enable sufficient explained variance, learning rate decay, the number of iterations, and the initialization method are part of the training process but were found less critical to the performance, and hence we omit them from discussion.
+
+% \begin{figure*}[h]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{figures/TaskDescriptions.pdf}
+%     \caption{The tasks that \ClimateSOM accomplishes and its overview}
+%     \label{fig:tasks}
+% \end{figure*}
+% \begin{figure}[t]
+%     \centering
+%     \includegraphics[width=0.9\linewidth]{figures/LLM.pdf}
+%     \caption{Incorporatings LLMs into the \ClimateSOM workflow}
+%     \label{fig:llm}
+% \end{figure}
+% \begin{figure}[t]
+%     \centering
+%     \includegraphics[width=0.9\linewidth]{figures/BootstrapComparison.pdf}
+%     \caption{The bootstrap-based construction of comparison within the \ClimateSOM workflow}
+%     \label{fig:bootstrap_comparison}
+% \end{figure}
+
+
+\subsubsection{Anchor (\step{S1})}
+% \subsubsection{Dimensionality Reduction (DR) on the SOM Nodes}
+As seen in past works in climate science employing SOMs \cite{sheridan_self-organizing_2011}, the SOM grid, while constructed to be locally smooth due to the training process, can have distortions globally. 
+%
+Therefore, SOMs are often presented alongside Sammon maps or Multidimensional Scaling (MDS) to provide a more faithful view of the SOM grid in terms of its relative distances between nodes.
+%
+However, these methods give no control to users to control the mapping process and gives priority to global structure in place of local structure.
+%
+To provide users with the iterative ability to shape and project the SOM nodes, we allow user to \textit{anchors} particular SOM node in the projection process.
+% 
+% In line with these approaches, we propose to apply a dimensionality reduction (DR) technique on the SOM grid nodes to yield a more interpretable 2D representation of the spatiotemporal fields in the input data set.
+%
+% However unlike similar approaches that rely of global DR methods like Sammon mapping or MDS, we propose a local DR method for two reasons. 
+
+% First, the most interesting comparison arises between ensemble members whose variations are often local in nature. 
+%
+% First, the differences between ensemble members can be subtle since they all model similar phenomena and subtle differences are better captured by local DR methods.
+%
+% In downstream tasks like clustering or the characterization of forcing, we rely on collection of local differences to encapsulate overall differences, and thus preserving local structures is preferred over its counterpart.
+%
+% Second, Euclidean distance, our distance metric to define pairwise difference between SOM nodes, is a sufficient local metric but a poor global metric, and thus optimizing for the global structure may introduce distortions that are less desirable.
+%
+% An important component of this step is the anchoring of points in the output 2D space as a constraint to the DR process.
+%
+% This allows for the user to configure the space in which the ensemble data will be visualized by explicitly soliciting the user to reorganize the 2D space to better suit their needs.
+%
+The utility of placing constraints on DR processes has been explored in previous works \cite{vu_integrating_2022}, and we find the iterative nature of anchoring via to be most suitable as it requires minimal intervention from the user.
+%
+% We claim that this is preferable over methods like UMAP as these methods can fail to preseve important characteristics of the embedded low-dimensional space, such as the smooth contours of the SOM grid.
+%
+In \ClimateSOM, we employ Minimum-Distortion Embedding (MDE)\cite{agrawal2021minimum} to support anchoring.
+%
+Similar to UMAP\cite{mcinnes2018umap}, MDE can be presented as an optimization problem over local neighborhood graphs.
+% , where the distortion between any two input data $i$ and $j$ arising from the dimensionality reduction is defined as a function of $d_{i,j}$, the Euclidean distance between the $x_i$ and $x_j$ -- embeddings of $i$ and $j$. 
+%
+%This function is formalized by Agrawal et al. as $f_{(i,j)}(d_{i,j})$ and referred to as the \textit{distortion function}.
+%%
+% Letting $\varepsilon$ to be the set of all pairs of $(i,j)$ and defining the \textit{average distortion} as $E(X)=(\Sigma_{(i,j)\in\varepsilon}f(i,j)) / |\varepsilon|$, MDE is formulated as the optimization problem to minimize $E(X)$ over all sets of feasible embeddings of the input $X$.
+%
+% Depending on MDE's configuration, this generalization can represent various DR techniques from PCA, MDS to UMAP.
+%
+Using MDE, we optimize for the distortion of the SOM grid nodes in the 2D space while anchoring points in the output space to ensure a more meaningful layout of the SOM nodes.
+%
+Since a 2D SOM roughly extracts two main axes of variation, this step allows user to physically map these axes to the two axes of the visual interface itself.
+%
+We refer to the output of this step as the \textit{Adjusted SOM Node Space}.
+
+\subsubsection{Annotate (\step{S2})}\label{ssec:annotate}
+This step allows users to provide \textit{annotations} to the \textit{Adjusted SOM Node Space} to add user-defined context to the SOM nodes while preparing for subsequent analysis in \step{S3}.
+%
+We define an \textit{annotation} as a pair of the following: (1) a bounded region within the \textit{Adjusted SOM Node Space} and (2) a text label that describes the region.
+%
+Two challenges arise: identifying relevant regions and defining meaningful labels.
+%
+Given the documented success of Text-to-SQL via LLMs \cite{zhang_natural_2024} and text summarization \cite{pu_summarization_2023}, our proposal for \ClimateSOM is leveraging LLMs in this process, alongside the user's visual inspection of the individual SOM nodes.
+%
+These correspond to the forward and backward directions of LLM assistance as shown in \cref{fig:workflow}.
+
+
+\paragraph{Forward Direction}
+In the forward direction, we assume the user has a characteristic of interest in mind for SOM nodes (e.g., ``\textit{Show me SOM nodes with average precipitation over Southern California above 0}''). The goal is to identify the corresponding region in the \textit{Adjusted SOM Node Space} by filtering nodes that match the specified condition. This is done by generating a PostGIS query based on the user’s geospatial query.
+%
+However, we found that naively prompting this task to LLMs does not yield consistent results, primarily due to LLM's
+% An identified challenge with tasking LLMs to generate spatial queries from natural language, however, is the 
+lack of accuracy in generating appropriate boundaries for given geospatial regions as found in \cite{liu_nalspatial_2025}.
+%
+To address this, we delegate the LLM not to generate spatial boundaries, but instead to generate a list of counties that correspond to the named region. These counties, which have well-defined boundaries, are then used to construct the spatial filter, reducing errors introduced by the LLM.
+%
+% In addition, we also adopt self-correction for the SQL query generation as seen in \cite{pourreza_din-sql_2023}.
+%
+In all, the forward direction proceeds as follows.
+\begin{enumerate}[nolistsep]
+    \item Parse the user query to detect any region names or locations. If none are detected, skip to step 3.
+    \item Resolve the identified regions to a list of counties with known boundary definitions. Combine these county boundaries to form the target region.
+    \item Use the resolved region and the numerical conditions extracted from the query to construct and execute a PostGIS query over the SOM nodes.
+\end{enumerate}
+\paragraph{Supported Question Types}
+Based on discussions with the domain experts, we identify three categories of user queries that the LLM should be able to support by generating appropriate PostGIS queries:
+%
+\begin{enumerate}[nolistsep]
+    \item SOM nodes such that the average value over \textit{some geospatial region} is above / below \textit{X}
+    \item SOM node such that the average value over \textit{some geospatial region} is between \textit{X} and \textit{Y}
+    \item SOM node such that the average value over \textit{some geospatial region A} is higher or lower than the average value over \textit{some geospatial region B}
+\end{enumerate}
+
+
+\begin{figure*}[!t]
+    \centering
+    \includegraphics[width=\textwidth]{temp.pdf}
+    \caption{
+        The \ClimateSOM interface at the end of \step{S1} and \step{S2} displaying the \textit{Annotated SOM Node Space}.
+        %
+%        The visual interface to support the first two steps --- \step{S1}: Anchor and \step{S2}: Annotate. 
+%        %
+%        The assumed user is first presented with \highlight{1}. 
+%        %
+        The user can inspect each SOM node via clicking on the node \subimage{1}, and the Node Viewer on the left displays the selected map of the SOM Node.
+        %
+        % After some initial visual inspection, they realize that the initial embedding of the SOM Nodes are not optimal since they cannot well interpret the dimensionality reduced axes. 
+        %
+        % The user then drags SOM Nodes around \subimage{1b} and clicks \textit{Reflect Anchors} and iteratively arrives to \highlight{2}. 
+        %
+        To support \step{S2}: Annotate, users can leverage the two directions of LLM-powered query system: Forward \subimage{2} and Backward \subimage{3}. 
+        %
+        For the forward direction \subimage{2}, the user can request a particular quality of interest, (e.g., \textit{Show me nodes that have average above 0 over Southern California}) and be presented with the corresponding SOM Node region highlighted in yellow. 
+        %
+        For the backward direction \subimage{3}, the user can select a SOM Node region and a LLM will generate a \textasciitilde
+ 50-word summary of SOM Node realizations in that region.
+        %
+        % The user's interaction with the LLM are tracked in \subimage{2d}.
+        %
+        Through visual inspection and the LLM assistance, the user compiles the set of \textit{annotations} as regions in the SOM Node Space and a label corresponding to the region.}
+        \vspace{-0.2in}
+    \label{fig:Step1and2}
+\end{figure*}
+
+\paragraph{Backward Direction}
+In the backward direction, we presume the user has identified a region within the \textit{Adjusted SOM Node Space} and wishes get a high-level summary of the region. 
+%
+In \ClimateSOM we accomplish this as follows.
+\begin{enumerate}[nolistsep]
+    \item Given a region in the \textit{Adjusted SOM Node Space}, we extract samples evenly within the SOM Node Space region. 
+        % For our case studies, we found nine samples to yield sufficient results.
+    \item Construct a per-county level summary statistic of each node from step 1. For a given sampled SOM node, we textually represent each node as: \begin{verbatim} 
+{ high_value:[counties_list], 
+    moderately_high_value:[counties_list],
+    neutral_value:[counties_list],
+    moderately_low_value:[counties_list],
+    low_value:[counties_list] }
+\end{verbatim} 
+    That is, we enumerate all counties with average values in each of the five categories.
+    %
+    Note that, we allow the the cutoff values that define \textit{high}, \textit{moderately high}, etc. to be modified by the user.
+    \item Use the text-based summary statistics for each sampled SOM node with a LLM to generate a summary description of the region.
+\end{enumerate}
+
+\vspace{3pt}
+\noindent
+In summary, the LLM is used in the forward direction for two tasks: (1) mapping region names to a list of counties, and (2) generating PostGIS queries to retrieve relevant SOM nodes. In the backward direction, the LLM serves as a summarizer of per-county statistics derived from user-selected regions.
+%
+We implement both directions using LangChain \cite{langchainLangChain} with OpenAI's \textit{gpt-4o-mini}\cite{achiam2023gpt} and use LangChain Tools for the forward direction to detect if the user input includes any geospatial regions that need to be resolved.
+%
+Details of the prompts used are available in the Appendix.
+%
+Either via manual inspection of the \textit{Adjusted SOM Node Space} or via the LLM integration, the user can now define a set of \textit{annotations} for the \textit{Adjusted SOM Node Space} to produce the \textit{Annotated SOM Node Space}.
+
+\vspace{-3pt}
+\subsubsection{Analyze (\step{S3})}
+Finally in this step, we describe how \ClimateSOM performs each of the tasks and meets the design requirements outlined in~\cref{ssec:design_requirements}.
+% \vspace{-3pt}
+\paragraph{Exploring a single set of model runs \req{R1}}\label{ssec:explore}
+% \begin{figure}[htbp]
+%     \centering
+%      \includegraphics[width=\linewidth]{figures/ExploreOne.pdf}
+%      \caption{}
+% \end{figure}
+Given a single ensemble model run with $n$ time steps, $R=[r_1, r_2,\ldots, r_n]$, we can describe it as a distribution $S=\{p_1,p_2,\ldots, p_n\}$ within the \textit{Annotated SOM Node Space} by mapping each $r_i$ to its best BMU and applying the MDE projection: $p_i = MDE(BMU(r_i))$.
+We then compute a kernel density estimate (KDE) over $S$, which serves as a “fingerprint” of the model run. Regions of high density indicate spatial patterns that occur frequently in the run. This distribution can also be expressed as percentages over the annotated regions defined in \step{S2}, enabling semantic interpretation beyond the KDE plot.
+%
+In the case of a set of multiple model runs, we apply the same process over the entire set of consider the aggregated set of points as the representative distribution.
+\paragraph{Comparing the behavior of two sets of model runs \req{R2}}
+% \begin{figure}[htbp]
+%     \centering
+%      \includegraphics[width=\linewidth]{figures/Compare.pdf}
+%      \caption{}
+% \end{figure}
+To facilitate comparison of two model runs $R_1$ and $R_2$, \ClimateSOM provides two methods: (1) side-by-side comparison and (2) a vector field formulation.
+%
+\paragraph{Comparison via side-by-side}
+The side-by-side comparison is a direct comparison of the distributions of $R_1$ and $R_2$ in the \textit{Annotated SOM Node Space} as defined in \cref{ssec:explore}.
+%
+By presenting these two views side-by-side, we allow users to visually inspect if there are regions within the SOM Node Space that are occupied in similar densities or different densities by $R_1$ and $R_2$.
+%
+Similar to the exploration of a single model run, the respective distributions can be compared via the breakdown based on the annotations defined in \step{S2} Annotate. 
+
+\paragraph{Comparison via a vector field formulation}
+We also support a formal comparison using vector fields. This is based on a bootstrap approach \cite{efron1992bootstrap} (implementation details in the Appendix).
+%
+Given two model runs $R_1$ and $R_2$, we generate $k$ number of bootstrap samples for each model run.
+%
+At each iteration, we first calculate the 2D optimal transport\cite{flamary2021pot} between the two bootstrap samples.
+%
+Given the optimal transport plan, we consider each pair in the plan and construct a set of vectors that points from each source to its target.
+%
+Interpolating the results for all sets of vectors onto a regular grid to generates a vector field.
+%%
+%Letting $R_1',R_2'$ be a bootstrap samples, for each bootstrap iteration we first compute the 2D optimal transport\cite{flamary2021pot} between $R_1'$ and $R_2'$.
+%%
+%This results in a list of pairs of elements $(r_1',r_2')$ where $r_1'\in R_1'$ and $r_2'\in R_2'$ such that the total cost of transport or matching is minimized.
+%%
+%Using this 2D optimal transport result, we aggregate and linearly interpolate this result onto a regular grid to generate a vector field.
+%%
+%Finally, averaging this result from all bootstrap iterations, we can generate a vector field that represents the difference between $R_1$ and $R_2$ in the \textit{Annotated SOM Node Space} as a transition from $R_1$ and $R_2$.
+%
+% Thus, the critical assumption of this approach is that is that the \textit{change} from $R_1$ to $R_2$ can be estimated by the 2D optimal transport between the two distributions.
+%
+% For our case studies, we found $k=50$ to produce stable results.
+%
+The resulting field represents the spatial transition from $R_1$ to $R_2$. 
+%
+This further enables analysis at the level of annotations---e.g., determining where points from annotation A in $R_1$ are mapped in $R_2$.
+
+This approach is particularly useful when comparing temporally ordered scenarios (e.g. comparing a historical run to a future run or comparing a low to a high emission scenario). The vector field comparison may provide an added layer of context since the comparison is treated as a \textit{transition} from one to the other.
+%
+If comparing between two sets of model runs, we apply the same process to the aggregated set of points in each set as was in \req{R1}.
+
+
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=\linewidth]{figures/BootstrapComparison.pdf}
+%     \caption{The bootstrap-based construction of comparison for \ClimateSOM as a vector field}
+%     \label{fig:bootstrap_comparison}
+% \end{figure}
+
+\vspace{-3pt}
+\paragraph{Clustering the behavior of many model runs \req{R3} } \label{ssec:clustering}
+% \setlength{\intextsep}{0pt} % Remove space above and below wrapfigure
+% \setlength{\columnsep}{5pt} % Reduce space between text and figure
+% \begin{wrapfigure}{o}{0.65\linewidth}
+% \begin{figure}[htbp]
+%     \centering
+%      \includegraphics[width=0.65\linewidth]{figures/Cluster.pdf}
+%      \caption{}
+% \end{figure}
+% \FloatBarrier % Forces wrapfigure to stay in place
+% \setlength{\intextsep}{12pt} % Remove space above and below wrapfigure
+% \setlength{\columnsep}{10pt} % Reduce space between text and figure
+% The third and final task is to cluster the behavior of many model runs based on their distributions in the \textit{Annotated SOM Node Space}. 
+%
+% For clustering, we consider two variants.
+ClimateSOM supports two types of clustering as follows.
+\paragraph{Clustering model runs directly} Given the distributions of the model runs in the \textit{Annotated SOM Node Space}, we perform clustering using Earth Mover's Distance (EMD)\cite{flamary2021pot} to quantify the similarity producing a distance matrix between the distributions.
+%
+We then apply UMAP on the distance matrix to produce a 2D embedding and HDBSCAN \cite{mcinnes2017hdbscan} to perform the clustering.
+%
+While HDBSCAN can operate on the distance matrix directly, we found more consistent results using this two-step method.
+%
+This results in a clustering of model runs that exhibit \textit{similar} behavior and those that exhibit \textit{dissimilar} behavior, where each cluster can be represented as an aggregate distribution of the model runs in that cluster.
+%
+\paragraph{Clustering GCMs based on their SSP forcing} Given vector field formulation of forcing, we perform clustering of the vector field using an average cosine similarity to quantify the similarity between the vector fields.
+%
+Similarly, we can use UMAP and HDBSCAN to perform clustering such that we can identify GCMs that exhibit \textit{similar} behavior under the same forcing and those that exhibit \textit{dissimilar} behavior.
+%
+For this variant, each cluster can be represented as a vector field that represents the average behavior of the GCMs in that cluster.
+
+A notable design implication of \ClimateSOM and its formulation is that the resulting clustering is interpretable, since it can be displayed directly in the same \textit{Annotated SOM Node Space} as distributions or vector fields.
+%
+% Within the broader domain of clustering algorithms and Explainable AI, there remains significant interest in the interpretability of various clustering algorithms \fix{cite}, as complex clustering workflows can often resemble a black box, making it difficult to discern the decision boundaries between clusters.
+%
+We consider this explainable clustering results as a key strength of \ClimateSOM.
+%
+% In contrast, the clustering for \ClimateSOM can be visualized directly in the \textit{Annotated SOM Node Space} as distributions or vector fields, providing a clear explanation of the clustering results.
+
+
+
+% the SOM grid can be used as a lower-dimensional representation of the input data set.
+% Once trained, the SOM  
+
+% \subsection{Enabling interpretability of projected SOM node space}
+% \subsection{Spatiotemporal data as a distribution}
+% Q: Why not use DTW or other time-series distance metric?\\
+% A: There are applications like some climate scenarios, where there are meaningful interpretations of the time series discarding the particular order, but considering the time series as a whole. Of course, we lose the temporal information, but we gain in simplifying the comparison.
+
+% \subsection{Downstream tasks: Clustering and Member Comparisons}

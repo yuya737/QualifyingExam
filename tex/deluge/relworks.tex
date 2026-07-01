@@ -1,0 +1,55 @@
+\paragraph{Flood Hazard Modeling and Process-Based Approaches}
+Flood risk mapping has traditionally relied on process-based hydrological and hydraulic models that simulate fluid physics over high-resolution topography~\cite{kumar_comprehensive_2023,bates_simple_2000}.
+%
+These models underpin FEMA flood maps and CONUS-scale ambient-flood products~\cite{fema_flood_zone_2021,bates_combined_2021,woznicki_development_2019,wing_30_2024}, providing 30\,m-to-street-level inundation footprints valuable for insurance and long-term planning, often at decadal scales.
+%
+For damage estimation specifically, the insurance industry has developed catastrophe (CAT) models that integrate hazard, exposure, and vulnerability for detailed risk assessment~\cite{zanardo_introduction_2022}.
+%
+However, neither of these approaches is suited to daily, dynamic damage prediction. 
+%
+Ambient-flood products characterize long-run risk rather than the daily prediction, and CAT models are computationally expensive to run at scale~\cite{bates_flood_2022,kazadi_floodgnn-gru_2024}.
+
+
+\paragraph{Machine Learning for Flood Prediction}
+Machine learning approaches address the operational gap left by process-based models by learning directly from large archives of hydrological, topographical, and socioeconomic data~\cite{oddo_deep_2024,collins_predicting_2022,alipour_leveraging_2020,liao_fast_2023}.
+%
+Tabular tree-based methods (Random Forest, XGBoost, LightGBM) are the dominant choice in the flood damage prediction literature~\cite{yang_predicting_2022,collins_predicting_2022,garcia_reconstructing_2025,alipour_leveraging_2020}, typically operating on aggregated features at the county or grid-cell level.
+%
+A parallel line of work applies sequence and graph models (LSTM, GNN) to riverine and flash-flood prediction~\cite{nearing_global_2024,tran_ai_2025,kazadi_floodgnn-gru_2024,sarkar_hydrogat_2025,taghizadeh_interpretable_2024,moishin_designing_2021}, achieving strong results, but the targets are typically river gauge measurements or hazard indicators rather than insured damage directly.
+%
+A further body of remote-sensing work maps flood extent from satellite imagery~\cite{rambour_sen12-flood_2020,Bonafilia_2020_CVPR_Workshops,puttinaovarat_flood_2020}, but likewise recovers inundation footprints rather than damage.
+%
+Among damage-targeted ML works, most are constrained to regional domains (a single county, or city) where local data permit detailed modeling~\cite{liu_flooddamagecast_2024,zhang_high_2023,shu_assessing_2026}, leaving the CONUS-wide daily pluvial damage problem largely unaddressed.
+
+\paragraph{Pluvial Flood Damage Prediction from Claims}
+Pluvial flooding is a particularly difficult prediction target~\cite{rosenzweig_pluvial_2018,nelson-mercer_pluvial_2025}, due to the highly localized natures of impacts and lack the dense observational infrastructure of stream and tide gauges that supports riverine and coastal flood predictions.
+%
+NFIP claims are the most comprehensive source of insured pluvial damage in the United States~\cite{fema_nfip_claims_v2} and have become the de facto damage signal for data-driven CONUS-scale work~\cite{yang_predicting_2022,garcia_reconstructing_2025}.
+%
+However, claims data are known to carry nontrivial spatial and temporal uncertainty.
+%
+Data redaction to protect personally identifiable information limits localization to Census Tract or ZIP polygons, reported dates frequently misalign with precipitation events due to reporting lags and mislabeling~\cite{wing_new_2020,shin_systematic_2022,petkov_learning_2025},
+and uninsured losses are systematically absent (\tsim$2/3$ of total losses~\cite{amornsiripanitch2024flood}).
+%
+Past work has largely treated these uncertainties as fixed properties of the dataset. 
+%
+Here, we instead build an explicit temporal and spatial uncertainty correction pipeline (\S\ref{ssec:temporal_correction},~\S\ref{ssec:spatial_correction}) to refine each claim before it enters the model, which we view as a prerequisite for using NFIP claims as a daily training signal.
+
+
+\paragraph{GeoAI Foundation Models and Interpretability}
+Earth-observation foundation models are increasingly becoming backbones of geospatial analysis tasks~\cite{agarwal2024general,szwarcman2024geospatial,zhu_foundations_2026}.
+%
+Efforts like Google AlphaEarth~\cite{brown_alphaearth_2025} provide dense, high-resolution learned embeddings that implicitly encode the built and natural environment and spatial context.
+%
+A growing body of work also probes \emph{what} these embeddings represent about physical space~\cite{benavides2026earth,rahman_physically_2026,bell_earth_2026}.
+%
+However, less attention has been paid to \emph{how} downstream models should consume them.
+%
+The default pattern, which is to concatenate embeddings into a black-box encoder, makes it difficult to verify whether the geospatial prior is being used in a physically meaningful way.
+%
+This raises the same interpretability concerns that motivate broader calls for explainable GeoAI~\cite{hsu_explainable_2023,roussel2025introducing,suri_trusting_nodate,zhu_foundations_2026} and interpretable flood models~\cite{taghizadeh_interpretable_2024}, and that Rudin~\cite{rudin_stop_2019} has addressed by advocating \emph{inherently} interpretable architectures over post-hoc attribution.
+%
+DELUGE's interpretable conditioning modules are designed to fill exactly this gap.
+%
+Rather than treating foundation-model embeddings as opaque feature vectors, we route them through parametric, physics-shaped modules whose learned parameters are themselves hydrologically meaningful and inspectable.
+

@@ -1,0 +1,50 @@
+Climate change impacts are typically assessed through mean-state changes at individual locations or regions.
+%
+While such analyses provide important insights (e.g., projected wetting winters and drying springs in California~\cite{pierce2018climate,polade2017precipitation}), they overlook a critical dimension: spatial co-variability between regions may reorganize fundamentally under warming.
+%
+Even when marginal trends appear modest for one region, a shift in the co-variability between two regions can carry consequences that marginal trends alone do not reveal.
+%
+Detecting such reorganization requires an explicit comparison of distributions of spatial realizations across climate scenarios, as temporal or spatial means and correlations alone can mask compositional shifts in realized patterns.
+
+Beyond mean-state analysis, Empirical Orthogonal Function (EOF) analysis is widely used to identify dominant modes of variability~\cite{hannachi2007empirical}, including covariability between climate modes~\cite{boschat2026covariability}. However, EOF-based approaches rely on linear combinations of orthogonal spatial patterns and may not capture nonlinear relationships or distributional shifts in realized patterns.
+%
+While extensions of EOFs, such as rotated EOFs~\cite{lian_evaluation_2012}, have been developed to address some of these limitations, they still primarily focus on identifying dominant modes of variability and do not directly support the distributional view that we pursue.
+
+The value of viewing climate realizations from a distributional perspective has been shared and appreciated by past authors.
+%
+Pendergrass et al. examined the effects of a warmer climate considering the distribution of spatially-aggregated change in the interannual standard deviation of seasonal-mean precipitation, globally~\cite{pendergrass_precipitation_2017}.
+%
+Zhang et al. argues that warming produces a distributional shift in precipitation, with wider variability and more extremes~\cite{zhang_increasing_2021}.
+%
+Crucially, they highlight the unreliability of examining mean states alone; both because changes in mean states alone cannot inform changes in variability and because change in variability may, in fact, be more difficult to adapt to than changes in mean states.
+%
+A more recent work reinforced this idea by showing that day-to-day variability changes can outweigh mean-state shifts in driving precipitation extremes across many regions~\cite{nordling2025climate}.
+%
+However, these past works fall short of considering the distribution of the spatial realizations themselves, which we argue is critical to better understanding the impacts of climate change on regional precipitation patterns and their co-variability.
+
+% However, we contend such analysis has been largely absent from the literature.
+%
+%
+% framework enables rigorous hypothesis testing of whether the distribution of spatial precipitation patterns conditioned on regional climate states has shifted between historical and future periods.
+To address this gap, we extend the ClimateSOM framework, building on prior applications of self-organizing maps to climate pattern analysis \cite{hewitson_self-organizing_2002, gibson_use_2017}. ClimateSOM discretizes the space of spatial climate patterns into a nonlinear, topology-preserving partition and thereby admits the distributional comparisons that EOF-based decompositions do not support. We extend this framework with a permutation-based hypothesis testing procedure utilizing Earth Mover's Distance to quantify distributional differences in spatial realizations.
+% %
+% Prior work has examined precipitation linkages and regional co-variability through correlation-based or mean-state analysis~\cite{}, but these approaches cannot formally test whether the composition of realized spatial patterns has shifted.
+%
+% Our framework enables such tests, 
+% , and the stationarity assumptions underlying water resource planning.
+We further develop a within-year coherence test and a clustering-based decomposition that attributes distributional shifts to compositional reorganization among identifiable pattern clusters.
+
+We demonstrate this capability on a critical test case concerning associations between California's Sacramento Bay-Delta Watershed and U.S. West Coast precipitation.
+%
+The Bay-Delta is a critical hydrological hub in a persistently drought-prone region~\cite{cloern2011projected} and a focus of climate-change impact studies~\cite{rojas-aguirre_evaluating_2025}.
+%
+Precipitation on the U.S. West Coast has also been widely studied from its North-South gradient~\cite{dettinger1998north}, the role of atmospheric rivers in shaping seasonal totals and extremes \cite{gershunov_assessing_2017, gershunov_precipitation_2019}, and future precipitation projections in the Pacific Northwest~\cite{abatzoglou2014seasonal}.
+%
+However, how the co-variability between these two regions may evolve under climate change has not been systematically characterized, despite its importance for water management and climate resilience.
+% \fix{ecosystem and agricultural planning across the region}.
+
+Specifically, when the Bay-Delta experiences anomalously wet or dry water years, what spatial precipitation anomaly patterns does the broader West Coast realize, and is that relationship changing?
+%
+Using LOCA2-downscaled CMIP6 projections~\cite{pierce2014statistical,pierce2015improved,eyring2016overview} from 15 models under three emission scenarios~\cite{riahi2017shared} (SSP-2.45, 3.70, 5.85), we find that West Coast precipitation patterns conditioned on Bay-Delta wet and dry years are significantly departing from historical periods.
+%
+This departure indicates that the historical conditioning relationship between Bay-Delta and West Coast precipitation is itself changing, which we term ``decoherence''. We find that decoherence strengthens under higher emissions and over longer time horizons, most pronounced in spring months.

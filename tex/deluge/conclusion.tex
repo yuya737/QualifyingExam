@@ -1,0 +1,49 @@
+We presented DELUGE, a multimodal CNN-based system for daily pluvial insured flood damage prediction at ${\sim}1$\,km resolution across the highest-claim regions of CONUS, trained on NFIP claims.
+%
+We structured the model around the core disaster-management components of hazard, exposure, and vulnerability, introduced an interpretable conditioning scheme for integrating foundation-model embeddings into the prediction task, and inspected the physical fidelity of that scheme.
+%
+As a prerequisite for using NFIP claims as a daily training signal, we also introduced precipitation-guided temporal and intersection-based spatial corrections that refine the timing and footprint of each claim.
+%
+DELUGE outperforms tuned gradient-boosted tree baselines on PR-AUC and concentrates high-dollar claims more effectively near the top of its prediction ranking, the regime most relevant to insurance and emergency-management stakeholders.
+%
+For insurers, these gains can improve risk segmentation. 
+%
+When calibrated to average annual loss, a model that better identifies high-dollar pluvial flood risk could support territory rating, risk selection, and reinsurance analysis, while also providing clearer risk signals for policyholders and communities.
+% with the largest gains concentrated in the high-cost claim 
+%
+We further demonstrated the efficacy of our \emph{Value and Temporal Modulators}, which gain \emph{interpretability-by-design} while remaining competitive with standard encoders for spatial time series. 
+%
+We believe this offers a scheme transferable to other geospatial tasks built on nascent Geospatial Foundation Models.
+%
+
+Three limitations point to natural next steps.
+%
+First, data quality remains the dominant bottleneck, on both the label and input sides.
+%
+On the label side, NFIP claims, despite our spatial and temporal uncertainty corrections, remain a noisy and incomplete proxy for pluvial damage.
+%
+Uninsured losses and unreported events are systematically absent from the record, and claimed damage amount is itself an imperfect proxy for severity or societal importance.
+%
+The resulting sparsity in both space and time is reflected in the modest absolute performance of all models including DELUGE, which nonetheless remains strong when the low prevalence of claims is taken into account.
+%
+On the input side, our hydrometeorology inputs themselves carry nontrivial uncertainty at the hourly kilometer scale.
+%
+Improving the fidelity of both the damage signal and the hydrometeorological hazard inputs is likely the single largest lever for further predictive gains.
+%
+Second, interpretability remains open.
+%
+Our conditioning scheme is a step forward in that it exposes \emph{how} the model utilizes foundation-model embeddings, but it does not explain individual predictions.
+%
+Closing this gap, from architecture-level fidelity to case-level explanation, is a natural direction for future work.
+%
+Third, our spatial evaluation shows that DELUGE generalizes across the wide range of flood dynamics present within highest-claim regions in CONUS~\cite{brunner_spatial_2020}, but it does not yet test extrapolation to geographies absent from training.
+%
+Applying DELUGE to regions or countries outside its training distribution, where flood dynamics and the built environment may differ from anything it has seen, is a distinct problem that we leave to future work.
+
+% We hope DELUGE serves as a startiriven pluvial flood impact modeling, and that the interpretable conditioning pattern generalizes to other geospatial prediction tasks built on foundation-model embeddings.
+Together, these results suggest that DELUGE can serve as a starting 
+point for CONUS-scale pluvial flood impact modeling, and that 
+interpretable deep learning can turn geospatial foundation-model 
+embeddings into accurate and physically meaningful prediction 
+systems.
+

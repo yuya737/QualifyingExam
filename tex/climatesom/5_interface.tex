@@ -1,0 +1,210 @@
+
+
+To introduce the interface design for \ClimateSOM, let's consider a climate scientist with a climate ensemble dataset of monthly precipitation projections over California, expressed an anomalies from historical averages.
+%
+Given this ensemble, we assume the scientist in interested in the three research questions introduced in \cref{sec:problem}.
+
+Assuming \step{S0} is complete, the trained SOM is a 2D grid of SOM nodes, where each node is a precipitation map over California.
+%
+Then the scientist proceeds through \step{S1} and \step{S2}.
+% \subsection{\step{S1} Step 1: Anchor and \step{S2} Step 2: Annotate}
+
+\subsubsection{SOM Node Space Editing View}
+% \paragraph{Step 1: Anchor}
+The main visual component for \ClimateSOM is the trained SOM and the SOM Node Space that the user iteratively edits as seen in~\cref{fig:workflow}.
+%
+The SOM Node Space Editing View supports the anchoring and annotating of the SOM Nodes in \step{S1} and \step{S2}.
+%
+First, as in~\cref{fig:workflow}-\subimage{1}, the SOM Node Space is presented to the user using the unanchored MDE result, each node depicting a precipitation map over California using a Green-Pink (high-low precipitation) colormap.
+%
+The interface also presents colored percentile lines in the SOM Node Space to orient the user to the mean anomaly in each SOM node.
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=\linewidth]{figures/temp2.pdf}
+%     \caption{Anchoring nodes reshapes the SOM Node Space in \step{S1}.}
+%     \label{fig:step1}
+% \end{figure}
+% \label{sec:Step1and2Inteface}
+% \cref{fig:Step1and2} provides an overview of the visual interface support for the two steps.
+%
+% First, the user is presented with \highlight{1} displaying the initial unanchored MDE result.
+%
+In \step{S1} the user constructs the \textit{Adjusted SOM Node Space} by anchoring and reflecting the anchors via MDE. 
+%
+SOM nodes in this step can be dragged around freely, and nodes that are set to be anchored are displayed with an anchor icon as seen in~\cref{fig:workflow}.
+%
+Furthermore, they can be inspected future via clicking on the node, displaying that node in the SOM Node Viewer (\cref{fig:Step1and2}-\subimage{1}).
+%
+Once they have a satisfactory \textit{Adjusted SOM Node Space} they proceed to \step{S2}.
+%
+This step constructs the \textit{Annotated SOM Node Space} by leveraging the LLM-empowered bidirectional query system in addition to manual visual inspection.
+%
+The interface supports two directions of LLM integration: forward (\cref{fig:Step1and2}-\subimage{2}) and backward (\cref{fig:Step1and2}-\subimage{3}) to support the user in defining annotations.
+%
+The interface provides the history of the user's interaction with the LLM in a chat-like visual UI.
+
+Annotations as seen in~\cref{fig:Step1and2} are rendered as bounded regions in the \textit{Annotated SOM Node Space} with a user-defined label.
+%
+This label can be produced via the user's inspection of the bounded region in question, or with assistance from the LLM's \textasciitilde
+ 50-word summary of the region.
+%
+Once all annotations are defined and named, the \textit{Annotated SOM Node Space} is ready for analysis in \step{S3}.
+%
+\cref{fig:Step3} provides an overview of the visual interface support for \step{S3}.
+%
+\subsubsection{Model Run Inspection and Characteristic View}
+% \paragraph{Model Run Inspection \subimage{1} and Characteristic View \subimage{2}}
+First in pursuit of \req{R1}, the user can inspect a single model run over any given month by selecting them via a dropdown and viewing its distribution over the \textit{Annotated SOM Node Space} in the Model Run Inspection View (\cref{fig:Step3}-\subimage{1}).
+%
+The interface presents the 2D distributional representation of the selected model run as a KDE plot drawing three polygons as of the top 25\%, 50\%, and 75\% density regions.
+%
+Thus, the darkest areas of the KDE plot corresponds to the SOM Node Space regions with the highest density of realizations in the selected model run.
+%
+In addition, we provide the breakdown of that model run's behavior broken down by the annotations in the Characteristic View (\cref{fig:Characteristic}).
+%
+In the Characteristic View, the distribution for the selected model run is broken down by the annotations, presented alongside a node map glyph (\cref{fig:Characteristic}-left), ordered by its percentages in each annotation region. 
+%
+The node map glyph is designed to quickly direct the user to the SOM Node Space regions where the each  annotation represents.
+%
+Furthermore, in the case that the user is comparing two model runs as a vector field, the Characteristics View instead displays the \textit{transition} as a Sankey diagram between the annotations.
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{Characteristic.pdf}
+    \caption{The Characteristic Viewer for inspecting single model run and when comparing two model runs as a vector field.}
+    \label{fig:Characteristic}
+\end{figure}
+\noindent
+\quad\textit{Justification:}\,\, In exploring the behavior of model runs, \textbf{the primary goal for climate scientists is to understand where the \textit{hotspots} are}.
+%
+That is, which part of the SOM Node Space most of the realizations of the model runs are concentrated. 
+%
+To this end, we employ the KDE representation as the visual encoding for the distribution so that we draw the most attention to the \textit{hotspots} in the distribution. 
+%
+Other designs we considered included using a 3D representation and encoding the density in the height, but we found a 3D encoding less effective as it was more difficult to interpret. 
+%
+The Characteristic View is designed in a similar vein, to provide a quick overview of the distribution of the model run over the annotations provided in \step{S2}, and the node map glyph directing the user to the \textit{hotspots} in the distribution.
+
+\subsubsection{Model Comparison View}
+% \paragraph{Comparison Views ~\cref{fig:sidebyside} and \cref{fig:Step3}-\subimage{3}} 
+To support \req{R2}, we offer two visual interfaces for comparing two model runs: via a side-by-side comparison and as a vector field.
+%
+First, the side-by-side comparison allows for simple visual comparison of two model runs, by placing the two distributions side-by-side in the \textit{Annotated SOM Node Space} (\cref{fig:sidebyside}).
+%
+By drawing the distributions over the identical SOM Node Space, the user can quickly identify the SOM Node Space regions where the densities differ.
+%
+However, to support the user for comparative tasks where there is a natural order to the comparison (e.g., comparing the same GCM over the historical vs. future period), we provide a vector field comparison view as well(~\cref{fig:Step3}-\subimage{3}).
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\linewidth]{sidebyside.pdf}
+    \caption{The side-by-side comparison view for comparing two model runs.}
+    \label{fig:sidebyside}
+\end{figure}
+
+\quad\textit{Justification:}\,\, 
+% When considering comparison of two model runs, over discussions with our domain expert, we identified the two types of comparisons, one where is a natural ordering to the comparison and one where there is not.
+% Therefore, our visual interface was designed to support both types of comparisons. 
+%
+Although the side-by-side comparison is simple to interpret, there were cases where the differences were subtle, or when we could infer an ordering, there was scope to provide a simpler visual encoding for the comparison.
+%
+We found that the vector field representation was a good fit for this task as the direction of the arrows provided a natural interpretation of the comparison as a \textit{transition}.
+
+For the vector field formulation of the comparison, we initially used a particle advection animation similar to those used in flow visualization but found that the static vector field representation to be more simple and required less visual processing.
+%
+In all, the two methods for comparison were well received by our domain expert, and thus implemented in the final design.
+
+
+%In \subimage{3c}, the user can inspect the breakdown of the model run over time, here for January, across the annotations provided in \step{S2}.
+%%
+%Secondly, to support \req{R2}, the user can compare two model runs via two visual interfaces, side-by-side \highlight{2} and via a vector field \highlight{3}.
+%%
+%With reference to the vector field \highlight{3} the user can understand the \textit{transition} from Selection 1 to Selection 2 with reference to the Sankey-like diagram \subimage{3e} displaying the best estimate of this transition considering the \textit{destination} of points originally in each annotation region in Selection 1.
+%
+\subsubsection{Clustering View}
+Lastly, to support \req{R3} clustering results (\cref{ssec:clustering}) are visualized as a circuit-line diagram connecting the independent per-month clustering results(~\cref{fig:Step3}-\subimage{4}).
+%
+For our scientists, \textbf{in addition to understanding the results of the per-month clustering results, there is also interest in understanding the evolution of the monthly clustering results.}
+%
+That is, how the cluster membership of a model run changes over different months.
+%
+% Therefore, in addition to visualizing the clusters, we also provide the circuit-line diagram to visualize the evolution as well.
+\begin{figure}[htbp]
+    \centering
+     \includegraphics[width=\linewidth]{step3interaction.pdf}
+     \caption{
+     Clicking \subimage{a} on a monthly cluster model run clustering variant \cref{fig:Step3}--\subimage{4} will select model runs represented in that cluster \subimage{b} and show its distribution over the \textit{Annotated SOM Node Space}.
+    %
+    On hover, only lines that pass through the hovered cluster are highlighted \subimage{c}.
+    }
+    \label{fig:Step3Interaction}
+\end{figure}
+
+\begin{figure*}[!t]
+    \centering
+    \includegraphics[width=0.95\textwidth]{step3.pdf}
+    \caption{
+        The visual interface to support the last step --- \step{S3} Analyze. 
+        %
+        Each selected model run is displayed as a distribution over the \textit{Annotated SOM Node Space} \subimage{1} and the breakdown of the distribution over the annotations are displayed in the Characteristic View \subimage{2}.
+        %
+        To support comparison, this main interface also supports a side-by-side comparison (\cref{fig:sidebyside}) but also as a vector field \subimage{3}.
+        %
+        Lastly, to support clustering of model runs or GCMs by forcing, the circuit-line diagram displays the monthly clustering results and their evolution \subimage{4}. 
+        %%
+        %First, in \highlight{1}, the user wishes to inspect a single model run: \req{R1}. 
+        %%
+        %The user can select a ensemble model run \subimage{3a} and view that model run as a distribution over the \textit{Annotated SOM Node Space} \subimage{3b}. 
+        %%
+        %Furthermore, given the annotations provided in \step{S2}, they are presented with a breakdown of the model run, here for January over time \subimage{3c}. 
+        %%
+        %The user can also inspect the list of the currently selected model \subimage{3d}. 
+        %%
+        %To support comparisons \req{R2}, we offer two visual interfaces, \highlight{2} and \highlight{3}, to support comparison as a side-by-side and via a vector field respectively. 
+        %%
+        %Of note is the comparison as a vector field in \highlight{3} where the user can inspect the comparison as a \textit{transition} from Selection 1 to Selection 2 \subimage{3e} and the interface provides a Sankey-like diagram to visualize out best estimate of transitions across the user-provided annotations. 
+        %%
+        %Finally \req{R3} is supported via a monthly clustering visualization \highlight{4}. 
+        %%
+        %\subimage{3f} and \subimage{3g} display the two variants of clusterings and the results as a circuit-line diagram connecting the per-month clustering results, placed according to 1D MDS results.
+        %%
+        %Interaction design and details are provided in \cref{fig:Step3Interaction} and \cref{sec:Step3Inteface}.
+    }
+    \vspace{-0.15in}
+    \label{fig:Step3}
+\end{figure*}
+
+
+Each monthly cluster is represented as a box and the model runs are visualized as lines through the boxes, indicating its cluster membership for the given month.
+%
+The cluster boxes are colored according to the cluster's mean anomaly, and the lines according to the model run's SSP.
+%
+We compute a 1D MDS with intercluster distances as the distance matrix for each month, and the cluster boxes are placed according to this result.
+%
+Therefore, for every month, more similar clusters are placed closer together and less similar clusters further apart. 
+%
+In the clustering diagrams, tracing each line provides a sense of the evolution of the clustering results over the months.
+%
+% The lines can be filtered via the user's selection via \subimage{3h} and 
+To support the investigation of the behavior of each cluster, clicking on a cluster will trigger the display of the data of that cluster as seen in \cref{fig:Step3Interaction}. 
+%
+Furthermore, to support the user in understanding if there are inter-month relationships between the clusters, we implement a hover interaction as well, by allowing the user to filter the lines based on those that pass through that hovered cluster.
+%
+A similar visual encoding supports the second variant of clustering--GCMs by forcing.
+%
+For this variant, each line represents GCMs instead of model runs as the GCMs are the subject of clustering.
+
+% and we include the circuit-line diagram for this in the Appendix.
+
+
+
+\noindent
+\quad\textit{Justification:}\,\, As seen in works like \cite{jackle2016temporal} where a number of independent clustering results are the subject of analysis \textit{and} any salient trends across them, we apply a similar approach utilizing 1D MDS for placement.
+%
+Supporting the analysis of inter-month relationships in addition to the per-month clustering results was a key interest expressed by our domain expert, and thus we choose this design. 
+
+
+
+
+

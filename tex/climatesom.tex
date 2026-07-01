@@ -1,0 +1,42 @@
+In this chapter, I turn to the second facet of multifaceted geospatial data: its \emph{ensemble variability}.
+%
+Climate projections rarely arrive as a single forecast; instead, large ensembles of model runs each trace a plausible spatiotemporal future, varying both from the systematic forcings scientists wish to study and from the chaotic internal variability of the climate system.
+%
+Conventional statistical summaries such as spatial means and variances compress this richness, often obscuring the very spatial and temporal structures that distinguish one plausible future from another.
+%
+To reconcile this, I present \emph{ClimateSOM}, a visual analysis workflow that abstracts the members of a spatiotemporal ensemble into a distribution over a self-organizing-map-defined, user-steerable 2D space, supporting the exploration, comparison, and clustering of model behavior with LLM-assisted sensemaking.
+%
+I evaluate ClimateSOM through case studies on LOCA-downscaled CMIP6 projections over the western United States and an expert review with domain scientists.
+%
+The workflow lets an analyst explore and \emph{compare} the behavior of model runs, but it leaves a central question unanswered: whether the comparisons it surfaces are statistically significant or merely apparent.
+%
+To this end, I extend the workflow from exploration to inference.
+
+In the second section of this chapter, I extend ClimateSOM with a statistical testing schema built on the Earth Mover's Distance, aiming to determine---with statistical significance---whether the \emph{distribution} of spatial precipitation patterns, and the co-variability between regions, is expected to change under a changing climate.
+%
+I demonstrate this extension on the co-variability between California's Sacramento Bay-Delta Watershed and U.S. West Coast precipitation, where I find a strengthening departure from historical relationships that I term ``decoherence.''
+%
+The remainder of this chapter develops the motivation, design, and assessment of both the workflow and its inferential extension in detail.
+
+\section{ClimateSOM --- The workflow}\label{sec:climatesom-workflow}
+\subsection{Introduction}\label{sec:intro}
+\input{tex/climatesom/1_intro}
+\subsection{Related Works}\label{sec:relworks}
+\input{tex/climatesom/2_relworks}
+\subsection{Problem Characterization}\label{sec:problem}
+\input{tex/climatesom/3_problem}
+\subsection{ClimateSOM}\label{sec:workflow}
+\input{tex/climatesom/4_workflow}
+\subsection{The Visual Interface}
+\input{tex/climatesom/5_interface}
+\subsection{Evaluation}
+\input{tex/climatesom/6_usecases}
+\subsection{Expert Feedback}
+\input{tex/climatesom/7_feedback}
+% \subsection{Discussion}
+% \input{tex/8_discussion}
+\subsection{Conclusion}
+\input{tex/climatesom/9_conclusion}
+
+% Extending ClimateSOM (formerly its own chapter) is the chapter's second section.
+\input{tex/agu.tex}

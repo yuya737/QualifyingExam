@@ -1,0 +1,72 @@
+\subsubsection{LOCA2-Downscaled Climate Projections}
+We analyze precipitation projections from 15 CMIP6 global climate models~\cite{eyring2016overview} (Table~\ref{tab:models}) downscaled to 6-km resolution over the contiguous United States using the Localized Constructed Analogs (LOCA2) method~\cite{pierce2014statistical,pierce2015improved,pierce2023future}.
+%
+LOCA2 provides monthly precipitation fields for historical (1950-2014) and future (2015-2100) periods under three Shared Socioeconomic Pathways: SSP2-4.5, SSP3-7.0, and SSP5-8.5~\cite{riahi2017shared}.
+%
+We also consider the first and second halves of the future period separately (2015-2057 and 2058-2100) to examine how decoherence evolves over time.
+%
+We consider two regions: the Sacramento Bay-Delta Watershed, a critical hydrological hub in California, and the broader U.S. West Coast region, encompassing coastal and inland areas from Washington to California (Figure~\ref{fig:regions}).
+
+\begin{table}
+\centering
+\begin{tabular}{lccccc}
+\hline
+GCM & Variant & Historical & SSP2-4.5 & SSP3-7.0 & SSP5-8.5 \\
+\hline
+ACCESS-CM2       & r1i1p1f1 & \checkmark & \checkmark & \checkmark & \checkmark \\
+CESM2-LENS       & r1i1p1f1 & \checkmark & \checkmark & \checkmark & \checkmark \\
+CNRM-ESM2-1      & r1i1p1f2 & \checkmark & --         & \checkmark & --         \\
+EC-Earth3-Veg    & r1i1p1f1 & \checkmark & \checkmark & \checkmark & \checkmark \\
+EC-Earth3        & r1i1p1f1 & \checkmark & \checkmark & \checkmark & \checkmark \\
+FGOALS-g3        & r1i1p1f1 & \checkmark & \checkmark & \checkmark & \checkmark \\
+GFDL-ESM4        & r1i1p1f1 & \checkmark & \checkmark & \checkmark & \checkmark \\
+HadGEM3-GC31-LL  & r1i1p1f3 & \checkmark & \checkmark & --         & \checkmark \\
+INM-CM5-0        & r1i1p1f1 & \checkmark & \checkmark & \checkmark & \checkmark \\
+IPSL-CM6A-LR     & r1i1p1f1 & \checkmark & \checkmark & \checkmark & \checkmark \\
+KACE-1-0-G       & r1i1p1f1 & \checkmark & \checkmark & \checkmark & \checkmark \\
+MIROC6           & r1i1p1f1 & \checkmark & \checkmark & \checkmark & \checkmark \\
+MPI-ESM1-2-HR    & r1i1p1f1 & \checkmark & \checkmark & \checkmark & \checkmark \\
+MRI-ESM2-0       & r1i1p1f1 & \checkmark & \checkmark & \checkmark & \checkmark \\
+TaiESM1          & r1i1p1f1 & \checkmark & \checkmark & \checkmark & --         \\
+\hline
+\end{tabular}
+\caption{Global climate models (GCMs) used in this study and their availability across SSP scenarios. Variant labels follow CMIP6 convention; absent combinations are marked with a dash and were unavailable at the time of the study.}
+\label{tab:models}
+\end{table}
+
+\subsubsection{Data Preprocessing and Anomaly Calculation}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\textwidth]{west_coast_boundaries.pdf}
+    \caption{Study region showing the Sacramento–Bay Delta Watershed (red) and the broader U.S. West Coast analysis domain (blue) used for examining precipitation co-variability.}
+    \label{fig:regions}
+\end{figure}
+
+To isolate distributional changes from model biases and inter-model spread, we compute precipitation anomalies at each grid cell.
+%
+Here, we define the anomaly as the difference between the modeled precipitation, relative to the monthly climatology averaged across all 15 GCM models over the historical period (1950-2014).
+%
+This ensures our analysis detects shifts in spatial pattern distributions rather than absolute magnitude differences between models.
+
+As in the original ClimateSOM, ensuring a pseudo-smooth set of SOM nodes that capture the full range of variability in the dataset is critical for characterizing the distribution of spatial patterns.
+%
+To this end, each monthly anomaly field is normalized by dividing by the standard deviation computed across all spatial locations, all SSP scenarios, all years, and all models for that specific month.
+%
+This normalization step is crucial for the SOM to learn meaningful patterns across months with different variability scales, preventing it from being dominated by months with higher variance.
+%
+Finally, we apply a signed-logarithm transformation to ensure negative and positive anomalies are equally represented in the SOM space.
+%
+Without transformation, the heavy positive tail of precipitation anomalies produces input vectors with extreme magnitudes that disproportionately influence SOM weight updates, causing the learned map to allocate excess capacity to representing rare extreme-wet states.
+%
+The signed-log compresses this asymmetry while preserving sign.
+
+In all, for any precipitation field $p$ at month $m$ we compute the transformed anomaly $p_m'$:
+\begin{linenomath*}
+\begin{equation*}
+    p_m' = \text{sign}(a_m) \cdot \log(|a_m| + 1), \quad a_m = \frac{p - \bar{p}_m}{\sigma_m}
+\end{equation*}
+\end{linenomath*}
+where $\bar{p}_m$ is the historical monthly climatology (1950-2014) averaged across all 15 models for month $m$, and $\sigma_m$ is a scalar standard deviation computed across all spatial locations, SSP scenarios, years, and models for month $m$.
+%
+All transformed fields $p_m'$ across models, months, and time periods are pooled to train the SOM, ensuring it captures the full range of spatial patterns in the dataset.
+

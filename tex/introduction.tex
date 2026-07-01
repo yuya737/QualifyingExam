@@ -1,0 +1,134 @@
+% Fallback so this file compiles even when the fixnotes package is not loaded.
+% \providecommand only defines \fix if it is not already defined elsewhere.
+\providecommand{\fix}[1]{\textbf{#1}}
+
+\section{Motivation}
+%
+Geospatial data---data imbued with a reference to a location on the Earth's surface---is ubiquitous and underlies many of the most pressing scientific and societal challenges of our time from public health~\cite{zhang_visualization_2023} to climate change~\cite{eyring2016overview}.
+%
+Decisions ranging from where to allocate water in a drought-stricken region, to how a community should prepare for the next flood, to how we adapt to climate change impacts as they unfold, are, at their core, decisions made against a backdrop of geospatial data.
+
+Yet this ubiquity comes with a challenge.
+%
+As our capacity to sense, simulate, and store information about the world has expanded, both the \emph{scale} and the \emph{complexity} of geospatial data have grown rapidly, ushering in the so-called \emph{Geospatial Big Data} era~\cite{wu_geosptial_2024}.
+%
+A single phenomenon is now routinely captured across many interacting variables, many simulation instances, and many heterogeneous data modalities, each adding a distinct dimension of complexity that an analyst must contend with before any insight can be drawn.
+%
+Compounding this, recent advances in Geospatial AI (GeoAI) have introduced a new source of both opportunity and complexity in the form of geospatial foundation models, led by the likes of Google's AlphaEarth~\cite{brown_alphaearth_2025} and NASA's Prithvi~\cite{szwarcman2024geospatial}.
+%
+While these information-rich embeddings show great promise for advancing geospatial applications~\cite{bell_earth_2026}, they also raise new questions of their own: how can we best leverage them for downstream tasks, and how can we ensure that the resulting models remain interpretable and physically meaningful?
+%
+% In all, modern geospatial data is hungry for advances in better analytic and communication tools 
+
+% The "facet" framing -- introduce the facet VA survey here.
+This growth, therefore, is not along any single axis of complexity but across many \textit{facets} of geospatial data, where a \emph{facet} is a particular way in which data can be complex, each one adding to the difficulty of analysis.
+%
+I borrow this notion from Kehrer and Hauser, whose comprehensive survey of \emph{multifaceted} scientific data~\cite{kehrer_visualization_2013} formalizes a taxonomy consisting of five facets: spatiotemporal, multivariate, multimodal, multirun, and multimodel.
+%
+Geospatial data, I argue, is no exception: it is frequently multivariate~\cite{strode2020bivariate}, ensemble-valued~\cite{kehrer2013visualization}, multimodal~\cite{wu_geosptial_2024}, and uncertain~\cite{maceachren2005visualizing}, often simultaneously.
+%
+As Kehrer and Hauser reports, and long recognized in the community, no single, one-size-fits-all solution serves every facet; each application domain and facet demands its own treatment.
+%
+Supporting analysis and communicating insights \textit{across} these facets remains a significant and largely open challenge.
+
+% Visual analytics as the tool, and a brief history rooted in cartography.
+This challenge, however, is far from new. The task of communicating insights from geospatial data long predates the modern field of \emph{visualization}, with deep roots in cartography, which has for centuries studied the varied ways to communicate geospatial data, often on a map~\cite{bertin1983semiology, Tyner_2014}.
+%
+Classical techniques like the choropleth map remain effective and remarkably widespread owing to their simplicity, and cartographers have developed numerous creative encodings for geospatial data over the years~\cite{eyton1984complementary,olson1981spectrally,wainer_empirical_1980,strode_exploratory_2020,schloss_mapping_2019}.
+%
+Tufte in his seminal book \emph{The Visual Display of Quantitative Information} presents numerous such examples, including Charles Joseph Minard’s flow map of Napoleon’s 1812 Russian campaign, often discussed and introduced in introductory visualization classes for its creativity and efficacy~\cite{tufte2001visual}.
+
+Yet increasingly, these techniques fall short: a static map struggles to convey multiple interacting variables or the spread across an ensemble of model runs, or the output of a predictive model that fuses many data modalities.
+%
+It is precisely this gap---between the complexity of modern geospatial data and the expressiveness of classical cartography---that necessitates \emph{visual analytics}, the science of analytical reasoning facilitated by interactive visual interfaces, as a means of analysis.
+%
+This proposal aims to respect existing analytics methods in the respective application domains and identify where and what novel analytics methods can provide.
+%
+The central question I seek to address in this proposal is thus:
+
+\begin{quote}
+\emph{In the face of ever increasing complexity of geospatial data along its many facets, how can we support its analysis? What role can Visual Analytics play?}
+\end{quote}
+\noindent
+To this end, I focus on three facets of complexity: (1) multivariate structure, (2) ensemble variability, and (3) multimodality and predictive modeling, offering techniques and methods to support analysis along each.
+
+\section{Facets of Geospatial Data}
+%
+I now expand on each of the three facets introduced above, what makes it difficult to analyze, and where existing approaches fall short, framing in each case the open challenge that the corresponding chapter takes up.
+%
+\paragraph{Multivariate Structure}
+%
+Geospatial phenomena are rarely described by a single variable; multivariate geospatial data is ubiquitous, arising across domains from public health to ecology and water management.
+%
+However, crucially, the analytic value often lies not in any single variable but in the \emph{interactions} among them--- how, for instance, unmet water demand, unmet water demand relative to historical baselines, and groundwater levels co-vary across space---which a visualization must surface rather than obscure.
+%
+Yet visualizing several variables together on a map while respecting the strict graph schema that viewers expect of maps~\cite{pinker1990a, hografer2020state} remains difficult.
+%
+Here, \emph{graph schema} refers to the graphic convention or prior knowledge about a visualization that a viewer uses to help interpret the visualization.
+%
+Padilla suggests that visualization comprehension can be understood as a process of matching the visual description of the visualization to the graph scheme~\cite{padilla_case_2018,padilla_decision_2018}.
+%
+However, the graph schema of maps is particularly strict relative to other visualizations: viewers expect that the spatial position of a mark corresponds to its geographic location, and any distance above maps in a 3D visualization is immediately associated with altitude.
+%
+This strict graph schema imposed on maps is a double-edged sword: it makes maps instantly legible, but it also reserves the most salient visual channel---spatial position~\cite{Munzner_2015}---for geography itself, leaving little room to encode additional variables and pushing designers toward color, the very channel least suited to conveying several quantities at once.
+%
+This is further complicated when the variables are expressed across \textit{differing spatial discretizations}, giving rise to issues such as the Modifiable Areal Unit Problem (MAUP)~\cite{fotheringham1991modifiable}.
+%
+The open challenge, then, is to encode many variables and their interactions \emph{without} violating the spatial expectations that make a map readable in the first place, and to do so robustly across the differing discretizations real-world geospatial data arrives in.
+
+\paragraph{Ensemble Variability}
+%
+Many scientific workflows produce not a single dataset but an \textit{ensemble}: a collection of model runs that are fundamentally similar yet meaningfully distinct~\cite{wang_visualization_2019, kehrer_visualization_2013}.
+%
+By varying models, parameters, and inputs, an ensemble lets scientists explore the range of possible outcomes, probe sensitivity, and quantify uncertainty; but each member is itself a full spatiotemporal field, and the systematic signal of interest is entangled with member-to-member noise, making the ensemble as a whole difficult to interpret.
+%
+This difficulty is compounded by the chaotic nature of the underlying systems: alongside the forced response that scientists seek to characterize, each run carries an unknown amount of internal variability that cannot be cleanly disentangled from the signal.
+%
+Understanding the variability among ensemble members is central to climate science in particular, where it underpins our understanding of plausible climate futures~\cite{eyring2016overview}.
+%
+The canonical example is a multi-model ensemble such as CMIP6, the Coupled Model Intercomparison Project, which spans dozens of global climate models run under several emissions and socioeconomic scenarios. 
+%
+Each produces its own trajectory of the future, and successive generations have swelled the ensemble to a scale that direct, run-by-run inspection cannot keep pace with.
+%
+Yet standard practice often collapses an ensemble into summary statistics such as spatial means and variances, which obscure the very spatial and temporal structure that distinguishes one plausible future from another, leaving the core tasks of exploring a single run, comparing two, and clustering many only partially supported.
+%
+The shortcoming runs deeper than visualization alone: even the dominant statistical tools, from comparisons of mean states to modal decompositions such as Empirical Orthogonal Functions~\cite{hannachi2007empirical}, characterize an ensemble through low-order moments or linear modes, and can therefore miss how the \emph{distribution} of realized spatial patterns reorganizes under a changing climate.
+%
+And, even if such statistical tools can detect \emph{significant} changes, characterizing the \emph{nature} of those changes---the spatial patterns that emerge, the regions that are most affected, and the timescales over which they occur---remains a challenge.
+%
+The open challenge, then, is to make the full distribution of ensemble behavior explorable and comparable---and to support claims drawn from it that are statistically defensible rather than merely apparent to the eye.
+
+\paragraph{Multimodality and Predictive Modeling}
+%
+Increasingly, geospatial analysis requires fusing heterogeneous, multimodal data sources and learning predictive models on top of them.
+%
+These sources: satellite imagery, terrain descriptors, hydrometeorological time series, and sparse observational records, differ in resolution, modality, and reliability, so combining them into a coherent predictive signal is itself a substantial modeling challenge.
+%
+The difficulty is sharpened by supervision: the prediction targets of greatest interest are often observed only sparsely and indirectly, so a model must often learn from noisy, uncertain proxies rather than clean ground truth.
+%
+Geospatial foundation models offer a partial answer, distilling vast Earth-observation archives into dense, general-purpose embeddings that can be reused across tasks~\cite{brown_alphaearth_2025}; but these embeddings arrive as opaque feature vectors, trading the transparency of hand-crafted descriptors for breadth of coverage.
+%
+This exposes a deeper tension: as predictive accuracy improves, interpretability tends to degrade, which is directly at odds with the understanding that analysts and decision-makers need in order to trust and act on a forecast.
+%
+The usual recourse is post-hoc attribution---saliency maps or feature-importance scores applied after training---but such methods explain individual predictions rather than revealing the structure a model has actually learned~\cite{rudin_stop_2019}.
+%
+The open challenge, then, is twofold: to fuse complementary modalities into an accurate predictive model, and to do so in a way that keeps the model's reasoning legible \emph{by design}---interpretable enough for analysts to interrogate, trust, and ultimately act on, rather than explained away after the fact.
+
+
+\section{Content Overview}
+%
+The remainder of this dissertation proposal is organized as follows. Each of the three facets above is developed in full in its own chapter, followed by a chapter outlining future work and conclusions.
+
+\begin{itemize}[topsep=2pt, leftmargin=*]
+    \item \textbf{Chapter~\ref{chp:hextiles}} develops the multivariate-structure thread. I introduce HexTiles, a domain-agnostic hexagonal-tiling encoding that combines semantic icons with hexagonal tessellation to render several variables and the interactions among them on a single map while preserving its spatial schema, and that stays faithful across data of differing spatial discretizations and qualities. By aggregating to a shared tessellation, HexTiles directly confronts the
+        Modifiable Areal Unit Problem, surfacing within-tile variability through confidence encodings rather than hiding it. I evaluate the design with a controlled user study, qualitative feedback and an expert review with ecologists and hydrologists, through case studies in California water management and Texas presidential-election data. 
+    \item \textbf{Chapter~\ref{chp:climatesom}} develops the ensemble-variability thread. I introduce ClimateSOM, a visual analysis workflow that abstracts a spatiotemporal climate ensemble into a distribution over a steerable two-dimensional space framed by a self-organizing map, supporting the three core tasks of exploring a single run, comparing two, and clustering many. It integrates large language models for bidirectional querying, locating regions of the space from natural-language descriptions and summarizing selected regions in text. I demonstrate it on LOCA-downscaled CMIP6 projections over two regions of the western United States and evaluate it with six domain scientists.
+        \begin{itemize}
+    \item \textbf{Section~\ref{sec:agu}} (within the ClimateSOM chapter) turns that workflow from exploration to inference. I extend ClimateSOM with a permutation-based hypothesis test built on the Earth Mover's Distance, together with a within-year coherence test and a clustering-based decomposition that attributes shifts to reorganization among identifiable pattern clusters. Applying it to the co-variability between California's Sacramento--San Joaquin Bay-Delta and broader U.S. West Coast
+        precipitation in LOCA2-downscaled CMIP6 (15 models, three emission scenarios), I find that the historical conditioning between the two regions is significantly departing from the past. I term this as a  ``decoherence'' find that strengthens under higher emissions and longer horizons and is most pronounced in spring.
+        \end{itemize}
+    \item \textbf{Chapter~\ref{chp:deluge}} develops the multimodality-and-predictive-modeling thread. I present DELUGE, to my knowledge the first end-to-end learned system for daily, ${\sim}1$\,km insured pluvial flood-damage prediction across the highest-claim regions of CONUS. A multimodal convolutional model trained on National Flood Insurance Program (NFIP) insurance claims, DELUGE routes Earth-observation foundation-model embeddings (AlphaEarth) and terrain descriptors through physics-shaped Value and Temporal Modulators
+        whose learned parameters are themselves hydrologically meaningful, yielding interpretability by design. It outperforms tuned tree-based baselines, with the largest gains on the high-cost claims that matter most. I consider this the base predictive model for a visual analytics system that will allow stakeholders, insurers, emergency managers, to understand DELUGE's pluvial flood damage predictions and interrogate its reasoning.
+    \item \textbf{\fix{ref} --- Future Research Plans and Conclusion} outlines two remaining directions---a visual analytics system to accompany DELUGE that uses explainable AI to illuminate its predictions, and a continued investigation of the spatial co-occurrence of extreme climate events---and concludes. Taken together, this dissertation advances visual analytics as a tool for complex geospatial analysis, with particular focus on imminent environmental challenges.
+\end{itemize}
+

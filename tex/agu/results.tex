@@ -1,0 +1,352 @@
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{som_grid_7x7.pdf}
+    \caption{An evenly selected 7$\times$7 grid of SOM nodes from the trained ClimateSOM, showing the spatial precipitation anomaly patterns associated with each node. Values are in the log-standardized anomaly space used for training as  described in Section~\ref{subsec:agu-methods}. Broadly the SOM extracts two axes of change: (1) the North-South axes of wetness and dryness and (2) overall wetness and dryness across the entire West Coast. Each SOM node is projected via
+    UMAP~\cite{mcinnes2018umap} and its projected position is used to represent any precipitation anomaly pattern in the dataset.
+    \label{fig:som_grid}}
+\end{figure}
+% \subsection{Changes in Bay-Delta Wet and Dry Year Frequency}
+%
+% Before examining distributional changes in spatial patterns, we first test whether the frequency of Bay-Delta wet and dry water years is itself changing under climate scenarios.
+% %
+% Table~\ref{tab:wy_frequencies} shows the proportion of water years classified as dry (below 25th percentile) or wet (above 75th percentile) based on Bay-Delta accumulated precipitation across all 13 models for each scenario and time period.
+% %
+% Fisher's exact test reveals significant shifts in these proportions under higher emissions and in the late-century period.
+% %
+% SSP2-4.5 and SSP3-7.0 in the second half of the century show both a decrease in dry year frequency and a significant increase in wet year frequency, with wet years comprising 35.89\% and 32.75\% of water years respectively compared to the historical 25.00\%.
+% %
+% However, most notably, such changes do not occur under the highest emissions scenario (SSP5-8.5), where dry and wet year frequencies remain statistically indistinguishable from historical proportions in both future periods.
+% %
+% \shortnote{Whats this about?}
+%
+%
+% \begin{table}
+% \centering
+% \caption{Frequency of Bay-Delta dry and wet water years across scenarios and time periods. Bold values differ significantly from historical proportions (Fisher's exact test, $p < 0.05$).}
+% \label{tab:wy_frequencies}
+% \begin{tabular}{c c c c}
+% \hline
+% Scenario & Period & Dry Model-Years (\%) & Wet Model-Years (\%) \\
+% \hline
+% Historical & 1950--2014 & 25.10 & 25.00 \\
+% \hline
+% SSP2-4.5 & Early (2015--2057) & 21.59 & 26.79 \\
+%          & Late (2058--2100) & \textbf{20.21} & \textbf{35.89} \\
+% \hline
+% SSP3-7.0 & Early (2015--2057) & 25.16 & 26.62 \\
+%          & Late (2058--2100) & \textbf{23.52} & \textbf{32.75} \\
+% \hline
+% SSP5-8.5 & Early (2015--2057) & 24.13 & 27.10 \\
+%          & Late (2058--2100) & 24.58 & 29.46 \\
+% \hline
+% \multicolumn{4}{l}{\footnotesize Dry: $<$25th percentile; Wet: $\geq$75th percentile of historical distribution}
+% \end{tabular}
+% \end{table}
+
+\subsubsection{Historical Model Evaluation Against Observations}
+
+Before examining future changes, we evaluate whether the CMIP6 models capture observed historical co-variability patterns by comparing each model's historical period (1950-2014) against Livneh gridded observational data (1950-2014)~\cite{pierce2021extreme}, both as an (1) validation of each GCM to adequately \emph{replicate} historical patterns and (2) as a validation of our methodology.
+%
+We apply the same EMD-based permutation test to compare West Coast precipitation pattern distributions conditioned on Bay-Delta wet and dry years between Livneh observations and each GCM's historical simulation.
+%
+Figure~\ref{fig:livneh_unsplit_pvalues} shows p-values for these comparisons across months and conditioning states.
+%
+Most models show no significant decoherence from observations for most months, indicating that the models generally capture the historical co-variability structure between Bay-Delta regime and West Coast spatial patterns.
+%
+This provides confidence that detected future changes represent genuine reorganization signals rather than model artifacts.
+%
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=\textwidth]{livneh_pvalue_table.pdf}
+%     \caption{P-values from EMD permutation tests comparing Livneh observed precipitation patterns (1950-2011) against each CMIP6 model's historical simulation (1950-2014). Non-significant p-values indicate models that show no significant signs of deviations.}
+%     \label{fig:livneh_pvalues}
+% \end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{livneh_unsplit_pvalue_table.pdf}
+    \caption{P-values from EMD permutation tests comparing Livneh unsplit observed precipitation patterns (1950-2014) against each CMIP6 model's historical simulation (1950-2014). Non-significant p-values indicate models that show no significant signs of deviations.}
+    \label{fig:livneh_unsplit_pvalues}
+\end{figure}
+
+\subsubsection{Welch t-test based hypothesis testing results}\label{ssec:t_test_results}
+To assess the validity of our EMD-based decoherence test, we compare its results against a standard parametric approach using Welch's t-test on mean West Coast precipitation anomalies.
+%
+Welch's variant does not assume equal variances, an appropriate choice given the differing sample sizes and variance characteristics across periods and scenarios.
+
+The two tests address related but distinct questions.
+%
+The t-test detects shifts in the mean magnitude of anomalies between periods, whereas the EMD test detects shifts in the distribution of spatial patterns themselves.
+%
+Agreement between the two provides converging evidence of distributional change; disagreement would highlight cases where pattern composition shifts without a corresponding shift in mean intensity.
+
+We compute the t-test for each combination of month, scenario, and conditioning state, comparing all grid-point anomalies in the West Coast domain between historical and future periods.
+%
+Results appear alongside the EMD results in Figure~\ref{fig:combined_pvalues}.
+%
+Broadly, the two tests show consistent significance patterns, supporting the validity of our EMD-based approach.
+%
+Across all 96 test cells (3 SSP scenarios $\times$ 2 future half-periods $\times$ 2 Bay-Delta conditioning states $\times$ 8 months), the two tests reach the same significance verdict at $p < 0.05$ in 71 cases (74\%), as summarized in Table~\ref{tab:emd_welch_agreement}.
+%
+Critically, the disagreements are highly asymmetric: in 22 of the 25 discordant cells the EMD test detects a significant distributional shift where the Welch t-test does not, whereas the reverse occurs in only 3 cells.
+%
+This asymmetry is consistent with our central premise, that the spatial composition of precipitation patterns can reorganize without a detectable change in mean intensity, and that such reorganization is visible to a distributional test yet invisible to a mean-based one.
+%
+\begin{table}[t]
+    \centering
+    \begin{tabular}{lccc}
+        \toprule
+        & \multicolumn{2}{c}{Welch t-test} & \\
+        \cmidrule(lr){2-3}
+        & Significant & Not significant & Total \\
+        \midrule
+        EMD significant     & 19 & 22 & 41 \\
+        EMD not significant & 3  & 52 & 55 \\
+        \midrule
+        Total               & 22 & 74 & 96 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Agreement between the EMD-based permutation test and the Welch t-test across all 96 test cells (3 SSP scenarios $\times$ 2 future half-periods $\times$ 2 Bay-Delta conditioning states $\times$ 8 months), with each cell classified as significant or not at $p < 0.05$. The tests agree in 71 of 96 cells (74\%): 19 jointly significant and 52 jointly non-significant. Of the 25 disagreements, 22 are cells where the EMD test detects a distributional shift that the mean-based Welch test misses, and only 3 are the reverse.}
+    \label{tab:emd_welch_agreement}
+\end{table}
+%
+The following sections focus on the EMD-based analysis.
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=\textwidth]{welch_pvalue_table.pdf}
+%     \caption{P-values from Welch t-tests comparing mean West Coast precipitation anomalies conditioned on Bay-Delta wet and dry years between historical (1950-2014) and future periods (2015-2057, 2058-2100) across three SSP scenarios }
+%     \label{fig:t_test_pvalues}
+% \end{figure}
+
+\subsubsection{EMD-based hypothesis testing results}
+In the following section, we evaluate the future vs historical West Coast precipitation distributional differences using our ClimateSOM extended EMD-based method, instead of considering the mean of all precipitation anomaly patterns as was performed above ~\ref{ssec:t_test_results}.
+% 
+Again the precipitation patterns are conditioned upon Bay-Delta watershed precipitation being wet or dry.
+%
+Our permutation tests reveal significant decoherence in West Coast precipitation pattern distributions conditioned on Bay-Delta regime from historical to future periods (Figure~\ref{fig:combined_pvalues}).
+%
+The magnitude and timing of decoherence depend systematically on emission scenario, time horizon, conditioning state (wet vs. dry), and month.
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=\textwidth]{pvalue_table.pdf}
+%     \caption{P-values from Earth Mover's Distance permutation tests (1,000 permutations) comparing distributions of West Coast spatial precipitation patterns conditioned on Bay-Delta wet and dry years between historical (1950-2014) and future periods. Results span 13 CMIP6 models aggregated, three SSP scenarios (rows), two future time periods (early: 2015-2057, late: 2058-2100), Bay-Delta wet and dry conditioning states, and eight months (Oct-May). Significant decoherence ($p < 0.05$) strengthens with higher emissions, later time horizons, and varies systematically by month and conditioning state.}
+%     \label{fig:pvalues}
+% \end{figure}
+
+\begin{sidewaysfigure}
+    \centering
+    \includegraphics[width=\textwidth]{combined_pvalue_table.pdf}
+    \caption{Combined p-values from Welch t-tests and EMD-based permutation tests comparing historical and future distributions of West Coast precipitation patterns conditioned on Bay-Delta wet and dry years. }
+    \label{fig:combined_pvalues}
+\end{sidewaysfigure}
+
+Decoherence strengthens from early-century to late-century periods.
+%
+In the early future period (2015-2057), Bay-Delta dry years show emerging decoherence primarily in October and April-May under higher emissions (SSP5-8.5: $p = 0.000$ in October, $p = 0.017$ in April), while wet years show weaker signals with only scattered significant months.
+%
+Table~\ref{tab:emd_sig_counts} summarizes this progression by tallying, for each scenario and conditioning regime, the number of months (out of eight, October--May) that exhibit significant distributional divergence ($p < 0.05$) under the EMD test.
+%
+The tally of significant months more than doubles from the early to the late period, from 13 to 28 summed across all scenarios and conditioning states, confirming that decoherence broadens across the wet season as the century progresses rather than remaining confined to a handful of months.
+%
+The signal also grows monotonically with emissions within nearly every period-regime block and is consistently stronger in dry-year than wet-year conditioning during the first half, with wet years catching up only in the late century.
+
+\begin{table}[t]
+    \centering
+    \begin{tabular}{lcccc}
+        \toprule
+        & \multicolumn{2}{c}{First-Half (2015--2057)} & \multicolumn{2}{c}{Second-Half (2058--2100)} \\
+        \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+        Bay-Delta Conditioning & Dry & Wet & Dry & Wet \\
+        \midrule
+        SSP2-4.5 & 3 & 1 & 5  & 4  \\
+        SSP3-7.0 & 2 & 1 & 4  & 4  \\
+        SSP5-8.5 & 4 & 2 & 6  & 5  \\
+        \bottomrule
+    \end{tabular}
+    \caption{Number of months (out of eight, October--May) with significant EMD-based distributional divergence ($p < 0.05$) between historical and future West Coast precipitation pattern distributions, by SSP scenario, future half-period, and Bay-Delta conditioning regime.}
+    \label{tab:emd_sig_counts}
+\end{table}
+
+%
+The late-century period (2058-2100) reveals widespread decoherence across both conditioning states.
+%
+For Bay-Delta dry years, fall and early winter months (October-January) show strong significance across all SSP scenarios, particularly under SSP3-7.0 and SSP5-8.5, and spring months (April-May) maintain significance across scenarios.
+
+Bay-Delta wet years in the late period exhibit the strongest reorganization signals.
+%
+Under SSP5-8.5, late winter through spring (March-May) shows highly significant decoherence ($p = 0.000$ for all three months), with additional shifts in November ($p = 0.003$) and February ($p = 0.019$).
+%
+SSP3-7.0 shows similar spring decoherence (April-May: $p = 0.000$) and significant shifts in November ($p = 0.007$) and February ($p = 0.000$).
+%
+Additionally, SSP2-4.5 shows significant late-century wet-year decoherence in March-May.
+
+Winter core months (December-January) generally show weaker signals, particularly for wet years.
+%
+This may indicate that mid-winter co-variability is undergoing intensification of existing spatial patterns rather than compositional reorganization; such changes would not be detected by our BMU distribution comparison, as intensified patterns would still map to the same SOM nodes.
+%
+The asymmetry between wet and dry year responses, especially pronounced in the late century, indicates that the Bay-Delta relationship with West Coast patterns is reorganizing in regime-dependent ways rather than through simple uniform shifts.
+%
+These results demonstrate that historical co-variability structures are fundamentally breaking down under climate change, with the rate and character of reorganization varying systematically by emission pathway, time horizon, and regional conditioning state.
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=\textwidth]{median_pvalue.png}
+%     \caption{Median p-values across MIROC6, EC-Earth3-Veg, KACE-1-0-G, ACCESS-CM2, IPSL-CM6A-LR, INM-CM5-0 comparing pooled historical and future ssp370}
+%
+% \end{figure}
+
+
+% is not enough to detect significant differences. I think the best way to show this is to just show the distribution of p-values across models for each cell in Figure 4, but even then I think it will be hard to interpret. Let me know if you want me to try that or if you have other ideas.}
+
+\subsubsection{Visualizing the Overall Spatial Character of Reorganization}\label{ssec:cumulative_change}
+
+Given the significant decoherence detected in the previous section, we now visualize \textit{what} is changing spatially.
+%
+To this end, we compute cumulative change fields where each SOM node's spatial pattern is weighted by the shift in its occupancy frequency.
+%
+For each comparison between distributions $S_1$ (future) and $S_2$ (historical), we calculate the proportion of samples matching each SOM node $i$ in both distributions. 
+\begin{align*}
+    p_{1,i} &= \text{count}(S_1 \text{ matches to node } i)/|S_1| \\
+    p_{2,i} &= \text{count}(S_2 \text{ matches to node } i)/|S_2|
+\end{align*}
+The cumulative change field is then
+\begin{linenomath*}
+\begin{equation*}
+    \text{Cumulative Change} = \sum_{i} (p_{1,i} - p_{2,i}) \cdot W_i
+\end{equation*}
+\end{linenomath*}
+where $W_i$ is the spatial precipitation pattern associated with SOM node $i$.
+%
+Positive values indicate locations whose expected precipitation under the given conditioning is higher in the future than historically; negative values, lower.
+%
+We note that the field is a relative change between historical and future distributions and does not characterize the absolute wetness or dryness of locations as projected in the CMIP6 catalog.
+
+
+\begin{sidewaysfigure}
+    \centering
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{change_mosaic_grid_first_dry.pdf}
+        \caption{Dry Bay-Delta years, early future (2015--2057)}
+        \label{fig:change_mosaic_grid_first_dry}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{change_mosaic_grid_second_dry.pdf}
+        \caption{Dry Bay-Delta years, late future (2058--2100)}
+        \label{fig:change_mosaic_grid_second_dry}
+    \end{subfigure}
+
+    \vspace{0.75em}
+
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{change_mosaic_grid_first_wet.pdf}
+        \caption{Wet Bay-Delta years, early future (2015--2057)}
+        \label{fig:change_mosaic_grid_first_wet}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.49\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{change_mosaic_grid_second_wet.pdf}
+        \caption{Wet Bay-Delta years, late future (2058--2100)}
+        \label{fig:change_mosaic_grid_second_wet}
+    \end{subfigure}
+    \caption{Cumulative change fields of West Coast precipitation relative to the historical period (1950--2014), aggregated across 15 CMIP6 models by month (columns) and SSP scenario (rows within each panel), conditioned on Bay-Delta dry years (top) and wet years (bottom) for the early (left) and late (right) halves of the future period. Positive (teal) values indicate locations wetter in the future than historically under the given conditioning, and negative (brown) values drier; bordered cells denote months with significant distributional divergence ($p < 0.05$).}
+    \label{fig:change_mosaic_grid}
+\end{sidewaysfigure}
+
+%
+%
+%
+%
+
+\subsubsection{Shifting seasonal precipitation in the U.S. West Coast, conditioned on Bay-Delta wet and dry years}
+\paragraph*{Bay-Delta Dry Years}
+Bay-Delta dry years show the strongest decoherence in fall (October-November) and spring (April-May), particularly under higher emissions and in the late future period.
+%
+The cumulative change fields reveal that these changes are primarily driven by a shift of precipitation away from the Bay-Delta Watershed toward the Pacific Northwest, with the exception of May in both periods where Bay-Delta dryness co-occurs with an overall dry U.S. West Coast (Figures~\ref{fig:change_mosaic_grid_first_dry} and~\ref{fig:change_mosaic_grid_second_dry}).
+
+\paragraph*{Bay-Delta Wet Years}
+Bay-Delta wet years show modest decoherence in the early future period, but exhibit more systematic and stronger decoherence in the late future period, particularly under SSP5-8.5.
+%
+The most notable changes occur in spring months (MAM), especially May, where Bay-Delta wet water years associate with a shift toward drier conditions in California and the Sierra Nevada, and wetter conditions in the Pacific Northwest (Figure~\ref{fig:change_mosaic_grid_second_wet}).
+%
+% This suggests that even during anomalously wet water years in the Bay-Delta, spring months may experience relative dryness compensated by wetter conditions in other months of the water year \fix{this needs to be verified}.
+%
+Similar trends appear in November under SSP3-7.0 and SSP5-8.5 in the late future period.
+
+
+\subsubsection{Within-year coherence of cumulative changes}
+The cumulative change fields shown in Figures~\ref{fig:change_mosaic_grid_first_dry},~\ref{fig:change_mosaic_grid_second_dry},~\ref{fig:change_mosaic_grid_first_wet}, and~\ref{fig:change_mosaic_grid_second_wet} represent aggregate patterns computed across all years within each period-condition.
+%
+However, a critical question remains unanswered. 
+%
+Do these spatial patterns actually manifest together within individual water years, or do they emerge only when averaging across the entire period?
+%
+To address this, we test whether the cumulative change patterns are coherently expressed in specific water years at rates higher than expected by chance.
+
+For each (month $m$, condition $c$), we first compute the historical conditional mean anomaly field $\bar{H}_{m,c}$ by averaging historical anomalies for that month and condition.
+%
+For each future month-model-year under condition $c$, we then compute the delta from this baseline:
+\begin{equation*}
+\delta_{m,y,k,c} = a_{m,y,k} - \bar{H}_{m,c}
+\end{equation*}
+This delta is directly comparable to the cumulative change field, since both are deltas relative to historical conditional behavior.
+%
+The subtraction also removes confounding from the historical conditional pattern (for example, the typical wet-year pattern that already existed historically) bleeding into the comparison.
+%
+We then calculate the Pearson correlation between each per-month delta $\delta_{m,y,k,c}$ and the corresponding cumulative change field, and average these monthly correlations across Oct-May for each model-year, yielding a single coherence metric per model-year.
+%
+A model-year with high mean correlation indicates that multiple months within that year exhibit shifts spatially aligned with the cumulative change field.
+
+We use 0.3 as a threshold for identifying model-years with meaningful coherence.
+%
+While modest, this threshold provides a conservative indicator of systematic pattern expression.
+%
+We count the number of model-years exceeding this threshold within each period-condition as our test statistic.
+
+To determine whether the observed counts are statistically significant, we perform another permutation test.
+%
+For each month within a period-condition, we randomly reassign all correlation values for that month across different year-model combinations.
+%
+This shuffling preserves the distribution of correlation values for each month but removes any temporal coherence within individual water years.
+%
+We recalculate model-year mean correlations from these shuffled values and count how many exceed 0.3, repeating this process to build a null distribution.
+%
+Under the null hypothesis that the cumulative changes are purely an aggregate artifact with no systematic expression in individual years, the observed count would be consistent with the null distribution.
+%
+Observed counts significantly exceeding the null distribution indicate that specific water years do indeed exhibit the cumulative change patterns coherently across multiple months.
+% we perform a permutation test on the count of year-model groups with mean correlation $> 0.3$ between the change fields for each period-condition.
+\begin{table}
+    \centering
+\begin{tabular}{l r r r r}
+\hline
+Period-Condition & Observed Count ($>0.3$)  & Null Mean & Null SD & p-value \\
+\hline
+First - Dry & 26  & 19.83 & 3.87 & 0.0778 \\
+First - Wet & 51  & 46.48 & 5.15 & 0.2190 \\
+Second - Dry & 93  & 76.12 & 5.62 & \textbf{0.0018} \\
+Second - Wet & 113 & 91.91 & 6.45 & \textbf{0.0012} \\
+\hline
+\end{tabular}
+\caption{Results of permutation test for co-occurrence of cumulative change fields with monthly anomaly fields across model-years for each period-condition ($\alpha=0.05$). Significant p-values indicate that the observed count of model-years with mean correlation $>0.3$ is greater than expected under the null distribution generated by randomly reassigning correlation values within each month across year-model combinations.}
+\label{tab:per_period_pvals}
+\end{table}
+%
+We show the results in Table~\ref{tab:per_period_pvals}.
+%
+The results demonstrate that the co-occurrence of cumulative changes is not merely an artifact of aggregating across entire periods, but rather reflects patterns coherently expressed in individual model-years at rates significantly higher than expected by chance.
+%
+This is particularly evident in the second half of the century for both dry and wet Bay-Delta years, where observed counts substantially exceed null expectations.
+%
+% Figure~\ref{fig:annual_cooccurrence} shows the number of model-years with mean correlation $>0.3$ for each year within each period-condition, illustrating the temporal evolution of within-year coherence.
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.7\textwidth]{annual_cooccurence.png}
+%     \caption{Annual count of model-years with mean correlation $>0.3$ between monthly anomaly fields and cumulative change fields for each period-condition. The increase in counts in the second half of the century visually supports the significant co-occurrence results from the permutation test.}
+%     \label{fig:annual_cooccurrence}
+% \end{figure}

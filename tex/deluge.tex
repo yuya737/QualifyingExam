@@ -1,0 +1,30 @@
+
+In this chapter, I address the third facet of multifaceted geospatial data: its \emph{multimodality} and the predictive modeling it enables.
+%
+Anticipating pluvial flood damage requires fusing heterogeneous sources---satellite imagery, terrain descriptors, and hydrometeorological time series---that differ in resolution, modality, and reliability, while learning from a sparse and noisy supervisory signal scattered across insurance claims.
+%
+Geospatial foundation-model embeddings offer broad coverage of the built and natural environment, but arrive as opaque feature vectors that trade the transparency analysts need for breadth, sharpening the familiar tension between predictive accuracy and interpretability.
+%
+To confront this, I present \emph{DELUGE}, an attempt at an end-to-end learned system for daily, ${\sim}1$\,km prediction of insured pluvial flood damage that routes foundation-model embeddings through physics-shaped, hydrologically meaningful modulators, yielding interpretability \emph{by design} rather than post-hoc explanation.
+%
+I evaluate DELUGE against tree-based baselines standard in the pluvial flood literature and inspect its learned modulator parameters for physical coherence.
+%
+Beyond its standalone predictive role, DELUGE serves as the base predictive model for the visual analytics system I propose, supplying both the damage predictions and the interpretable, physically meaningful modulators that this system will surface for analysts to inspect and query.
+%
+The remainder of this chapter develops the motivation, architecture, and assessment of the approach in detail.
+
+\section{Introduction}
+\input{tex/deluge/intro.tex}
+\section{Related Works}
+\input{tex/deluge/relworks.tex}
+\section{Data}
+\input{tex/deluge/data.tex}
+% \section{Methods}
+% \input{tex/methods.tex}
+\section{DELUGE Architecture}
+\input{tex/deluge/arch.tex}
+
+\section{Results}
+\input{tex/deluge/results.tex}
+\section{Discussion and Conclusion}
+\input{tex/deluge/conclusion.tex}

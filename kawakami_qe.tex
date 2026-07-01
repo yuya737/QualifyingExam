@@ -1,0 +1,233 @@
+\documentclass[12pt]{ucdavisthesis}
+
+% PLEASE READ THE MANUAL - ucdavisthesis.pdf (in the package installation directory)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                      %
+%               LATEX COMMANDS FOR DOCUMENT SETUP                      %
+%                                                                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\usepackage{bookmark}
+% \usepackage{mathptmx} % Times New Roman font
+\usepackage[T1]{fontenc}
+\usepackage{newpxtext}
+
+\usepackage[us,nodayofweek,12hr]{datetime}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+% \usepackage{cleveref}
+\usepackage{subcaption}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{enumitem}
+\usepackage[english]{babel}
+
+
+
+\usepackage[color=purple!15]{todonotes}
+\usepackage{algorithm,algpseudocode}
+\usepackage{array}
+\usepackage{amssymb}
+\usepackage{xspace}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage[breakable]{tcolorbox}
+\usepackage[pagebackref,bookmarks]{hyperref}
+\usepackage[nameinlink,capitalise]{cleveref}
+% \usepackage{float}
+
+% % keep the ToC at subsection depth (tocdepth 2) so it stays compact.
+% \setcounter{secnumdepth}{4}
+% \setcounter{tocdepth}{3}
+
+% HEXTILES
+\newcommand{\note}[1]{\textcolor{blue}{}}
+\newcommand{\qu}[1]{\textit{``{#1}''}}
+
+% CLIMATESOM
+\definecolor{navy}{RGB}{0, 0, 100}
+\definecolor{lightblue}{RGB}{199, 233, 255}
+\definecolor{lightgreen}{RGB}{185, 255, 185}
+\definecolor{circuitred}{RGB}{239, 37, 21}
+\newcommand{\ClimateSOM}{{\fontfamily{zi4}\selectfont ClimateSOM}\xspace}
+\newcommand{\req}[1]{\tcbox[on line, size=tight, boxrule=0pt, colback=lightblue!100,left=3pt,right=3pt,top=2pt,bottom=2pt, arc=5pt, frame empty ]{\textcolor{black}{\textbf{#1}}}}
+\newcommand{\dist}[1]{\tcbox[on line, size=tight, boxrule=0pt, colback=circuitred!100,left=2pt,right=2pt,top=2pt,bottom=2pt, arc=3pt, frame empty ]{\textcolor{white}{#1}}}
+\newcommand{\step}[1]{\tcbox[on line, size=tight, boxrule=0pt, colback=lightgreen!100,left=3pt,right=3pt,top=1pt,bottom=1pt, arc=0pt, frame empty ]{\textcolor{black}{\textbf{#1}}}}
+\newcommand{\subimage}[1]{\tcbox[on line, size=minimal, boxrule=0pt, colback=navy!100,left=3pt,right=3pt,top=1pt,bottom=1pt, arc=4pt, frame empty]{\textcolor{white}{\footnotesize #1}}}
+\newcommand{\highlight}[1]{\colorbox{gray!120}{\textbf{\textcolor{white}{\footnotesize #1}}}}
+
+\newcommand{\fix}[1]{%
+    \colorbox{red!20}{\textbf{Fix:} #1}%
+}
+
+% \citeA: textual/in-text citation used in the AGU chapter (apacite-style).
+% IEEEtran is a numeric style and does not load natbib/apacite, so alias it to
+% \cite. NOTE: this renders as "[12] examined ..." rather than "Author [12]
+% examined ..."; switch the document to natbib + an author-year style if you
+% want the author name printed inline.
+\providecommand{\citeA}[1]{\cite{#1}}
+
+% AGU
+\newcommand{\shortnote}[2][blue!20]{{%
+    \sethlcolor{#1}%
+    \hl{\textbf{Note:} #2}%
+
+}}
+
+\usepackage{rotating}
+
+\usepackage{url} %this package should fix any errors with URLs in refs.
+\usepackage{lineno}
+\usepackage{soul}
+\usepackage{amsmath}
+\usepackage{amssymb}
+% \usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\algrenewcommand\algorithmicrequire{\textbf{Input:}}
+\algrenewcommand\algorithmicensure{\textbf{Output:}}
+
+
+% DELUGE
+\newcommand{\tsim}[1]{${\sim}}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{arydshln}
+\usepackage{bbm}
+\usepackage{varwidth}
+\usepackage{wrapfig}
+\usepackage{placeins}
+\newcommand{\colorchip}[1]{\textcolor[HTML]{#1}{\rule[-0ex]{1.5ex}{1.5ex}}}
+\usepackage[T1]{fontenc}
+
+
+
+%\usepackage[square,comma,numbers,sort&compress]{natbib}
+%\usepackage{hypernat}
+% Other useful packages to try
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%
+% Different fonts to try (uncomment only fontenc and one font at a time)
+% (you may need to install these first)
+%\usepackage[T1]{fontenc} %enable fontenc package if using one of the fonts below
+%\usepackage[adobe-utopia]{mathdesign}
+%\usepackage{tgschola}
+%\usepackage{tgbonum}
+%\usepackage{tgpagella}
+%\usepackage{tgtermes}
+%\usepackage{fourier}
+%\usepackage{fouriernc}
+%\usepackage{kmath,kerkis}
+%\usepackage{kpfonts}
+%\usepackage[urw-garamond]{mathdesign}
+%\usepackage[bitstream-charter]{mathdesign}
+%\usepackage[sc]{mathpazo}
+%\usepackage{mathptmx}
+%\usepackage[varg]{txfonts}
+
+\graphicspath{{./figures/hextiles/}{figures/climatesom/}{figures/agu/}{./tex/deluge}{images/}{./}} % where to search for the images
+\newenvironment{tightItemize}{
+    \begin{itemize}
+        \setlength{\itemsep}{0pt}
+        \setlength{\parskip}{0pt}
+        \setlength{\parsep}{0pt}
+
+}{\end{itemize}}
+
+\hyphenation{dis-ser-ta-tion blue-print man-u-script pre-par-ing} %add hyphenation rules for words TeX doesn't know
+
+
+%\renewcommand{\rightmark}{\scriptsize A University of California Davis\ldots \hfill Rev.~\#1.0 \quad Compiled: \currenttime, \today}
+% a fancier running header that can be used with draftcls options
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                      %
+%        DOCUMENT SETUP AND INFORMATION FOR PRELIMINARY PAGES          %
+%                                                                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title          {Supporting Analysis of Multifaceted Geospatial Data with Visual Analytics}
+%Exact title of your thesis. Indicate italics where necessary by underlining or using italics. Please capitalize the first letter of each word that would normally be capitalized in a title.
+
+\author         {Yuya Kawakami}
+%Your full name as it appears on University records. Do not use initials.
+
+\authordegrees  {
+     M.S. University of Oregon 2022 \\
+    B.A. Grinnell College 2020}
+%Indicate your previous degrees conferred.
+
+\officialmajor  {Computer Science}
+%This is your official major as it appears on your University records.
+
+\graduateprogram{Computer Science}
+%This is your official graduate program name. Used for UMI abstract.
+
+\degreeyear     {2026}
+% Indicate the year in which your degree will be officially conferred.
+
+\degreemonth    {July}
+% Indicate the month in which your degree will be officially conferred. Used for UMI abstract.
+
+\committee{Dr. Kwan-Liu Ma}{Dr. Dongyu Liu}{Dr. Maike Sonnewald}{Dr. Daniel Cayan}{Dr. Zhaojun Bai}
+% These are your committee members. The command accepts up to five committee members so be sure to have five sets of braces, even if there are empties.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\copyrightyear{2020}
+%\nocopyright
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \dedication{\textsl{To all who supported and believed in me. \\ To Sanah and my parents.}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\abstract{
+    \input{tex/abstract}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \acknowledgments{Acknowledgements to those who helped you get to this point. They should be listed by chapter when appropriate.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Each chapter can be in its own file for easier editing and brought in with the \include command.
+% Then use the \includeonly command to speed compilation when working on a particular chapter.
+%%% \includeonly{ucdavisthesis_example_Chap1}
+
+\begin{document}
+
+% \newcommand{\bibfont}{\singlespacing}
+% need this command to keep single spacing in the bibliography when using natbib
+
+% \bibliographystyle{unsrtnat}
+%many other bibliography styles are available (IEEEtran, mla, etc.). Use one appropriate for your field.
+
+\makeintropages
+%Processes/produces the preliminary pages
+\chapter{Introduction}
+\input{tex/introduction}
+% % % \chapter{Background}
+\chapter{HexTiles and Semantic Icons for MAUP-Aware Multivariate Geospatial Visualizations}\label{chp:hextiles}
+\input{tex/hextiles}
+\chapter{ClimateSOM: A Visual Analysis Workflow for Climate Ensemble Datasets}\label{chp:climatesom}
+\input{tex/climatesom}
+\chapter{DELUGE: Towards Continental-Scale Daily Pluvial Flood Damage Prediction via Interpretable Conditioning on Foundation Model Embeddings}\label{chp:deluge}
+\input{tex/deluge.tex}
+\chapter{Ongoing and Future Research Plans}
+\input{tex/future.tex}
+
+\bibliographystyle{IEEEtran}
+\bibliography{kawakami_qe}
+
+% The UMI abstract uses square brackets!
+% \UMIabstract[The UMI abstract is submitted online as plain text. It no longer has a word limit or specific formatting. Therefore, the UMIabstract command is now deprecated.]
+
+\end{document} 

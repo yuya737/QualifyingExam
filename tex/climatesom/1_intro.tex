@@ -1,0 +1,117 @@
+% \subsubsection*{\note{Proposed Structure}}
+% \begin{tightEnumerate}
+%     \item As climate models increase in complexity (e.g. CMIP6 is significantly more complex than CMIP5) there is an increasing urgency to understand their outputs.
+%     \item Recent climate ensemble data like CMIP6 contains within it many Global Climate Models (GCM) and Shared Socioeconomic Pathways (SSP), each pair arising in a similar yet dissimilar spatiotemporal time series over some given spatial domain.
+%     \item Understanding each member's output, comparing different member's outputs, and clustering these results is increasingly central to climate science and understanding future variability of the climate.
+%     \item These three tasks are the main concern - explore one, compare two, cluster many
+%     \item However the current state-of-the-art analytic methods founded in climate science to address these tasks are statistic-based methods (e.g. computing and comparing spatial means over different SSPs) and while they have proven to be successful \fix{cite} leave room for improvement.
+%     \item Similarly, state-of-the-art tools in visual analytics falls short in its interpretability for domain scientists.
+%     \item To this end, we propose a visual analysis workflow to equip climate scientist with a visual tool and language to address these questions.
+%     \item With \ClimateSOM we apply a self-organizing map (SOM), a well recognized analysis tool in climate science, with carefully tuned parameters, along with dimensionality reduction and annotation, to abstract spatiotemporal time series to a distribution over a user-steerable space. 
+%     \item Finally we demonstrate that \ClimateSOM can produce scientific insights about climate ensemble data that are otherwise time consuming and difficult to yield otherwise.
+% \end{tightEnumerate}
+
+%% As climate models continue to increase in complexity, the need to understand their outputs has become more urgent. 
+%As climate models and their ensemble data sets become increasingly complex, the need to understand their outputs has grown. \fix{cite climate science papers}
+%%
+%One such example is the transition from Coupled Model Intercomparison Project (CMIP) CMIP5 to CMIP6 \cite{eyring2016overview}, which represents a significant leap in the size of the ensemble.
+%%
+%The CMIP6 ensemble dataset contains a wide array of outputs, including data from numerous Global Climate Models (GCMs) and Shared Socioeconomic Pathways (SSPs). 
+%%
+%These outputs form spatiotemporal time series that, while arising from similar processes, can crucially vary significantly across different runs.
+
+%The complexity of this data necessitates a deeper understanding of the individual climate model outputs as well as the relationships between them. 
+%%
+%% In particular, we identify three key motivating tasks for ensemble datasets - explore one, compare two, and cluster many.
+%In particular, as previously presented by Wang in their survey of ensemble data visualization \cite{wang_visualization_2019}, we also identified three key tasks for working with ensemble datasets: exploring individual models, comparing results across models, and clustering multiple outputs.
+%%
+%% As a result exploring the outputs of each GCM-SSP pair, comparing results from different models, and clustering these results have become critical components of climate science \cite{almazroui2020projections}. \fix{add other CMIP6 paper}
+%%
+%This is particularly important as researchers aim to better understand the variability of future climate scenarios.
+
+%However, current state-of-the-art analytical methods in climate science, which often rely on statistical techniques such as computing and comparing spatial means across different SSPs, while successful \fix{add some papers to this end}, leave room for improvement in terms of providing deeper insights.
+%%
+%The field of visual analytics has also proposed many methods to this end \cite{kappe_exploring_2019}, \fix{cite more}; however, they short in its ability to support the range of tasks—such as exploration, comparison, and clustering of ensemble models—that \ClimateSOM is designed to address.
+
+%%
+%To address these challenges, we propose a novel visual analysis workflow designed to equip climate scientists with an intuitive tool and language for exploring and analyzing climate ensemble data.
+%%
+%In particular, we introduce \ClimateSOM, a workflow that applies self-organizing maps (SOMs)—a well-established analytical tool in climate science—in combination with carefully tuned parameters, steerable dimensionality reduction, and annotation. 
+%%
+%In all, this methodology abstracts spatiotemporal time series into a distribution over a user-steerable space, enabling more flexible and insightful exploration of the data.
+
+%Finally, we demonstrate that \ClimateSOM can yield scientific insights from climate ensemble data that would otherwise be time-consuming and difficult to extract, thus offering a valuable advancement in the field of climate science.
+% \begin{tightItemize}
+%     \item \note{Spatiotemporal ensemble data is increasingly large and requires solutions to explore, compare, and cluster them}
+%     \item \note{Despite work in this area, its still unclear how we can communicate the dynamics of spatiotemporal data in a concise way while also supporting explicit support for other tasks like comparison and clustering.}
+% \end{tightItemize}
+
+Ensemble datasets are increasingly integral to scientific research as computing resources have increased in power \cite{wang_visualization_2019, kehrer_visualization_2013}. 
+Many disciplines, from computational fluid dynamics~\cite{patchett2017deep} to climate science~\cite{maher2021large}, rely on ensemble datasets to capture and predict variability by running their models under different conditions and parameters.
+The result is a collection of model runs---an \textit{ensemble} dataset---that supports exploration of possible outcomes, sensitivity analysis, and uncertainty quantification. However, working with ensemble datasets remains difficult due to their sheer size and complexity~\cite{wang_visualization_2019}.
+% The output of such a process, a set of many model runs known as an \textit{ensemble} dataset, helps researchers explore the range of possible outcomes, understand the sensitivity of the outputs with respect to the model variants or parameters, and quantify uncertainty in predictions. Despite its ubiquity, a major challenge with working with ensemble datasets is often their sheer size and complexity \cite{wang_visualization_2019}.
+
+% Since a single model run often requires a specialized analysis, this difficulty only grows when dealing with an entire ensemble.
+% Since analyzing a single output set from a particular  model run often requires individual analysis, dealing with an entire ensemble only amplifies this difficulty.
+% They often exhibit substantial variability both within and across model runs, making them difficult for domain scientists to fully interpret them.
+% ensemble datasets often highly vary within and across model runs, 
+
+Climate science in particular relies on ensemble datasets to examine plausible climate futures under varying conditions, such as greenhouse gas and aerosol emissions or land use changes
+~\cite{murphy_quantification_2004, eyring2016overview, maher_max_2019}.
+%
+Each model run often represents  a spatiotemporal time series, where each time step is a climate outcome (e.g. precipitation) over some spatial regions.
+%
+These model runs may come from different global climate models~\cite{eyring2016overview, maher_max_2019} and use varying input assumptions, producing a broad set of outcomes. Understanding and communicating the resulting variability and patterns remains a major challenge.
+
+
+Although existing analyses in climate science provide valuable insights---often through statistical summaries like spatial means and variances across model runs---they may overlook key spatial and temporal structures~\cite{kappe_exploring_2019}.
+Visual analytics techniques have been developed to support interpretation of ensemble data~\cite{biswas2016visualization, kappe_exploring_2019, evers_interactive_2023}, but many struggle to provide both interpretability and robustness when dealing with highly complex, chaotic model behavior.
+%
+% The main challenge, particularly with climate ensemble datasets, as previously identified\cite{potter2009visualization}, is that model runs are often both highly chaotic and complex.
+%
+% In addition to the systematic variations introduced by the model inputs that climate scientists are interested in exploring, they usually also include unknown amounts of random variation.
+% In addition to the systematic climate variations driven by the model inputs that are sought after, any analytics and must contend with unknown amounts of random variation.
+% they include unknown amounts of random variation in addition to the systematic variations of interest introduced by the GCMs and SSPs.
+%
+% In face of such variability and complexity, 
+%
+% As Kappe outlines, in the context of ensemble spatiotemporal simulations, ``direct visualizations \textit{(of climate ensembles)} are prohibitive with respect to space, time, and mental capacity of the user'' \cite{kappe2022visual}. 
+%
+% Simple exploratory visualizations of the this data often reveal that the innumerable number of variations observed in the dataset is too complex to understand or visualize in its entirety.
+In this context, even summarizing a single model run clearly is difficult, and comparing or clustering multiple runs poses a greater challenge.
+
+
+% As a result, most approaches resort to \textit{Summary statistics} 
+
+To overcome these limitations, we introduce a novel visual analysis workflow that equips climate scientists with an intuitive tool and visual language for exploring and analyzing ensemble climate projection datasets. 
+%
+In line with findings by Wang et al. in their comprehensive survey of ensemble data visualization \cite{wang_visualization_2019}, we identify three essential tasks when working with such datasets: \textit{(1) exploring a single set of model run(s)}, \textit{(2) comparing the behavior across two sets of model runs}, and \textit{(3) clustering the behavior of multiple model runs}. 
+%
+These tasks are crucial for uncovering insights into climate variability and making meaningful inferences about these projections. 
+%
+These tasks along with its interpretability serves as a guiding principle for \ClimateSOM.
+
+The overarching goal for \ClimateSOM is data abstraction by transforming spatiotemporal time series into a distribution over a user-steerable 2D space.
+%
+Central to \ClimateSOM is a self-organizing map (SOM)\cite{kohonen_self-organizing_1990}, a widely recognized analytical tool in climate science, along with steerable dimensionality reduction and annotations.
+%
+% Expanding on past work on SOM training, we highlight the impact of SOM training parameters and its importance to the success of this visual workflow.
+%
+Through this transformation, \ClimateSOM enables flexible, interpretable exploration of diverse model behavior, helping researchers detect patterns and relationships that would otherwise be difficult to uncover.
+
+We further integrate LLMs to assist in sensemaking of the SOM-defined 2D space.
+%
+\ClimateSOM introduces an LLM-empowered bidirectional query methods that allows users to (1) locate regions of interest in the 2D space based on natural language queries and (2) generate textual summaries of selected regions.
+%
+We demonstrate the utility of \ClimateSOM through case studies using LOCA-downscaled CMIP6 climate projections~\cite{pierce2023future} across two regions in the western United States. In addition, we conduct an expert review with six domain scientists to assess the system’s usability and its ability to support scientific insight.
+%
+In short, the contributions of this work are the following:
+\begin{itemize}[noitemsep, topsep=0pt]
+    \item A novel workflow for visual analysis of a spatiotemporal ensemble that abstracts the ensemble members as a distribution over a steerable 2D space framed by a self-organizing map.
+    \item Integration of LLMs to assist in sensemaking of the SOM-defined 2D space in which \ClimateSOM operates.
+    \item \ClimateSOM, a visualization interface that supports this workflow end-to-end, enabling users to explore, compare, and cluster ensemble model runs.
+    \item Case studies on the LOCA-Downscaled CMIP6 climate model projections over two different regions of the Western United States and interviews with six domain experts to evaluate its efficacy.
+        % to demonstrate the utility of \ClimateSOM in uncovering insights from climate ensemble datasets.
+\end{itemize}
+
+

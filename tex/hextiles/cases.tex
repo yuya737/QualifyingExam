@@ -1,0 +1,109 @@
+To evaluate HexTiles, we consider two data sets: (1) 2020 Presidential Election and demographics data in Texas, and (2) Outputs from CalSim3, the California Water Resources Simulation model of the Central Valley Project (CVP) and State Water Project (SWP) \cite{draper_calsim_2004}.
+%
+In particular, we compare HexTiles to Square-glyphs, another superimposition-based multivariate visualization technique with past use in geospatial data visualization and Cartography as discussed in \cref{sec:relworks}.
+
+\subsection{Election data}
+We consider the 2020 Presidential Election and demographics data in Texas, which includes the number of votes for each candidate in each precinct\cite{election_data}, as well as demographic data for each county subdivision\cite{census_2020}.
+%
+In particular, we focus on three variables: (1) Population density per squared kilometer, (2) Percent people of color, and (3) Percent democrat lead.
+%
+This use case is described in~\cref{subsec:election_usecase}.
+%%
+%As outlined in \cref{sec:relworks}, Square-glyphs, encode data in the size of the squares. 
+
+\subsection{CalSim3 data}
+Given the large set of data that CalSim3 can produce, with consultation with domain experts, we take a timestep from its output data for one simulation describing one alternate scenario using the same operational rules as baselines but with modified hydrology inputs reflecting a possible future climate condition. 
+%
+
+We consider three variables: (1) Unmet water demand, (2) Difference of unmet water demand with respect to historical baselines, and (3) Groundwater levels.
+%
+Unmet water demand is calculated at each \textit{demand unit}, a spatial discretization that CalSim3 uses to represent water use in the Sacramento and San Joaquin Valleys\cite{CalSim3}, where the difference between \textit{net water delivery} and \textit{water demand} is taken.
+%
+Furthermore, we also consider the difference in unmet water demand with respect to historical baselines as another important metric, as noted by our domain experts.
+%
+Lastly, we also take into consideration groundwater levels, as it plays an important role in the management of water resources in California's Central Valley.
+%
+Described using a different spatial discretization, groundwater levels report the amount of groundwater present in each location.
+%
+This use case is described in~\cref{subsec:water_usecase}.
+
+\begin{figure*}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{ElectionUseCase}
+    \caption{2020 Presidential Election and demographics data in Texas. (1) Population density, (2) Percent people of color, (3) Percent democratic lead, (4) Square-glyph visualization of the three variables, (5) HexTiles visualization of the three variables without variance encoding, and (6) HexTiles visualization of the three variables with variance encoding.}
+    \label{fig:usecase_election}
+\end{figure*}
+\begin{figure*}[h!]
+    \includegraphics[width=\textwidth]{ElectionComparison}
+    \caption{The 2020 Presidential Election and demographics data over Houston, TX encoded in (1) Square-glyphs, (2) HexTiles without variance encoding, and (3) HexTiles with variance encoding}
+    \label{fig:usecase_election_comparison}
+    \vspace{-0.15in}
+\end{figure*}
+
+\begin{figure*}[h!]
+    \includegraphics[width=\linewidth]{MAUPUseCase}
+    \caption{The same region of the election data use case near Dallas, TX encoded in HexTiles with (1) HexTiles without variance encoding, (2) HexTiles with variance encoding, and (3) HexTiles with variance encoding at a higher zoom level. Notice that the hexagonal region approximately subdivides into seven smaller hexagonal regions.}
+    \label{fig:usecase_maup}
+\end{figure*}
+
+\begin{figure*}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{WaterUseCase}
+    \caption{CalSim3\cite{CalSim3} output for a particular water allocation scenario at a particular timestep. (1) Unmet water demand at each demand unit, (2) The difference of unmet water demand with respect to historical baselines, (3) groundwater levels, (4) Square-glyph visualization of the three variables, (5) HexTiles visualization of the three variables without variance encoding, and (6) HexTiles visualization of the three variables with variance encoding.}
+    \label{fig:usecase_water}
+    \vspace{-0.15in}
+\end{figure*}
+
+
+\subsection{Visualizations}
+Here, we describe the resulting visualizations and the specifics for the two use cases, as well as the impact of the variance encoding for HexTiles, in order.
+
+\subsubsection{2020 Presidential Election Data Visualization in Texas}
+\label{subsec:election_usecase}
+Using the 2020 Presidential Election and demographics data in Texas, we present the resulting visualizations for Square-glyphs, HexTiles without variance encoding, and HexTiles with variance encoding in~\cref{fig:usecase_election}.
+%
+For a detailed comparison, we also show the visualizations over the same area near Houston, TX in~\cref{fig:usecase_election_comparison}.
+% 
+For Square-glyphs, data is encoded in the size of the squares as introduced prior. 
+%
+However, for diverging data like the percent Democrat lead, in the interest of staying genuine to its original design, we divide the data into two separate squares, one square representing the lead for each party.
+%
+If combined into a single square, the size of the square could be misleading.
+%
+Thus, from the top-left square clockwise, the squares and its size encode, (1) Percent Democrat lead, (2) Percent Republican lead, (3) Population density, and (4) Percent people of color.
+%
+For HexTiles, its base color encodes percent Democrat lead, its inner ring the percent people of color, and the semantic icon in the center the population density.
+%
+The according legends are shown on the right.
+
+\subsubsection{Water Distribution Visualization from CalSim3}
+\label{subsec:water_usecase}
+Using the CalSim3 data, we present the resulting visualizations for Square-glyphs, HexTiles without variance encoding, and HexTiles with variance encoding in~\cref{fig:usecase_water}.
+%
+For the Square-glyphs, similar to the percent Democrat lead in the election data, we divide the difference with respect to historical baselines into two separate squares, one for positive differences and one for negative differences.
+%
+From the top-left square clockwise, the squares and its size encode, (1) Scenario unmet water demand (i.e. unmet water demand for this specific scenario), (2) Groundwater levels, (3) Positive difference of unmet water demand with respect to historical baselines, and (4) Negative difference of unmet water demand with respect to historical baselines.
+%
+For HexTiles, its base color encodes groundwater levels, its inner ring the difference of unmet water demand with respect to historical baselines, and the semantic icon in the center the scenario unmet water demand.
+%
+The according legends are shown on the right.
+
+
+\subsubsection{Variance encoding to alleviate the modifiable areal unit problem}
+To highlight the impact of the variance encoding and the more faithful representation of the data it enables, we describe a specific example using the election data in \cref{fig:usecase_maup}.
+%
+The region of interest here is near Dallas TX. 
+%
+With the variance encoding, initially the user is shown a HexTile with unsaturated blue-purple base color (somewhat Democrat) and a dark green (high percent people of color) but thin inner ring.
+%
+The unsaturated base color, as well as the thin inner ring communicates, that the spatially-weighted mean alone is not a \textit{faithful} representation of the data.
+%
+Zooming into the region, the user sees the HexTiles subdivide seven into smaller HexTiles, each with a different base color and inner ring thickness.
+%
+In fact, in this region near Dallas, there is a diverse mix of areas with varying levels of Democrat lead and percent people of color.
+%
+The differences in characteristics of urban and rural areas near Dallas and Forth Worth are more \textit{faithfully} communicated with the variance encoding.
+%
+Note that these insights are entirely absent without the variance encoding.
+%
+

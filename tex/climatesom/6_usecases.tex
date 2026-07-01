@@ -1,0 +1,202 @@
+% \subsection{LOCA-Downscaled CMIP6 Precipitation Ensemble}
+
+
+\subsubsection{Case Studies}
+\paragraph{The Data}
+To demonstrate that \ClimateSOM can uncover valuable insights, we apply the workflow to a ensemble dataset of LOCA-downscaled CMIP6 precipitation projections~\cite{pierce2014statistical,pierce2015improved,eyring2016overview} over California and the Northwest United States\cite{pierce2023future}.
+%
+% The Localized Constructed Analogs (LOCA) statistical downscaling method \cite{pierce2014statistical,pierce2015improved } is an analog-based method used to downscale
+% relatively coarse scale global climate model projections from the CMIP6 archive \cite{eyring2016overview}  to finer scale regional projections. 
+%
+% The LOCA North American projections were carried out at 6km spatial resolution, in which downscaling of precipitation was conducted from global model projections made by 27 CMIP6 models, 
+%
+These model projections were made under 3 different SSPs \cite{riahi2017shared}, from a  SSP245, a relatively low greenhouse gas emission future, SSP370, a medium high greenhouse gas emissions future, and SSP585 a high greenhouse gas emissions future. 
+%
+% Of the 27 models, we consider \textasciitilde 14 models for each SSP and the historical period (i.e. four time periods per GCM) for which data was available, resulting in a total of 56 ensemble members.
+We consider 14 GCMs for each SSP and the historical period (i.e. four time periods per GCM) for which data was available, resulting in a total of 56 ensemble members.
+%
+Details of the ensemble members used in this work can be found in the Appendix.
+% LOCA or Localized Constructed Analogs, is a statistical downscaling method that takes coarse resolution climate model outputs, here of CMIP6\cite{eyring2016overview}, and downscales them to a regular grid of finer resolution.
+
+We consider two regions separately: California and the Northwestern United States, encompassing Oregon, Washington, and Idaho.
+%
+While daily predictions are available, we focus on monthly projections considering months from October to May, as these months contribute to \textasciitilde85\% of the annual precipitation in both spatial regions.
+%
+We apply two preprocessing steps. 
+%
+Second, we normalize the monthly anomalies by dividing them by per-month standard deviation across models, time, and space.
+%
+The final data, therefore, consists of monthly precipitation anomalies expressed in standard deviations from the historical average.
+%
+For the California case study the each ensemble model run had a of size of $780\times 151\times 165$ (time $\times$ longitude $\times$ latitude), while for the Northwestern US, it was $780\times 60\times 115$.
+%
+We consult \textbf{E1}, a co-author, for the California case study, and another domain expert \textbf{E2} for the Northwestern US case study.
+
+
+% While this makes any analysis across different months difficult, this simplification allows us to train a single SOM across different months that streamlines the analysis.
+
+\paragraph{LOCA-Downscaled CMIP6 over California}
+\paragraph{SOM Training}
+We experimented with various dimensions of the SOM grid and found that the choice had minimal impact on the results so long they were sufficiently large and selected a 30$\times$30 grid.
+%
+We include the impacts of the initial neighborhood radius ratio $kR$ and the neighborhood decay ratio $kS$ on the SOM in the Appendix.
+%
+For the California region, we selected $kR=0.03$ and $kS=0.2$ as they provided a good balance explanatory power and SOM grid smoothness.
+%
+This provided a SOM grid with 80.5\% of explained variance.
+\paragraph{The Case Study}
+We outline a case study of the precipitation ensemble over California with the \textbf{E1}, a climate scientist and co-author of this paper.
+%
+We will reference~\cref{fig:Dan} for this case study.
+%
+First, the expert goes through \step{S1}: Anchor to reorganize the SOM node space to improve the interpretability of the SOM node space.
+%
+They place wetter precpitation SOM nodes to the left, dryer nodes to the right, and allow the vertical axis to represent the North-South gradient of the region, placing nodes with higher precipitation in the North on the upper side of the SOM Node Space and vice versa.
+%
+Next, as they are familiar with the SOM nodes and their precipitation patterns, they perform \step{S2}: Annotate producing five annotations regions: (1) \textit{Statewide Wet}, (2) \textit{Wetter North - Drier South}, (3) \textit{Wetter South - Drier North}, (4) \textit{Intermediate}, and (5) \textit{Statewide Dry} (\cref{fig:Step1and2}).
+%
+The first question the expert wishes to answer is on the behavior of model runs that predict a wetter California in January and whether there are trends that these model run exhibit in the previous months.
+% 
+To this end, the expert examines the model run clustering in the circuit-line diagram and identifies two clusters of model runs in January (\req{R3}), one representing a wetter California than the other based on the color of the cluster boxes.
+
+They then compare the two January clusters (\req{R2}), learning that the difference in the two clusters [\dist{A},\dist{B}] is primarily in the density of \textit{Statewide Wet} realizations.
+%
+Interestingly, the \textit{Statewide Dry} realizations are both prominently present in both clusters.
+%
+They visually confirm that the additional occurrences of \textit{Statewide Wet} realizations in one cluster is the driving difference between the two clusters.
+%
+% The expert also studies the behavior of the two clusters in December, noticing the difference here is in density in the \textit{Statewide Dry} (\req{R2}).
+%
+Further they learn from the circuit-line diagram that the both the drier and wetter cluster in December evolve to a wetter California in January, but realizes that it primarily evolves from a dry cluster in November considering the number of lines that pass through the respective clusters.
+%
+Following the dry cluster in November, they learn that this cluster is represented by heavy \textit{Statewide Dry} realizations as well as \textit{Wetter South - Drier North} realizations.
+%
+Thus the expert concludes that models run that predict a wetter California in January are associated with a overall drier November with a particular dryness in the North of the region, but less clear trends in December.
+
+Another exploration that the expert wishes to undertake is of the behavior of MIROC6, a GCM, in the medium-emission scenario, SSP370, relative to the other GCMs under the same emissions scenario.
+%
+Exploring through different months, they observe that MIROC6 in February has a distinct pattern compared to the other GCMs in the same emissions scenario .
+%
+While the other GCMs over February are distributed across \textit{Statewide Wet} and \textit{Statewide Dry} realizations, MIROC6 introduces heavy \textit{Wetter North - Drier South}  and \textit{Wetter South - Drier North} realizations (\req{R1}).
+%
+This difference in mixture of realizations may warrant further investigation into MIROC6 - SSP370 over February to understand the reasons for the model run's distinct behavior.
+
+\begin{figure}[!t]
+    \centering
+    % \includegraphics[width=\textwidth]{figures/Dan.pdf}
+     \includegraphics[width=\linewidth]{Dan.pdf}
+    \caption{The California case study.% with \ClimateSOM. 
+     \textit{The Annotated SOM Node Space} used is shown in~\cref{fig:Step1and2}. The expert explored monthly clustering in model runs in January - here the user has hovered over \dist{A}, displaying the lines that pass through it (\req{R3}). The expert explored the cluster behavior by examining its distributions. Lastly, they also explored a single model run, \textit{MIROC6 - SSP370}, against the same SSP for all GCMs (\req{R2}).}
+    \label{fig:Dan}
+\end{figure}
+
+\paragraph{LOCA-Downscaled CMIP6 over the Northwestern US}
+% This section recounts a domain expert's experience using \ClimateSOM to analyze LOCA-downscaled CMIP6 precipitation ensemble over the Northwestern US.
+We follow the same process to pick the SOM parameters for the Northwestern US case study, selecting $kR=0.03$ and $kS=0.2$ over a $30\times 30$ SOM grid explaining 78.8\% of the variance.
+%
+With consultation from an Economist, \textbf{E2}, with experience studying in climate change impacts on the Western Coast of the United States, this case study examines LOCA-downscaled CMIP6 precipitation ensemble over the Northwestern US.
+%
+We will reference~\cref{fig:Tom} for this case study.
+%
+First, the expert goes through \step{S1}: Anchor to reorganize the SOM node space to improve the interpretability of the SOM node space and \step{S2}: Annotate and visually identified regions of interest relying previous domain knowledge of precipitation patterns in the Northwestern US.
+%
+This yielded five annotated regions: (1) \textit{Dry Global}, (2) \textit{Wet NE}, (3) \textit{Dry SW}, (4) \textit{Wet Global}, and (5) Remainder.
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.8\linewidth]{figures/TomSpace.png}
+%     \caption{The \textit{The Annotated SOM Node Space} for the Northwestern US case study}
+%     \label{fig:TomSpace}
+% \end{figure}
+
+% The expert first examines the behavior of all GCMs over the historical period in January noticing the breakdown of the selected months into the annotated regions, \textit{Dry Global} and \textit{Remainder} being the most prominent (\req{R1}).
+%
+% This is seen in \highlight{B}.
+%
+% Checking the results for the other Fall months, the expert observes the Fall vs.
+
+
+First, the expert wishes to compare historical and SSP585 precipitation projections in April. 
+%
+Here, this transition is represented by a change from a unimodal distribution of precipitation realizations to a bimodal distribution (\highlight{C}).
+%
+In particular, the expert notices a shift to a wetter Northeast (of the region) under this higher emissions future, which they recognize to be a \textit{notable change} with particular significance to agriculture in the region (\req{R2}).
+% \begin{figure}[h]
+    % \centering
+    % \includegraphics[width=\linewidth]{figures/TomBimodal.png}
+    % \caption{The shift from a unimodal to bimodal distribution of precipitation realizations in April, comparing historical (left) and SSP585 (right) ensemble model runs.}
+    % \label{fig:TomSpace}
+% \end{figure}
+%
+In contrast, in November, the expert observes a movement towards a wetter Northwest (of the region) in a higher emissions future.
+%
+The expert therefore confirms that the effect on a higher emissions future on precipitation in the Northwestern US is drastically \textbf{different} between April and November, where April expects higher precipitation in the Northeast compared to the Northwest.
+%
+This is an interesting insight, as simple statistical analysis would not reveal such spatial patterns.
+
+
+% with visual descriptions of the changes.
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=\linewidth]{figures/TomNov.png}
+%     \caption{The shift from a precipitation realizations in November, comparing historical (left) and SSP585 (right) ensemble model runs.}
+%     \label{fig:TomSpace}
+% \end{figure}
+%
+% Drilling down to a particular climate model, they observe that for ACCESS-CM2 comparing historical to a higher emission model in November, they see an increase in precpitation in the westside and coastal regions of the Northwestern US (\req{R2}).
+
+
+
+Next, the expert wishes to explore whether there are outlier GCMs that exhibit different SSP forcing from historical to SSP585 in November. 
+%
+Consulting the circuit-line diagram for the GCM clustering of forcings, they observe two clusters of GCMs in November, so they click on the two clusters.
+%
+Here, they observe that one of the clusters (\highlight{B}), \textit{``homes in the lower right area of the SOM distribution''} thus representing GCMs that predict a drier November with drier anomalies concentrated toward the Southwest of the region.
+%
+On the other hand, the other cluster of GCMs (\highlight{C}), in contrast, collects toward the lower left area of the SOM distribution, and thus a wetter coastal region and wetter border with Canada, highlighting the two clusters of GCMs in its SSP forcing (\req{R3}).
+%
+They hypothesize that the the GCM's forcing in the first cluster may be anomalous, and thus may warrant further investigation.
+%
+Throughout this session, the expert was impressed with \ClimateSOM's ability to \textit{``visualize big picture patterns quickly''} and that it was \textit{``just not something (they) could do otherwise''}.
+
+
+
+
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=\textwidth]{Tom-6.pdf}
+    \caption{The Northwestern US case study with \ClimateSOM. \highlight{A}: Comparing historical and SSP585 projections in April (\req{R2}), \highlight{B},\highlight{C}: Exploring the two GCM forcing clusters in November and comparing their behavior (\req{R3}).}
+    \label{fig:Tom}
+\end{figure*}
+
+\subsubsection{Evaluating the LLM integration}\label{ssec:llm_eval}
+While past works demonstrate the ability of LLMs to generate SQL queries and a general text summarizer, past works on LLMs have not explicitly evaluated two spatial abilities: (1) the spatial ability to map region identifiers to a list of counties and (2) the spatial ability to summarize a list of counties to a short summary.
+%
+Additionally, given the possible ambiguity that may arise in how places are defined (i.e., \textit{Southern California} may mean different boundaries to different people), we conducted a short evaluation of our LLM in the above two tasks with 8 participants all familiar with the geography of California.
+%
+% Specifically, we designed two tasks. 
+
+First, given a common region identifier (e.g., \textit{Southern California}), we asked the participants to evaluate how reasonable the list of counties generated by the LLM was.
+%
+Second, given a list of counties randomly selected from one of the textual summaries of a SOM node in the California case study, we asked the participants to evaluate how reasonable the regional summaries were.
+%
+Both tasks were evaluated on a 5-point Likert scale. (\textit{1: Strongly Agree, 2: Agree, 3: Neither Agree nor Disagree, 4: Disagree, 5: Strongly Disagree}).
+%
+We show examples of the tasks in the Appendix.
+
+Collecting 10 of each tasks (80 responses per task), we found that for T1, the average score was 2.11 (SD=1.32) and for T2, the average score was 2.5 (SD=1.55).
+%
+This suggests that while the LLMs are not perfect, they are able to generate reasonable lists of counties and summaries of regions that most participants found reasonable.
+%
+Admittedly, in the first task there were regions where responses were more polarized, especially for vaguely defined region identifiers like \textit{Desert Region of California} and in the second task, when the list of counties were highly disconnected geographically, generating textual summaries of such regions was challenging.
+%
+Another limitation of the current implementation is that we use counties as the unit of analysis. 
+%
+However, natural language descriptions of regions do not always conform to county boundaries--some regional identifiers may span or divide multiple counties. As a result, generating finer-grained boundaries and summaries that account for these irregularities is beyond the scope of this integration.
+
+Lastly, we also test the LLM's PostGIS generation for \ClimateSOM by test generating 20 queries for each of the three categories and manually inspecting the results.
+%
+We found that our LLM's generation was accurate in \textasciitilde 90\% of the cases, with the remaining \textasciitilde 10\% being cases where the LLM generated a query with incorrect syntax.
+%
+\textbf{In all, we find the failure cases with our LLM integration arising mainly from ambiguous region identifiers for spatial tasks, the county-level unit of analysis, and incorrect syntax generation for the PostGIS queries}.
+%
+This suggests a conversational interface that can allow the user to correct the LLMs when they generate unreasonable results as a future direction.

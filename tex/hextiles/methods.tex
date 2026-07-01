@@ -1,0 +1,255 @@
+The design of HexTiles is motivated by the need to (1) faithfully visualize geospatial data of varying spatial discretizations and (2) ease the process of assessing interactions between variables across spatial regions.
+%
+To this end, taking inspiration from past works in superimposition-based multivariate geospatial visualizations like Square-glyphs, we specifically enumerate the design considerations (DCs) for HexTiles as follows:
+\begin{tightItemize}
+    \item \textbf{DC1:} Handle geospatial data of varying spatial discretizations simultaneously.
+    \item \textbf{DC2:} Allow for assessment of interactions between variables across spatial regions.
+    \item \textbf{DC3:} Enable visualizations that allow designers to steer sensemaking and prioritize certain information over others.
+    \item \textbf{DC4:} Enable a more faithful visualization of geospatial variables that take into account the error that is introduced when data is spatially aggregated and thus to alleviate the modifiable areal unit problem (MAUP).
+\end{tightItemize}
+\subsection{Design}
+%
+To address these challenges, we highlight the three major design decisions for HexTiles and which \textbf{DC} they address: (1) spatial binning [\textbf{DC1}], (2) semantic icons [\textbf{DC2, DC3}], and (3) confidence encoding [\textbf{DC4}].
+
+
+\subsubsection{Spatial Binning}
+\textbf{Spatial binning} is a widely used form of visual abstraction in which data is aggregated within polygonal regions. 
+%
+This is required as geospatial data is often irregularly discretized.
+%
+While this approach sacrifices a viewer’s ability to examine individual data points, Cleveland \cite{cleveland1985graphical} highlights the ability of these bins to convey their underlying spatial distributions. 
+%
+To form bins, both irregular and regular polygons can be used. 
+%
+% While irregular binning is commonly found when data relates to, for example, political boundaries, Battersby et al. \cite{battersby2017shapes} argue the perceptual advantages of regular bins for non-anthropogenic data.
+%
+Such regular tessellations, which can only be achieved using either equilateral triangles, squares, or hexagons, produce a smoother gradient and allow for a direct comparison between tiles. 
+%
+As triangles alternate their orientation within a grid, squares and hexagons are predominantly used for spatial binning on maps.
+%
+Carr \cite{carr1990looking} explored the use of both shapes in binned data plots for visualizing large datasets.
+%
+He and his colleagues \cite{carr_hexagon_1992} later compared square and hexagonal tessellations for univariate and bivariate mosaic maps. 
+%
+% Them, along with several more recent publications \cite{birch2007rectangular, shelton2014mapping} stress the following three major advantages of using hexagonal over square tessellations. 
+Them, along with several more recent publications \cite{birch2007rectangular, shelton2014mapping}, advocate for the use of hexagonal tessellations, primarily citing the higher distraction that square tessellations introduce due to the horizontal and vertical lines.
+%
+% In addition, we consider hexagonal tessellation to be accessible to many audiences, as they are commonly used in board games and other mediums as well.
+%stress the following three major advantages of using hexagonal over square tessellations. 
+%First, square grids introduce horizontal and vertical lines, which human perception has an innate preference for. 
+%%
+%This preference may elicit a perceptual bias and may obscure the identification of spatial patterns \cite{carr_hexagon_1992}. 
+%%
+%Second, Scott \cite{scott1985averaged} found that hexagons have higher representational accuracy, and third, better connective properties–surrounding tiles in a tessellation are equidistant from their center—are all properties attributed to the recent surge in publications using hexagonal tiling \cite{birch2007rectangular, shelton2014mapping}. 
+%%
+%The benefit of spatial binning is two-fold: (1) by introducing a regular discretization we can solve the spatial discretization mismatch issue from~\cref{sec:intro}, and (2) ease the comparison process between two regions as the unit of comparison becomes the HexTiles, in the case of our work.
+%
+%As scientific results across domains feature data with a spatial connection, which is increasingly communicated through geovisualizations, more fields have started exploring the use of geographic space for their field, in what has become known as the spatial turn \cite{skupin2009discrete}. 
+%%
+%Birch et al. \cite{birch2007rectangular} surveyed the use of tessellations in ecology and support the notion of a trend towards favoring hexagonal tessellations. 
+%%
+%In further support thereof, other examples can be found across non-visualization domains \cite{shelton2014mapping, shelton2015social}. 
+%%
+%The question of how to best utilize the available cells, however, is a topic of ongoing research. Heimerl et al. \cite{heimerl2018visual} have recently explored the use of encodings and their combination for hexagonal scatterplots.
+%%
+%They compiled a comprehensive list of tasks commonly found for analyzing these plots and consider designs appropriate for the different analysis questions. 
+%
+This all gives strong reason to base our visualization on hexagonal tiling.
+
+\subsubsection{Icons}
+\textbf{Icons} are a common form of visual abstraction in which data is represented by a symbol, often taking advantage of metaphors  \cite{nocke2005icon, presnov_pacemod_2023}.
+%
+Our main motivation of using icons to represent data is (1) to leverage the \textit{pre-attentive} processing of visual information, much like what Chernoff attempts via data encoding in facial features \cite{chernoff1973use}, and (2) to reduce reliance on colormaps to encode data.
+%
+%While a number of considerations must be made when designing icons, one key consideration is to ensure that icons are pre-attentively \textit{distinct} from each other, as pointed out by Ware \cite{ware2019information}.
+%%
+%% As Ware points out, in designing symbols for visualizations, it is important that symbols are .
+%%
+%This is our view on why bivariate or multivariate colormaps can be challenging to design well.
+
+ % \begin{wrapfigure}{r}{0.5\linewidth}
+ %   \begin{center}
+ %     \includegraphics[width=0.5\linewidth]{bivariate}
+ %   \end{center}
+ %   \caption{A bivariate colormap}
+ %   \label{fig:bivariate}
+% \end{wrapfigure}
+
+\begin{figure}[h!]
+    % \small
+    \centering
+    \begin{subfigure}[b]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{IconExample}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.4\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{ColormapExample}
+    \end{subfigure}
+    \caption{The same CalSim3 unmet water demand data (details in~\cref{sec:cases}) over a part of California's central valley; \textit{Left:} icons, \textit{Right:} continous red colormap. Each icon represents around 0.15 Acre-feet / Acre of unmet water demand within the corresponding region. As seen in the number of icons and the colormap, unmet water demand increases from the HexTile region on the left to the right.}%missing
+    \label{fig:icon_example}
+\end{figure}
+%% \begin{figure}[]
+%  \centering
+%  % the following command controls the width of the embedded PS file
+%  % (relative to the width of the current column)
+%  \includegraphics[width=0.3\linewidth]{bivariate}
+%  % replacing the above command with the one below will explicitly set
+%  % the bounding box of the PS figure to the rectangle (xl,yl),(xh,yh).
+%  % \includegraphics[width=.95\linewidth, bb=39 696 126 756]{sampleFig}
+%  %
+%  %\parbox[t]{.9\columnwidth}{\relax
+%  %         For all figures please keep in mind that you \textbf{must not}
+%  %         use images with transparent background! 
+%  %         }
+%  %%
+%  \label{fig:bivariate} 
+%  \caption{Bivariate colormap}
+%\end{figure}
+
+An example of using the number of icons to represent univariate unmet water demand data (details in \cref{sec:cases}) is shown in \cref{fig:icon_example}.
+%
+In order to ease interpretation, we use a red water droplet and encode the amount of unmet water demand with its count.
+%
+With reference to \cref{fig:icon_example}, we highlight some qualities of icons as well as some trade-offs.
+
+First, icons can be expressive, since we can almost immediately detect if there are one, two, three or four objects in a group - an ability that we possess from early on in our development \cite{dehaene2011number,ware2019information}.
+%
+Second, comparing two regions is made easier since we can compare the number of icons in each region.
+%
+We argue that similar operations can be more difficult with colors.
+%
+Lastly, and importantly in the context of HexTiles, by using icons we can reduce the burden of color encoding, making way for other variables to be simultaneously encoded in color. 
+
+%In many cases, interpreting data encoded with bivariate colormaps become an \textit{attentive} endeavour, requiring viewers to mentally map back and forth between the color and the data.
+%% 
+%Even though, some colors have meaningful association to sentiments or other concepts, immediately mapping color from a bivariate colormap to meaning is difficult.
+%%
+%In contrast, with HexTiles, in addition to color, we also employ icons to represent data.
+
+%For continuous data, this is equivalent to mapping data to an discrete colormap, where instead the we replace the color with a group of icons, where the number of icons is dependent on the value to be encoded.
+%%
+%This is particularly powerful since we can, almost immediately detect, see if there are one, two, three of four objects in a group - an ability that we possess from early on in our development \cite{dehaene2011number,ware2019information}.
+%%
+%We consider similar assessments harder to make when colors are used.
+%%
+%For categorical variables, semantic icons can be used to represent categories.
+%%
+%Here, ideally, the icon design should be such that the underlying category is immediately recognizable and pre-attentively \textit{distinct}.
+%%
+%The benefits for semantic icons are two-fold: (1) the simplicity of design allows for easy recognition, as well as comparison of and the estimation of difference in values between multiple regions thus leveraging \textit{pre-attentive} processing, and (2) relieve the reliance of colors so that the data encoded in colors are easier to interpret.
+
+% \note{Maybe have an example}
+
+However, we also highlight some trade-offs of employing semantic icons.
+%
+First, by mapping continuous variable to discrete values, we effectively trade accuracy for speed and ease. 
+%
+Subtle differences between values will be lost, since different data values from two regions might both be mapped to, say, a set of two water droplet icons.
+%
+Second, by the nature of the encoding where data is encoded in the number of icons, the data must have a meaningful value to which regions with zero icons can be mapped.
+%
+Since regions with two icons will be perceived to be ``twice as much'' in comparison to regions with one icon, continuous variables whose range, for example, do not cross zero, may suffer from this encoding.
+
+
+\subsubsection{Confidence encoding to address the modifiable areal unit problem (MAUP)}
+\label{subsec:maup}
+The modifiable areal unit problem (MAUP) is a well-documented problem in cartography and spatial data analysis, and is shown to have serious implications for decision-making \cite{fotheringham1991modifiable, manley2021scale, nelson_evaluating_2017}.
+%
+Broadly speaking, MAUP is an issue in geospatial data analysis where the results of an analysis can be influenced by the shapes, sizes and orientations of the polygons used to represent the data.
+
+For example, a study on crime rate may reach different conclusions on whether the data is based on neighborhood, city, or county boundaries.
+%
+As Butkiewicz et. al. describe, MAUP can be broadly separated into two components: scale effect and aggregation effect \cite{butkiewicz_alleviating_2010}.
+%
+The former, the scale effect, relates to the fact that different spatial scales can dilute and obscure finer details when aggregated to a larger scale.
+%
+The latter, the aggregation or zoning effect, relates to the fact that particular spatial discretizations of the underlying space can lead to different patterns in the data.
+%
+In other words, different observations can be obtained by delineating data into different spatial blocks, even if the underlying data is the same.
+%
+Gerrymandering is one such example.
+
+As we consider spatial binning to combine data of varying spatial discretizations, MAUP becomes a concern in visualization as well. 
+%
+Given entirely different data, MAUP can lead to the same aggregated result  in a given HexTile.
+% \begin{wrapfigure}{r}{0.7\linewidth}
+    \begin{figure}[htb]
+    \centering
+    \includegraphics[width=0.9\linewidth]{MAUP2}
+    \caption{A motivating example for when MAUP interferes with visualization. Suppose a boundary between two regions in the original data bisects a HexTile domain. Note that in both cases, since the area within each HexTile is similar, a spatially-weighted average would report the same value of 70, despite the inherent variability in the data. The weighted mean is an incomplete picture of the data.}
+    \label{fig:MAUP}
+    \end{figure}
+% \end{wrapfigure}
+%
+\cref{fig:MAUP} illustrates this by way of example.
+%%
+%Notice here that due to separate spatial discretization that HexTiles or any other spatial binning would introduce, aggregation within the data results in the loss of information.
+%
+Past works in visualizations have addressed MAUP including work by Butkiewicz et al. \cite{butkiewicz_alleviating_2010}, but their work is a system to assist in geospatial data analysis in the face of MAUP, and not a geospatial visualization encoding design with explicit consideration of MAUP.
+%
+With HexTiles, we explicitly encode \textit{confidence} in each HexTile component to address MAUP.
+
+Specifically, we calculate a spatially-weighted variance for each of the variables we encode for each HexTile region.
+% 
+Then, we express that via Value-Suppressing Uncertainty Palettes (VSUP) \cite{2018_uncertainty_palettes}, inner ring thickness, and opacity, depending on the variable (details in \cref{sec:workflow}).
+%
+The user can therefore interpret the variability of the data within each HexTile, so that variability information is not lost in the visualizations.
+ 
+
+% \fix{MAUP is a problem in geospatial data analysis where the results of an analysis can be influenced by the spatial scale of the data. This is because the spatial scale can affect the spatial patterns of the data, which in turn can affect the results of the analysis. The MAUP can lead to biased results and incorrect conclusions, which can have serious implications for decision-making. Often, MAUP is considered in statistical analysis of differently spatially discretized data, but we argue that
+% it is also a problem in geospatial visualization as well. To address this, we calculate a confidence value via spatially and/or density weighted average within each HexTile, which can be used to interpret the variability of the data within each HexTile. This information can be lost in geospatial visualizations, but with HexTiles, we aim to make this information explicit.}
+
+\subsection{Implementation}
+% \\
+% \note{Need a visual example of a HexTile, much like Lucas' report does. }
+
+ \begin{figure}
+   \begin{center}
+        \includegraphics[width=0.8\linewidth]{HexTileAnatomy}
+   \end{center}
+   \vspace{-0.15in}
+   \caption{The anatomy of a single HexTile and components in which data can be encoded: (1) the HexTile color, (2) the HexTile inner ring, and (3) the overlaid semantic icons (the design will vary with application)}
+   \label{fig:HexTilesAnatomy}
+   \vspace{-0.15in}
+ \end{figure}
+%\begin{figure}[htb]
+%% \begin{figure}[]
+%  \centering
+%  % the following command controls the width of the embedded PS file
+%  % (relative to the width of the current column)
+%  % replacing the above command with the one below will explicitly set
+%  % the bounding box of the PS figure to the rectangle (xl,yl),(xh,yh).
+%  % It will also prevent LaTeX from reading the PS file to determine
+%  % the bounding box (i.e., it will speed up the compilation process)
+%  % \includegraphics[width=.95\linewidth, bb=39 696 126 756]{sampleFig}
+%  %
+%  %\parbox[t]{.9\columnwidth}{\relax
+%  %         For all figures please keep in mind that you \textbf{must not}
+%  %         use images with transparent background! 
+%  %         }
+%  %%
+%  \label{fig:HexTilesAnatomy}
+%  \caption{The anatomy of HexTiles}
+%\end{figure}
+
+The HexTiles design (\cref{fig:HexTilesAnatomy}) is a visualization encoding design to encode three geospatial variables at once, including our weighted-variance defined confidence to address MAUP, via a carefully designed superimposition.
+%
+The main software we leverage in HexTiles are the hierarchical hexagon-based spatial binning system \texttt{H3} \cite{uberh3} and the \texttt{WebGL}-accelerated \texttt{deck.gl} \cite{wang_deckgl_2019}.
+
+\texttt{H3} is a hierarchical hexagon-based spatial binning system developed by Uber \cite{uberh3}. 
+%
+Unlike rectangular spatial bins, hexagon bins cannot simply be represented by a row and column due to the nature of hexagonal tessellation which has three degrees of direction rather than two. 
+%
+\texttt{H3} simplifies the location encoding as well as size encoding of hexagons by assigning each hexagon to an ID based on its location and size (resolution).
+%
+\texttt{H3} also simplifies the process of mapping the basemap zoom level (we use \texttt{Mapbox} in our implementation) to the appropriate hexagon tile size, since \texttt{H3} defines discrete resolutions that approximately subdivides a hexagon into seven smaller hexagon in the next resolution in its hierarchy. 
+%
+We refer the readers to the \texttt{H3} documentation \cite{uberh3} for more details.
+%
+In HexTiles, we use \texttt{H3} to define the hexagonal regions, or HexRegions, in which each tile is placed in.
+%
+Finally, in further pursuit of \textbf{DC3}, we allow users to \textit{zoom} into regions of interest, to discern finer details in the data, decreasing the hexagon size at each level.
+%
+This both mitigates the scale effect for MAUP, and ensures that HexTiles adheres to the \textit{information seeking mantra} of visualization design \cite{shneiderman_eyes_1996}. 
+% \textcolor{red}
