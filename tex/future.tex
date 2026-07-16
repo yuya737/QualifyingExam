@@ -1,4 +1,4 @@
-This chapter outlines my ongoing and future research plans for the remainder of my doctoral program, as I continue to investigate multifaceted geospatial data, its analytical challenges, and the potential of visual analytics to address them. I pursue two main directions, which I describe below.
+This chapter outlines my ongoing and future research plans for the remainder of my doctoral program, as I continue to investigate multifaceted geospatial data, its analytical challenges, and the potential of visual analytics to address them. I describe two main directions in turn, then close by drawing out the contributions and broader impact of the dissertation as a whole.
 
 \section{Visual Analytics for Pluvial Flood Damage Risk and Assessment}
 DELUGE (Chapter~\ref{chp:deluge}) produces daily, ${\sim}1$\,km predictions of insured pluvial flood damage, and because it routes foundation-model embeddings through physically meaningful modulators, it reports not only what it predicts but the hydrological factors shaping each prediction.
@@ -36,7 +36,7 @@ The decomposition remains a work in progress, and alongside this integration I w
 %
 A further task is to synthesize these findings into a manuscript for submission and presentation at AGU's Annual Meeting.
 
-The second thread generalizes the question the extension asks.
+The second thread broadens the question the extension asks.
 %
 ClimateSOM and its EMD extension currently characterize the distribution and co-variability of a single field, precipitation.
 %
@@ -51,4 +51,17 @@ Building on the inferential and interpretive tooling of Chapter~\ref{chp:climate
 Combined with geospatial foundation model embeddings, which encode the character of the built and natural environment, the workflow could further characterize the kind of place each event strikes, answering \emph{what} happens and \emph{where}, in the sense of what kind of place, at the same time.
 %
 This connects to compound-event analysis, an area of growing concern in climate risk assessment that marginal, single-variable trends are poorly suited to address.
+
+\section{Expected Contributions and Broader Impact}
+Across its three facets, this dissertation returns to a single, persistent question. As geospatial data grows more complex, how can an analyst still interpret it and act on what they find? What changes from one chapter to the next is where that complexity, and the opacity it brings, resides. Read in sequence, the three contributions trace that opacity as it migrates from the data into the model, and offer a way to restore interpretability at each level where it settles.
+
+In HexTiles, the complexity lies in the data itself, in the many variables a single map must carry. The response works at the level of the visual encoding, rendering those variables and their interactions while preserving the spatial schema that keeps a map readable, and surfacing through confidence encodings the within-tile uncertainty that aggregation would otherwise hide.
+%
+In ClimateSOM, the complexity lies in the ensemble, in the sheer number of model runs that no analyst can inspect directly. The response works at the level of the interactive workflow, abstracting the ensemble into an explorable distribution and, with its extension, adding statistical testing so that a detected shift can be shown to be real rather than merely apparent to the eye.
+%
+In DELUGE, the complexity lies in the model. Geospatial analysis increasingly rests on opaque learned models built over foundation-model embeddings, and here the interpretability problem is the model itself. DELUGE meets it by construction, routing those embeddings through physically meaningful modulators so that its reasoning is legible along the hazard, exposure, and vulnerability components experts already reason with, rather than approximated after the fact. This interpretability by design is only the starting point. It is what makes the model amenable to a visual analytics system in the first place, and building that system, which turns the interpretable model into a decision tool for stakeholders, is the immediate next step and the first of the two directions above.
+
+Taken together, this arc is the contribution. As geospatial analysis leans ever more heavily on opaque computation, culminating in foundation models, the burden of interpretation shifts from the data onto the model, and visual analytics must follow it there. Each method in this dissertation is realized in a concrete system and evaluated with domain experts, yet the guidance it offers, on keeping a representation legible, on grounding claims in more than visual impression, and on building interpretability into a model rather than bolting it on afterward, is meant to transfer beyond the particular application in which I develop it.
+
+The broader impact lies in the application domains themselves. The methods are aimed squarely at imminent environmental challenges, from California water management and climate adaptation to pluvial flood risk assessment, and are built with and validated against the understanding of the scientists and stakeholders who face them. My hope is that this dissertation shows how visual analytics, positioned deliberately between advances in modeling and the judgment of domain experts, can render multifaceted geospatial data not only visible but interpretable and, ultimately, actionable.
 

@@ -4,9 +4,9 @@
 
 \section{Motivation}
 %
-Geospatial data---data imbued with a reference to a location on the Earth's surface---is ubiquitous, underlying many of the most pressing scientific and societal challenges of our time, from public health~\cite{zhang_visualization_2023} to climate change~\cite{eyring2016overview}.
+Geospatial data---data imbued with a reference to a location on the Earth's surface---is ubiquitous, underlying many of the most pressing scientific problems and societal issues of our time, from public health~\cite{zhang_visualization_2023} to climate change~\cite{eyring2016overview}.
 %
-Decisions ranging from where to allocate water in a drought-stricken region, to how a community should prepare for the next flood, to how we adapt to climate change impacts as they unfold are, at their core, made against a backdrop of geospatial data.
+Decisions about where to allocate water in a drought-stricken region, how a community should prepare for the next flood, how we adapt to climate change impacts as they unfold are, at their core, made against a backdrop of geospatial data.
 
 Yet this ubiquity comes with a challenge.
 %
@@ -44,7 +44,7 @@ The rise of these foundation models only compounds the challenge, adding complex
 %
 It is precisely this gap---between the complexity of modern geospatial data and the expressiveness of classical cartography---that necessitates \emph{visual analytics}.
 %
-This proposal aims to respect the analysis methods already established in each application domain, while identifying where novel methods can contribute and what they can offer.
+This proposal aims to build on the analysis methods already established in each application domain, while identifying where novel methods can contribute and what they can offer.
 %
 The central question I seek to address in this proposal is thus:
 
@@ -70,7 +70,9 @@ Here, \emph{graph schema} refers to the graphic convention or prior knowledge ab
 %
 Padilla suggests that visualization comprehension can be understood as a process of matching the visual description of the visualization to the graph schema~\cite{padilla_case_2018,padilla_decision_2018}.
 %
-However, the graph schema of maps is particularly strict relative to other visualizations: viewers expect that the spatial position of a mark corresponds to its geographic location, and any height above the map plane in a 3D visualization is immediately read as altitude.
+However, the graph schema of maps is particularly strict relative to other visualizations. 
+%
+For instance, viewers expect that the spatial position of a mark corresponds to its geographic location, and any height above the map plane in a 3D visualization is immediately read as altitude.
 %
 This strict graph schema imposed on maps is a double-edged sword: it makes maps instantly legible, but it also reserves the most salient visual channel---spatial position~\cite{Munzner_2015}---for geography itself, leaving little room to encode additional variables and pushing designers toward color, the very channel least suited to conveying several quantities at once.
 %
@@ -106,11 +108,13 @@ Increasingly, geospatial analysis requires fusing heterogeneous, multimodal data
 %
 These sources, from satellite imagery and terrain descriptors to hydrometeorological time series and sparse observational records, differ in resolution, modality, and reliability, so combining them into a coherent predictive signal is itself a substantial modeling challenge.
 %
-The difficulty is sharpened by supervision: the prediction targets of greatest interest are often observed only sparsely and indirectly, so a model must learn from noisy, uncertain proxies rather than clean ground truth.
+The difficulty is sharpened by supervision since the prediction targets of greatest interest are often observed only sparsely and indirectly, so a model must learn from noisy, uncertain proxies rather than clean ground truth.
 %
 Geospatial foundation models offer a partial answer, distilling vast Earth-observation archives into dense, general-purpose embeddings that can be reused across tasks~\cite{brown_alphaearth_2025}; but these embeddings arrive as opaque feature vectors, trading the transparency of hand-crafted descriptors for breadth of coverage.
 %
-This exposes a deeper tension: as predictive accuracy improves, interpretability tends to degrade, which is directly at odds with the understanding that analysts and decision-makers need in order to trust and act on a forecast.
+This exposes a deeper tension. 
+%
+As predictive accuracy improves, interpretability tends to degrade, which is directly at odds with the understanding that analysts and decision-makers need in order to trust and act on a forecast.
 %
 The usual recourse is post-hoc attribution.
 %
@@ -133,6 +137,6 @@ The remainder of this dissertation proposal is organized as follows. Each of the
         \end{itemize}
     \item \textbf{Chapter~\ref{chp:deluge}} develops the multimodality-and-predictive-modeling thread. I present DELUGE, to my knowledge the first end-to-end learned system for daily, ${\sim}1$\,km insured pluvial flood-damage prediction across the highest-claim regions of CONUS as defined by National Flood Insurance Program (NFIP) claims. A multimodal convolutional model trained on NFIP insurance claims, DELUGE routes Earth-observation foundation-model embeddings (AlphaEarth) and terrain descriptors through physics-shaped Value and Temporal Modulators
         whose learned parameters are themselves hydrologically meaningful, yielding interpretability by design. It outperforms tuned tree-based baselines, with the largest gains on the high-cost claims that matter most. I consider this the base predictive model for a visual analytics system that will allow stakeholders, such as insurers and emergency managers, to understand DELUGE's pluvial flood-damage predictions and interrogate its reasoning.
-    \item \textbf{Chapter~\ref{chp:future} --- Ongoing and Future Research Plans} outlines two directions that carry this work forward and concludes. The first is a visual analytics system built on DELUGE that lets stakeholders inspect \emph{why} a damage prediction is made, attributing it along the hazard, exposure, and vulnerability triad that structures disaster risk, and pose counterfactual what-if queries to the model. The second completes the ClimateSOM extension by folding its inferential and interpretive capability back into the interactive workflow, and generalizes it into a workflow for studying how the spatial co-occurrence of extreme events shifts in location, intensifies, or weakens under a changing climate. Taken together, this dissertation advances visual analytics as a tool for complex geospatial analysis, with a particular focus on imminent environmental challenges.
+    \item \textbf{Chapter~\ref{chp:future} --- Ongoing and Future Research Plans} outlines two directions that carry this work forward and concludes. The first is a visual analytics system built on DELUGE that lets stakeholders inspect \emph{why} a damage prediction is made, attributing it along the hazard, exposure, and vulnerability triad that structures disaster risk, and pose counterfactual what-if queries to the model. The second completes the ClimateSOM extension by folding its inferential and interpretive capability back into the interactive workflow, and develops a separate visual analysis workflow for studying how the spatial co-occurrence of extreme events shifts in location, intensifies, or weakens under a changing climate. Taken together, this dissertation advances visual analytics as a tool for complex geospatial analysis, with a particular focus on imminent environmental challenges.
 \end{itemize}
 
