@@ -1,4 +1,25 @@
-This chapter outlines my ongoing and future research plans for the remainder of my doctoral program, as I continue to investigate multifaceted geospatial data, its analytical challenges, and the potential of visual analytics to address them. I describe two main directions in turn, then close by drawing out the contributions and broader impact of the dissertation as a whole.
+This chapter outlines my ongoing and future research plans for the remainder of my doctoral program, as I continue to investigate multifaceted geospatial data, its analytical challenges, and the potential of visual analytics to address them. I describe a focused evaluation study that consolidates the HexTiles work, together with three research directions, then close by drawing out the contributions and broader impact of the dissertation as a whole.
+
+\section{A Larger-Scale Evaluation of HexTiles}
+The evaluation of HexTiles in Chapter~\ref{chp:hextiles} was conducted with seven participants, a sample large enough to surface clear qualitative signals but too small to resolve the quantitative comparisons with statistical confidence.
+%
+The strongest finding concerned cognitive load. Across all four dimensions of the NASA-TLX instrument, mental demand, performance, effort, and frustration, all seven participants reported significantly more favorable scores for HexTiles than for the superimposition-based baseline. The variances in Task 1 estimation error and Task 2 completion time were also significantly lower for HexTiles, pointing to a more consistent interpretive load. Together these give strong evidence that HexTiles reduces the effort of reading multivariate geospatial data.
+
+The picture is more tentative on raw task performance.
+%
+On Task 2, where participants had to locate a tile satisfying a joint condition on each variable, a task that serves as a proxy for reasoning about the interactions among variables, HexTiles achieved a higher success rate than the baseline, though the difference did not reach significance at $\alpha = 0.05$ ($p = 0.117$).
+%
+A similar pattern held on Task 1, where HexTiles achieved a lower mean estimation error without a statistically significant difference.
+%
+With only seven participants, the study was underpowered to detect effects of this size, so these trends are suggestive rather than conclusive.
+
+The natural next step is a larger and more diverse user study designed to resolve exactly these questions.
+%
+With a substantially larger participant pool spanning a wider range of visualization expertise, and with hypotheses and analyses fixed in advance, the study would carry the statistical power to confirm whether the Task 2 advantage in reasoning about variable interactions is real, and to map where HexTiles helps and where it does not.
+%
+It would also let me vary factors held fixed in the initial study, such as the number of encoded variables, the choice of dataset and application domain, and the presence or absence of the variance encoding and semantic icons, isolating the contribution of each design element.
+%
+Establishing these results at scale would strengthen the empirical foundation for HexTiles as a general-purpose multivariate geospatial encoding.
 
 \section{Visual Analytics for Pluvial Flood Damage Risk and Assessment}
 DELUGE (Chapter~\ref{chp:deluge}) produces daily, ${\sim}1$\,km predictions of insured pluvial flood damage, and because it routes foundation-model embeddings through physically meaningful modulators, it reports not only what it predicts but the hydrological factors shaping each prediction.
@@ -22,6 +43,45 @@ This extends DELUGE's interpretable conditioning scheme, mapping its physically 
 Second, \emph{counterfactual and what-if analysis}: perturbing the conditions underlying a prediction and observing how the predicted damage and its modulators respond, so that an analyst can probe the effect of altered hazard scenarios, changing exposure, or candidate mitigation measures.
 
 
+
+\section{Visual Analytics for Interpreting How Models Use Embeddings from Geospatial Foundation Models}
+Geospatial foundation models such as AlphaEarth now provide general-purpose embeddings that a growing number of predictive models consume in place of hand-engineered features.
+%
+Their power lies in being dense and general, yet that same density makes them opaque, and a model built on top of them gives no account of which aspects of an embedding it actually relies on.
+%
+The interpretability problem, in other words, no longer stops at the model, as we showed with DELUGE. It reaches into the learned representation the model is built on.
+%
+DELUGE keeps its own use of the embedding legible by construction, through modulators designed to be physically meaningful, but interpretability of that kind must be engineered into each model deliberately. Most models instead consume foundation-model embeddings wholesale, and for them the reliance on the representation has to be recovered after the fact rather than built in.
+%
+Recent work has begun to show that these embeddings are far from unstructured. Their dimensions can be associated with continuous environmental covariates such as precipitation, temperature, and vegetation~\cite{rahman2026alphaearth}, and with the land cover classes they help discriminate~\cite{benavides2026earth}, while concept-based interpretability methods have shown more broadly that human-meaningful directions can be recovered from and traversed within learned representations~\cite{kim2018tcav}.
+%
+This evidence, however, characterizes the representation in the aggregate, describing what the embedding space encodes globally or which of its dimensions a fixed task depends on. It does not tell an analyst how a particular trained model uses its embeddings at a particular place, nor how that reliance shifts from one region to the next. That question turns from the representation to a model's use of it, and from a global summary to local spatial variation, which makes it a visual analytics problem.
+
+Here, I propose to develop a visual analytics system that makes the embedding reliance of a trained geospatial model interpretable and explorable.
+%
+The system first grounds the embedding space in a vocabulary of human concepts, learning for each known spatial covariate a direction in the embedding space that corresponds to it, following the concept activation vector formulation~\cite{kim2018tcav}.
+%
+To explain a given prediction, it reads the model's local sensitivity as the gradient of the output with respect to the embedding, and expresses that gradient in this concept vocabulary.
+%
+Computed across space, the result is a profile of how strongly the model's reliance aligns with each known covariate at each location, together with a measure of how much of that reliance falls outside the named vocabulary entirely.
+
+The distinction between those two quantities is the analytical core of the system.
+%
+For any prediction, one can always measure how much each known concept is present in the model's sensitivity, but one cannot always explain that sensitivity fully as a sum of known concepts.
+%
+The gap between the two separates three cases an analyst needs to tell apart. There is reliance that is fully accounted for by known covariates, the expected situation; reliance that is real but shared across covariates that co-vary in the world, an entanglement to be surfaced rather than hidden; and reliance that lies outside the named vocabulary altogether, a residual that flags predictive structure no known covariate explains and is therefore a candidate for discovery.
+%
+The system would render these profiles spatially, as brushable maps that reveal where and how a model's reliance shifts across geography.
+%
+It would support counterfactual queries by retrieving real neighboring locations whose embeddings differ along a chosen concept, so that a what-if perturbation corresponds to places that actually exist rather than to synthetic points drifting off the data manifold.
+%
+For the residual directions, it would run a discovery loop that proposes recurring unnamed structure and lets an expert inspect the places that exemplify it and name it, folding newly named concepts back into the vocabulary~\cite{ghorbani2019ace}.
+
+Where DELUGE achieves this legibility by design for a single model, the system recovers it after the fact for models that were never built to be interpretable, making it a general method applicable to any predictor built on foundation-model embeddings rather than one tied to a single model or task.
+%
+I would validate it against synthetic models with known concept dependence, where the reliance it recovers can be checked against ground truth, before turning it on trained models across a range of geospatial prediction tasks.
+%
+This direction carries the logic of the dissertation to its conclusion. As geospatial prediction comes to rest on the dense representations of foundation models, the work of interpretation must reach into those representations themselves, and visual analytics offers the means to do so.
 
 \section{Completing the ClimateSOM Extension and Investigating Spatial Co-occurrence of Extreme Climate Events}
 The extension to ClimateSOM developed in Section~\ref{sec:agu} established an EMD-based permutation test for distributional shifts in spatial co-variability, together with a clustering-based decomposition (Section~\ref{ssec:decomposing_reorganization}) that resolves a detected shift into a ranked set of interpretable pattern transitions.
@@ -52,16 +112,23 @@ Combined with geospatial foundation model embeddings, which encode the character
 %
 This connects to compound-event analysis, an area of growing concern in climate risk assessment that marginal, single-variable trends are poorly suited to address.
 
+
 \section{Expected Contributions and Broader Impact}
-Across its three facets, this dissertation returns to a single, persistent question. As geospatial data grows more complex, how can an analyst still interpret it and act on what they find? What changes from one chapter to the next is where that complexity, and the opacity it brings, resides. Read in sequence, the three contributions trace that opacity as it migrates from the data into the model, and offer a way to restore interpretability at each level where it settles.
+Across its three facets, this dissertation returns to a single, overarching question: \emph{As geospatial data grows more complex, how can an analyst still interpret it and act on what they find? }
+%
+In each chapter resides the varying levels of complexity and the opacity it brings.
+% What changes from one chapter to the next is where that complexity, and the opacity it brings, resides. 
+Read in sequence, the three contributions trace that opacity as it migrates from the data into the model, and offer a way to restore interpretability at each level where it settles.
+
 
 In HexTiles, the complexity lies in the data itself, in the many variables a single map must carry. The response works at the level of the visual encoding, rendering those variables and their interactions while preserving the spatial schema that keeps a map readable, and surfacing through confidence encodings the within-tile uncertainty that aggregation would otherwise hide.
 %
 In ClimateSOM, the complexity lies in the ensemble, in the sheer number of model runs that no analyst can inspect directly. The response works at the level of the interactive workflow, abstracting the ensemble into an explorable distribution and, with its extension, adding statistical testing so that a detected shift can be shown to be real rather than merely apparent to the eye.
 %
-In DELUGE, the complexity lies in the model. Geospatial analysis increasingly rests on opaque learned models built over foundation-model embeddings, and here the interpretability problem is the model itself. DELUGE meets it by construction, routing those embeddings through physically meaningful modulators so that its reasoning is legible along the hazard, exposure, and vulnerability components experts already reason with, rather than approximated after the fact. This interpretability by design is only the starting point. It is what makes the model amenable to a visual analytics system in the first place, and building that system, which turns the interpretable model into a decision tool for stakeholders, is the immediate next step and the first of the two directions above.
+In DELUGE, the complexity lies in the model. Geospatial analysis increasingly rests on opaque learned models built over foundation-model embeddings, and here the interpretability problem is the model itself. DELUGE meets it by construction, routing those embeddings through physically meaningful modulators so that its reasoning is legible along the hydrometeorological hazard component, the most important of its inputs and one experts already reason with, rather than approximated after the fact. This interpretability by design is only the starting point. It is what makes the model amenable to a visual analytics system in the first place, and building that system, which turns the interpretable model into a decision tool for stakeholders, is the immediate next step and the first of the directions above.
 
-Taken together, this arc is the contribution. As geospatial analysis leans ever more heavily on opaque computation, culminating in foundation models, the burden of interpretation shifts from the data onto the model, and visual analytics must follow it there. Each method in this dissertation is realized in a concrete system and evaluated with domain experts, yet the guidance it offers, on keeping a representation legible, on grounding claims in more than visual impression, and on building interpretability into a model rather than bolting it on afterward, is meant to transfer beyond the particular application in which I develop it.
+Taken together, these three responses trace one progression, the locus of complexity moving from the data, to the ensemble, to the model, with the work of restoring interpretability following it down the analysis stack. This progression is the contribution. As geospatial analysis leans ever more heavily on opaque computation, culminating in foundation models, the burden of interpretation settles on the model, and visual analytics must follow it there.
+% Each method in this dissertation is realized in a concrete system and evaluated with domain experts, yet the guidance it offers, on keeping a representation legible, on grounding claims in more than visual impression, and on building interpretability into a model rather than bolting it on afterward, is meant to transfer beyond the particular application in which I develop it.
 
 The broader impact lies in the application domains themselves. The methods are aimed squarely at imminent environmental challenges, from California water management and climate adaptation to pluvial flood risk assessment, and are built with and validated against the understanding of the scientists and stakeholders who face them. My hope is that this dissertation shows how visual analytics, positioned deliberately between advances in modeling and the judgment of domain experts, can render multifaceted geospatial data not only visible but interpretable and, ultimately, actionable.
 
