@@ -1,4 +1,4 @@
-# Qualifying Exam
+# Yuya's Qualifying Exam
 
 **Supporting Analysis of Multifaceted Geospatial Data with Visual Analytics**
 
